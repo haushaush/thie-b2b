@@ -1,0 +1,167 @@
+export interface Product {
+  id: string;
+  name: string;
+  manufacturer: string;
+  storage: string;
+  grade: "A" | "B";
+  pricePerUnit: number;
+  availableUnits: number;
+  securedUnits: number;
+}
+
+export const mockProducts: Product[] = [
+  {
+    id: "1",
+    name: "iPhone 16 Pro",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "A",
+    pricePerUnit: 899,
+    availableUnits: 45,
+    securedUnits: 12,
+  },
+  {
+    id: "2",
+    name: "iPhone 16 Pro",
+    manufacturer: "Apple",
+    storage: "512GB",
+    grade: "A",
+    pricePerUnit: 1049,
+    availableUnits: 28,
+    securedUnits: 8,
+  },
+  {
+    id: "3",
+    name: "iPhone 16 Pro Max",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "A",
+    pricePerUnit: 1099,
+    availableUnits: 32,
+    securedUnits: 15,
+  },
+  {
+    id: "4",
+    name: "iPhone 16 Pro Max",
+    manufacturer: "Apple",
+    storage: "512GB",
+    grade: "B",
+    pricePerUnit: 999,
+    availableUnits: 18,
+    securedUnits: 5,
+  },
+  {
+    id: "5",
+    name: "iPhone 15 Pro",
+    manufacturer: "Apple",
+    storage: "128GB",
+    grade: "A",
+    pricePerUnit: 749,
+    availableUnits: 56,
+    securedUnits: 22,
+  },
+  {
+    id: "6",
+    name: "iPhone 15 Pro",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "B",
+    pricePerUnit: 699,
+    availableUnits: 41,
+    securedUnits: 10,
+  },
+  {
+    id: "7",
+    name: "iPhone 15",
+    manufacturer: "Apple",
+    storage: "128GB",
+    grade: "A",
+    pricePerUnit: 549,
+    availableUnits: 78,
+    securedUnits: 35,
+  },
+  {
+    id: "8",
+    name: "iPhone 15",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "B",
+    pricePerUnit: 499,
+    availableUnits: 62,
+    securedUnits: 18,
+  },
+  {
+    id: "9",
+    name: "iPhone 14 Pro",
+    manufacturer: "Apple",
+    storage: "128GB",
+    grade: "A",
+    pricePerUnit: 649,
+    availableUnits: 34,
+    securedUnits: 12,
+  },
+  {
+    id: "10",
+    name: "iPhone 14 Pro",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "B",
+    pricePerUnit: 579,
+    availableUnits: 45,
+    securedUnits: 8,
+  },
+  {
+    id: "11",
+    name: "MacBook Pro 14\"",
+    manufacturer: "Apple",
+    storage: "512GB",
+    grade: "A",
+    pricePerUnit: 1599,
+    availableUnits: 15,
+    securedUnits: 4,
+  },
+  {
+    id: "12",
+    name: "MacBook Air M2",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "A",
+    pricePerUnit: 899,
+    availableUnits: 28,
+    securedUnits: 9,
+  },
+  {
+    id: "13",
+    name: "iPad Pro 12.9\"",
+    manufacturer: "Apple",
+    storage: "256GB",
+    grade: "A",
+    pricePerUnit: 899,
+    availableUnits: 22,
+    securedUnits: 7,
+  },
+  {
+    id: "14",
+    name: "iPad Air",
+    manufacturer: "Apple",
+    storage: "64GB",
+    grade: "B",
+    pricePerUnit: 449,
+    availableUnits: 38,
+    securedUnits: 14,
+  },
+];
+
+export const storageOptions = ["64GB", "128GB", "256GB", "512GB", "1TB"];
+export const gradeOptions = ["A", "B"] as const;
+export const modelOptions = [
+  "iPhone 16 Pro",
+  "iPhone 16 Pro Max",
+  "iPhone 15 Pro",
+  "iPhone 15",
+  "iPhone 14 Pro",
+  "MacBook Pro 14\"",
+  "MacBook Air M2",
+  "iPad Pro 12.9\"",
+  "iPad Air",
+];
