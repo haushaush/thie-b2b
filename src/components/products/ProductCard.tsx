@@ -50,9 +50,9 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Right: Stats & Actions */}
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col gap-2">
           {/* Stats Boxes */}
-          <div className="flex gap-2">
+          <div className="flex justify-end gap-2">
             <div className="flex flex-col items-center">
               <div className="flex h-10 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/5">
                 <span className="text-base font-bold text-primary">{product.availableUnits}</span>
