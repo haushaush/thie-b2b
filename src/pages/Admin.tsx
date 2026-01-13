@@ -25,15 +25,27 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ProductsTable } from "@/components/admin/ProductsTable";
 import { ProductData } from "@/components/admin/ProductEditModal";
+import { z } from "zod";
 
-interface CSVProduct {
-  name: string;
-  manufacturer: string;
-  storage: string;
-  grade: string;
-  price_per_unit: number;
-  available_units: number;
-}
+// Zod schema for comprehensive CSV product validation
+const CSVProductSchema = z.object({
+  name: z.string().trim().min(1, "Name ist erforderlich").max(200, "Name darf max. 200 Zeichen haben"),
+  manufacturer: z.string().trim().min(1, "Hersteller ist erforderlich").max(100, "Hersteller darf max. 100 Zeichen haben"),
+  storage: z.string().trim().max(50, "Speicher darf max. 50 Zeichen haben").optional().default(""),
+  grade: z.enum(["A", "B", "C"], { errorMap: () => ({ message: "Ungültige Qualitätsstufe (erlaubt: A, B, C)" }) }),
+  price_per_unit: z.number().positive("Preis muss positiv sein").max(999999, "Preis darf max. 999.999 sein"),
+  available_units: z.number().int("Stückzahl muss ganzzahlig sein").min(0, "Stückzahl darf nicht negativ sein").max(999999, "Stückzahl darf max. 999.999 sein"),
+});
+
+type CSVProduct = z.infer<typeof CSVProductSchema>;
+
+// Sanitize text by removing control characters
+const sanitizeText = (str: string): string => {
+  return str.replace(/[\x00-\x1F\x7F]/g, "").trim();
+};
+
+// Maximum CSV file size (5MB)
+const MAX_CSV_FILE_SIZE = 5 * 1024 * 1024;
 
 interface ParseResult {
   products: CSVProduct[];
@@ -110,44 +122,34 @@ export default function Admin() {
       const values = line.split(";").map((v) => v.trim());
       
       try {
-        const name = values[columnIndices.name];
-        const manufacturer = values[columnIndices.manufacturer];
-        const storage = values[columnIndices.storage];
-        const grade = values[columnIndices.grade]?.toUpperCase();
+        // Sanitize text fields to remove control characters
+        const rawName = sanitizeText(values[columnIndices.name] || "");
+        const rawManufacturer = sanitizeText(values[columnIndices.manufacturer] || "");
+        const rawStorage = sanitizeText(values[columnIndices.storage] || "");
+        const rawGrade = sanitizeText(values[columnIndices.grade] || "").toUpperCase();
         const priceStr = values[columnIndices.price_per_unit]?.replace(",", ".");
         const unitsStr = values[columnIndices.available_units];
-
-        if (!name || !manufacturer) {
-          errors.push(`Zeile ${i + 1}: Name und Hersteller sind erforderlich`);
-          continue;
-        }
-
-        if (!["A", "B", "C"].includes(grade)) {
-          errors.push(`Zeile ${i + 1}: Ungültige Qualitätsstufe "${grade}" (erlaubt: A, B, C)`);
-          continue;
-        }
 
         const price = parseFloat(priceStr);
         const units = parseInt(unitsStr, 10);
 
-        if (isNaN(price) || price < 0) {
-          errors.push(`Zeile ${i + 1}: Ungültiger Preis "${priceStr}"`);
-          continue;
-        }
-
-        if (isNaN(units) || units < 0) {
-          errors.push(`Zeile ${i + 1}: Ungültige Stückzahl "${unitsStr}"`);
-          continue;
-        }
-
-        products.push({
-          name,
-          manufacturer,
-          storage: storage || "",
-          grade,
-          price_per_unit: price,
-          available_units: units,
+        // Validate with Zod schema
+        const result = CSVProductSchema.safeParse({
+          name: rawName,
+          manufacturer: rawManufacturer,
+          storage: rawStorage,
+          grade: rawGrade,
+          price_per_unit: isNaN(price) ? -1 : price,
+          available_units: isNaN(units) ? -1 : units,
         });
+
+        if (!result.success) {
+          const errorMessages = result.error.errors.map(e => e.message).join("; ");
+          errors.push(`Zeile ${i + 1}: ${errorMessages}`);
+          continue;
+        }
+
+        products.push(result.data);
       } catch {
         errors.push(`Zeile ${i + 1}: Fehler beim Parsen`);
       }
@@ -160,11 +162,22 @@ export default function Admin() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Check file extension
     if (!file.name.endsWith(".csv")) {
       toast({
         variant: "destructive",
         title: "Ungültiges Dateiformat",
         description: "Bitte laden Sie eine CSV-Datei hoch",
+      });
+      return;
+    }
+
+    // Check file size limit (5MB)
+    if (file.size > MAX_CSV_FILE_SIZE) {
+      toast({
+        variant: "destructive",
+        title: "Datei zu groß",
+        description: "Die CSV-Datei darf maximal 5 MB groß sein",
       });
       return;
     }
@@ -204,10 +217,19 @@ export default function Admin() {
 
       if (deleteError) throw deleteError;
 
-      // Insert new products
+      // Insert new products - map to database schema
+      const productsForInsert = parsedProducts.map(p => ({
+        name: p.name,
+        manufacturer: p.manufacturer,
+        storage: p.storage,
+        grade: p.grade,
+        price_per_unit: p.price_per_unit,
+        available_units: p.available_units,
+      }));
+
       const { error: insertError } = await supabase
         .from("products")
-        .insert(parsedProducts);
+        .insert(productsForInsert);
 
       if (insertError) throw insertError;
 

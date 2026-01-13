@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -21,11 +22,31 @@ export default function ForgotPassword() {
       return;
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Bitte geben Sie eine gültige E-Mail-Adresse ein");
+      return;
+    }
+
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (resetError) {
+        setError("Fehler beim Senden der E-Mail. Bitte versuchen Sie es später erneut.");
+        return;
+      }
+      
+      setIsSubmitted(true);
+    } catch {
+      setError("Ein unerwarteter Fehler ist aufgetreten");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
