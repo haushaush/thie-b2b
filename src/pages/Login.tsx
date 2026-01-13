@@ -136,16 +136,6 @@ export default function Login() {
           </form>
         </Card>
 
-        {/* Demo credentials hint */}
-        <div className="mt-6 rounded-lg border border-border/50 bg-card p-4">
-          <p className="text-center text-sm text-muted-foreground">
-            <strong>Demo-Zugangsdaten:</strong>
-            <br />
-            E-Mail: <code className="rounded bg-muted px-1.5 py-0.5">demo@example.com</code>
-            <br />
-            Passwort: <code className="rounded bg-muted px-1.5 py-0.5">demo123</code>
-          </p>
-        </div>
       </div>
     </div>
   );
