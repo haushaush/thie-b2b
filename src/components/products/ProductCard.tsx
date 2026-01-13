@@ -3,13 +3,6 @@ import { Product } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface ProductCardProps {
   product: Product;
@@ -76,16 +69,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
-            <Select defaultValue="all">
-              <SelectTrigger className="h-8 w-14 border-border/50 bg-background text-xs">
-                <SelectValue placeholder="Alle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle</SelectItem>
-                <SelectItem value="a">A</SelectItem>
-                <SelectItem value="b">B</SelectItem>
-              </SelectContent>
-            </Select>
+            <Button
+              onClick={() => addItem(product, product.availableUnits)}
+              size="sm"
+              variant="outline"
+              className="h-8 px-2 border-border/50 bg-background text-xs"
+              disabled={product.availableUnits === 0}
+            >
+              Alle
+            </Button>
 
             {quantity === 0 ? (
               <Button
