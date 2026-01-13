@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Search, Loader2 } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/products/ProductCard";
 import { CartBar } from "@/components/products/CartBar";
@@ -22,7 +24,8 @@ export default function Dashboard() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { clearCart } = useCart();
+  const { items, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -74,21 +77,56 @@ export default function Dashboard() {
   }, [products, searchQuery, filters]);
 
   const handleSubmitRequest = async () => {
+    if (!user || items.length === 0) return;
+    
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitModalOpen(false);
-    clearCart();
-    
-    toast({
-      title: "Anfrage erfolgreich gesendet",
-      description: "Sie finden Ihre Anfrage unter 'Requests'.",
-    });
-    
-    navigate("/requests");
+    try {
+      // Create the request
+      const { data: request, error: requestError } = await supabase
+        .from("requests")
+        .insert({
+          user_id: user.id,
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (requestError) throw requestError;
+
+      // Create request items
+      const requestItems = items.map((item) => ({
+        request_id: request.id,
+        product_id: item.product.id,
+        product_name: item.product.name,
+        quantity: item.quantity,
+        price_per_unit: item.product.pricePerUnit,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("request_items")
+        .insert(requestItems);
+
+      if (itemsError) throw itemsError;
+
+      setIsSubmitModalOpen(false);
+      clearCart();
+      
+      toast({
+        title: "Anfrage erfolgreich gesendet",
+        description: "Sie finden Ihre Anfrage unter 'Requests'.",
+      });
+      
+      navigate("/requests");
+    } catch (error: any) {
+      toast({
+        title: "Fehler beim Senden",
+        description: error.message || "Bitte versuchen Sie es erneut.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
