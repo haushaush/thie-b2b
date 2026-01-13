@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 
@@ -7,7 +7,7 @@ interface CartBarProps {
 }
 
 export function CartBar({ onSubmit }: CartBarProps) {
-  const { totalDevices, totalAmount } = useCart();
+  const { totalDevices, totalAmount, clearCart } = useCart();
 
   if (totalDevices === 0) return null;
 
@@ -35,9 +35,20 @@ export function CartBar({ onSubmit }: CartBarProps) {
           </div>
         </div>
 
-        <Button onClick={onSubmit} size="lg" className="px-6">
-          Submit request
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={clearCart} 
+            size="lg" 
+            variant="outline"
+            className="px-4"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Leeren
+          </Button>
+          <Button onClick={onSubmit} size="lg" className="px-6">
+            Submit request
+          </Button>
+        </div>
       </div>
     </div>
   );
