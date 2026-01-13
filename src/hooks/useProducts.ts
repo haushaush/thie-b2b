@@ -6,10 +6,10 @@ export interface Product {
   name: string;
   manufacturer: string;
   storage: string;
-  grade: string;
+  grade: "A" | "B";
   pricePerUnit: number;
   availableUnits: number;
-  securedUnits?: number;
+  securedUnits: number;
 }
 
 export function useProducts() {
@@ -28,7 +28,7 @@ export function useProducts() {
         name: p.name,
         manufacturer: p.manufacturer,
         storage: p.storage || "",
-        grade: p.grade || "A",
+        grade: (p.grade === "A" || p.grade === "B" ? p.grade : "A") as "A" | "B",
         pricePerUnit: Number(p.price_per_unit),
         availableUnits: p.available_units,
         securedUnits: 0,

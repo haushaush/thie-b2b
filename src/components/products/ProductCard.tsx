@@ -1,5 +1,5 @@
 import { Plus, Minus } from "lucide-react";
-import { Product } from "@/data/mockProducts";
+import { Product } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

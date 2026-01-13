@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
-import { mockProducts } from "@/data/mockProducts";
+import { Search, Loader2 } from "lucide-react";
+import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -11,6 +11,7 @@ import { SubmitModal } from "@/components/products/SubmitModal";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
+  const { data: products = [], isLoading, error } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({
     models: [],
@@ -37,7 +38,7 @@ export default function Dashboard() {
 
   // Filter products
   const filteredProducts = useMemo(() => {
-    return mockProducts.filter((product) => {
+    return products.filter((product) => {
       // Search query
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -70,7 +71,7 @@ export default function Dashboard() {
 
       return true;
     });
-  }, [searchQuery, filters]);
+  }, [products, searchQuery, filters]);
 
   const handleSubmitRequest = async () => {
     setIsSubmitting(true);
@@ -89,6 +90,23 @@ export default function Dashboard() {
     
     navigate("/requests");
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <p className="text-destructive">Fehler beim Laden der Produkte</p>
+        <p className="text-sm text-muted-foreground">{error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-24">
