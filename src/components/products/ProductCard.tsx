@@ -69,16 +69,15 @@ export function ProductCard({
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
-            <Select defaultValue="all">
-              <SelectTrigger className="h-8 w-14 border-border/50 bg-background text-xs">
-                <SelectValue placeholder="Alle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle</SelectItem>
-                <SelectItem value="a">A</SelectItem>
-                <SelectItem value="b">B</SelectItem>
-              </SelectContent>
-            </Select>
+            <Button
+              onClick={() => addItem(product, product.availableUnits - quantity)}
+              size="sm"
+              variant="outline"
+              className="h-8 px-2 text-xs"
+              disabled={product.availableUnits === 0 || quantity >= product.availableUnits}
+            >
+              Alle
+            </Button>
 
             {quantity === 0 ? <Button onClick={handleAdd} size="sm" className="h-8 w-10 rounded-lg bg-accent p-0 text-accent-foreground hover:bg-accent/90" disabled={product.availableUnits === 0}>
                 <Plus className="h-5 w-5" />
