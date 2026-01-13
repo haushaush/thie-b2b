@@ -41,11 +41,12 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <span className="text-lg font-bold text-primary-foreground">T</span>
-          </div>
-          <span className="text-xl font-semibold text-primary">Thie</span>
+        <Link to="/dashboard" className="flex items-center">
+          <img 
+            src="/logo.svg" 
+            alt="Thie Logo" 
+            className="h-10 w-auto"
+          />
         </Link>
 
         {/* Right side: User initials + Hamburger */}
