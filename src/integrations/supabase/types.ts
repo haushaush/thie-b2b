@@ -80,6 +80,84 @@ export type Database = {
         }
         Relationships: []
       }
+      request_items: {
+        Row: {
+          created_at: string
+          id: string
+          price_per_unit: number
+          product_id: string
+          product_name: string
+          quantity: number
+          request_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price_per_unit: number
+          product_id: string
+          product_name: string
+          quantity: number
+          request_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price_per_unit?: number
+          product_id?: string
+          product_name?: string
+          quantity?: number
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requests: {
+        Row: {
+          admin_message: string | null
+          created_at: string
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          status: Database["public"]["Enums"]["request_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_message?: string | null
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_message?: string | null
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -116,6 +194,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      request_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -244,6 +323,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      request_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
