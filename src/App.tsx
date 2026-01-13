@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AdminRoute } from "@/components/AdminRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 // Pages
@@ -15,6 +16,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import Dashboard from "@/pages/Dashboard";
 import Requests from "@/pages/Requests";
 import Profile from "@/pages/Profile";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,14 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/requests" element={<Requests />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <Admin />
+                    </AdminRoute>
+                  }
+                />
               </Route>
 
               {/* Redirects */}
