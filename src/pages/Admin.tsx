@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ProductsTable } from "@/components/admin/ProductsTable";
+import { ProductData } from "@/components/admin/ProductEditModal";
 
 interface CSVProduct {
   name: string;
@@ -46,6 +49,29 @@ export default function Admin() {
   const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Fetch all products
+  const { data: products = [], isLoading: isLoadingProducts, refetch: refetchProducts } = useQuery({
+    queryKey: ["admin-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("name");
+
+      if (error) throw error;
+
+      return data.map((p) => ({
+        id: p.id,
+        name: p.name,
+        manufacturer: p.manufacturer,
+        storage: p.storage || "",
+        grade: p.grade || "A",
+        price_per_unit: Number(p.price_per_unit),
+        available_units: p.available_units,
+      })) as ProductData[];
+    },
+  });
 
   const parseCSV = (content: string): ParseResult => {
     const lines = content.trim().split("\n");
@@ -192,6 +218,7 @@ export default function Admin() {
 
       setParsedProducts([]);
       setParseErrors([]);
+      refetchProducts();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -219,6 +246,7 @@ export default function Admin() {
         title: "Katalog gelöscht",
         description: "Alle Produkte wurden entfernt",
       });
+      refetchProducts();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -301,6 +329,23 @@ export default function Admin() {
               Alle Produkte löschen
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Products Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Produktkatalog</CardTitle>
+          <CardDescription>
+            Alle {products.length} Produkte im System. Klicken Sie auf Bearbeiten, um ein Produkt zu ändern.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ProductsTable
+            products={products}
+            isLoading={isLoadingProducts}
+            onProductUpdated={refetchProducts}
+          />
         </CardContent>
       </Card>
 
