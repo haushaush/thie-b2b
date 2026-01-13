@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, LayoutDashboard, FileText, User, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, FileText, User, LogOut, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,17 @@ const navigationItems = [
   { name: "Profil", href: "/profile", icon: User },
 ];
 
+const adminNavigationItems = [
+  { name: "Admin", href: "/admin", icon: Settings },
+];
+
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
+  
+  const allNavItems = isAdmin 
+    ? [...navigationItems, ...adminNavigationItems] 
+    : navigationItems;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -71,7 +79,7 @@ export function Header() {
               </SheetHeader>
 
               <nav className="flex flex-col gap-1 p-4">
-                {navigationItems.map((item) => {
+                {allNavItems.map((item) => {
                   const isActive = location.pathname === item.href;
                   return (
                     <Link
