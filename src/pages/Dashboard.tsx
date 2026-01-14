@@ -19,6 +19,8 @@ export default function Dashboard() {
     models: [],
     storage: [],
     grades: [],
+    colors: [],
+    batteryRange: [0, 100],
     priceRange: [0, 2000],
   });
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
@@ -29,12 +31,23 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Extract unique colors from products
+  const availableColors = useMemo(() => {
+    const colors = new Set<string>();
+    products.forEach((p) => {
+      if (p.color) colors.add(p.color);
+    });
+    return Array.from(colors).sort();
+  }, [products]);
+
   // Calculate active filter count
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.models.length > 0) count++;
     if (filters.storage.length > 0) count++;
     if (filters.grades.length > 0) count++;
+    if (filters.colors.length > 0) count++;
+    if (filters.batteryRange[0] > 0 || filters.batteryRange[1] < 100) count++;
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 2000) count++;
     return count;
   }, [filters]);
@@ -61,6 +74,19 @@ export default function Dashboard() {
 
       // Grade filter
       if (filters.grades.length > 0 && !filters.grades.includes(product.grade)) {
+        return false;
+      }
+
+      // Color filter
+      if (filters.colors.length > 0 && !filters.colors.includes(product.color)) {
+        return false;
+      }
+
+      // Battery filter
+      if (
+        product.batteryHealth < filters.batteryRange[0] ||
+        product.batteryHealth > filters.batteryRange[1]
+      ) {
         return false;
       }
 
@@ -171,6 +197,7 @@ export default function Dashboard() {
           filters={filters}
           onFiltersChange={setFilters}
           activeFilterCount={activeFilterCount}
+          availableColors={availableColors}
         />
       </div>
 
