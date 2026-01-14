@@ -1,9 +1,10 @@
 import { useState, useRef, useMemo } from "react";
-import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRequests } from "@/hooks/useRequests";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -293,7 +294,10 @@ export default function Admin() {
     }
   };
 
-  // Calculate statistics
+  // Fetch requests for statistics
+  const { data: requests = [] } = useRequests();
+
+  // Calculate product statistics
   const totalUnits = useMemo(() => {
     return products.reduce((sum, p) => sum + p.available_units, 0);
   }, [products]);
@@ -301,6 +305,14 @@ export default function Admin() {
   const totalValue = useMemo(() => {
     return products.reduce((sum, p) => sum + (p.price_per_unit * p.available_units), 0);
   }, [products]);
+
+  // Calculate request statistics
+  const requestStats = useMemo(() => {
+    const pending = requests.filter(r => r.status === "pending").length;
+    const approved = requests.filter(r => r.status === "approved").length;
+    const rejected = requests.filter(r => r.status === "rejected").length;
+    return { pending, approved, rejected, total: requests.length };
+  }, [requests]);
 
   return (
     <div className="space-y-6">
@@ -312,7 +324,7 @@ export default function Admin() {
         </p>
       </div>
 
-      {/* Statistics Cards */}
+      {/* Product Statistics Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -330,6 +342,46 @@ export default function Admin() {
           <CardHeader className="pb-2">
             <CardDescription>Gesamtwert</CardDescription>
             <CardTitle className="text-3xl">{totalValue.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      {/* Request Statistics Cards */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1">
+              <FileSpreadsheet className="h-4 w-4" />
+              Alle Anfragen
+            </CardDescription>
+            <CardTitle className="text-3xl">{requestStats.total}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="border-yellow-500/20 bg-yellow-500/5">
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1 text-yellow-600">
+              <Clock className="h-4 w-4" />
+              Ausstehend
+            </CardDescription>
+            <CardTitle className="text-3xl text-yellow-600">{requestStats.pending}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="border-green-500/20 bg-green-500/5">
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1 text-green-600">
+              <CheckCircle2 className="h-4 w-4" />
+              Genehmigt
+            </CardDescription>
+            <CardTitle className="text-3xl text-green-600">{requestStats.approved}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="border-red-500/20 bg-red-500/5">
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1 text-red-600">
+              <XCircle className="h-4 w-4" />
+              Abgelehnt
+            </CardDescription>
+            <CardTitle className="text-3xl text-red-600">{requestStats.rejected}</CardTitle>
           </CardHeader>
         </Card>
       </div>
