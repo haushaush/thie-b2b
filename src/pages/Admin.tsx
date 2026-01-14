@@ -32,6 +32,8 @@ const CSVProductSchema = z.object({
   name: z.string().trim().min(1, "Name ist erforderlich").max(200, "Name darf max. 200 Zeichen haben"),
   manufacturer: z.string().trim().min(1, "Hersteller ist erforderlich").max(100, "Hersteller darf max. 100 Zeichen haben"),
   storage: z.string().trim().max(50, "Speicher darf max. 50 Zeichen haben").optional().default(""),
+  color: z.string().trim().max(100, "Farbe darf max. 100 Zeichen haben").optional().default(""),
+  battery_health: z.number().int("Batteriestand muss ganzzahlig sein").min(0).max(100).optional().default(0),
   grade: z.enum(["A", "B", "C"], { errorMap: () => ({ message: "Ungültige Qualitätsstufe (erlaubt: A, B, C)" }) }),
   price_per_unit: z.number().positive("Preis muss positiv sein").max(999999, "Preis darf max. 999.999 sein"),
   available_units: z.number().int("Stückzahl muss ganzzahlig sein").min(0, "Stückzahl darf nicht negativ sein").max(999999, "Stückzahl darf max. 999.999 sein"),
@@ -78,6 +80,8 @@ export default function Admin() {
         name: p.name,
         manufacturer: p.manufacturer,
         storage: p.storage || "",
+        color: p.color || "",
+        battery_health: p.battery_health || 0,
         grade: p.grade || "A",
         price_per_unit: Number(p.price_per_unit),
         available_units: p.available_units,
@@ -97,7 +101,7 @@ export default function Admin() {
 
     // Parse header
     const header = lines[0].split(";").map((h) => h.trim().toLowerCase());
-    const requiredColumns = ["name", "manufacturer", "storage", "grade", "price_per_unit", "available_units"];
+    const requiredColumns = ["name", "manufacturer", "storage", "color", "battery_health", "grade", "price_per_unit", "available_units"];
     
     const missingColumns = requiredColumns.filter((col) => !header.includes(col));
     if (missingColumns.length > 0) {
@@ -109,6 +113,8 @@ export default function Admin() {
       name: header.indexOf("name"),
       manufacturer: header.indexOf("manufacturer"),
       storage: header.indexOf("storage"),
+      color: header.indexOf("color"),
+      battery_health: header.indexOf("battery_health"),
       grade: header.indexOf("grade"),
       price_per_unit: header.indexOf("price_per_unit"),
       available_units: header.indexOf("available_units"),
@@ -126,18 +132,23 @@ export default function Admin() {
         const rawName = sanitizeText(values[columnIndices.name] || "");
         const rawManufacturer = sanitizeText(values[columnIndices.manufacturer] || "");
         const rawStorage = sanitizeText(values[columnIndices.storage] || "");
+        const rawColor = sanitizeText(values[columnIndices.color] || "");
+        const rawBatteryHealth = values[columnIndices.battery_health]?.replace("%", "");
         const rawGrade = sanitizeText(values[columnIndices.grade] || "").toUpperCase();
         const priceStr = values[columnIndices.price_per_unit]?.replace(",", ".");
         const unitsStr = values[columnIndices.available_units];
 
         const price = parseFloat(priceStr);
         const units = parseInt(unitsStr, 10);
+        const batteryHealth = parseInt(rawBatteryHealth, 10);
 
         // Validate with Zod schema
         const result = CSVProductSchema.safeParse({
           name: rawName,
           manufacturer: rawManufacturer,
           storage: rawStorage,
+          color: rawColor,
+          battery_health: isNaN(batteryHealth) ? 0 : batteryHealth,
           grade: rawGrade,
           price_per_unit: isNaN(price) ? -1 : price,
           available_units: isNaN(units) ? -1 : units,
@@ -222,6 +233,8 @@ export default function Admin() {
         name: p.name,
         manufacturer: p.manufacturer,
         storage: p.storage,
+        color: p.color,
+        battery_health: p.battery_health,
         grade: p.grade,
         price_per_unit: p.price_per_unit,
         available_units: p.available_units,
@@ -330,10 +343,10 @@ export default function Admin() {
               Die CSV-Datei muss folgende Spalten enthalten (Semikolon-getrennt):
             </p>
             <code className="block rounded bg-background p-2 text-xs">
-              name;manufacturer;storage;grade;price_per_unit;available_units
+              name;manufacturer;storage;color;battery_health;grade;price_per_unit;available_units
             </code>
             <p className="mt-2 text-xs text-muted-foreground">
-              Beispiel: iPhone 14 Pro;Apple;256GB;A;899.99;50
+              Beispiel: iPhone 14 Pro;Apple;256GB;Space Black;89;A;899.99;50
             </p>
           </div>
 

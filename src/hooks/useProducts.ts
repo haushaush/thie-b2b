@@ -6,7 +6,9 @@ export interface Product {
   name: string;
   manufacturer: string;
   storage: string;
-  grade: "A" | "B";
+  color: string;
+  batteryHealth: number;
+  grade: "A" | "B" | "C";
   pricePerUnit: number;
   availableUnits: number;
   securedUnits: number;
@@ -28,7 +30,9 @@ export function useProducts() {
         name: p.name,
         manufacturer: p.manufacturer,
         storage: p.storage || "",
-        grade: (p.grade === "A" || p.grade === "B" ? p.grade : "A") as "A" | "B",
+        color: p.color || "",
+        batteryHealth: p.battery_health || 0,
+        grade: (p.grade === "A" || p.grade === "B" || p.grade === "C" ? p.grade : "A") as "A" | "B" | "C",
         pricePerUnit: Number(p.price_per_unit),
         availableUnits: p.available_units,
         securedUnits: 0,
