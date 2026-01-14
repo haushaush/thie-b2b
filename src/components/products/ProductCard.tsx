@@ -3,24 +3,20 @@ import { Product } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 interface ProductCardProps {
   product: Product;
 }
-export function ProductCard({
-  product
-}: ProductCardProps) {
-  const {
-    items,
-    addItem,
-    removeItem,
-    updateQuantity
-  } = useCart();
+
+export function ProductCard({ product }: ProductCardProps) {
+  const { items, addItem, removeItem, updateQuantity } = useCart();
   const cartItem = items.find(item => item.product.id === product.id);
   const quantity = cartItem?.quantity || 0;
+
   const handleAdd = () => {
     addItem(product, 1);
   };
+
   const handleRemove = () => {
     if (quantity > 1) {
       updateQuantity(product.id, quantity - 1);
@@ -28,70 +24,85 @@ export function ProductCard({
       removeItem(product.id);
     }
   };
+
+  const handleClaimAll = () => {
+    const remaining = product.availableUnits - quantity;
+    if (remaining > 0) {
+      addItem(product, remaining);
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("de-DE", {
       style: "currency",
       currency: "EUR"
     }).format(price);
   };
-  return <div className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
-      <div className="flex items-start justify-between gap-4">
+
+  return (
+    <div className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
+      <div className="flex items-start justify-between gap-6">
         {/* Left: Product Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-card-foreground">
+          <h3 className="text-xl font-bold text-card-foreground">
             {product.name}
           </h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {product.manufacturer} | {product.storage} | {product.grade}-Grade
+          <Badge 
+            variant="secondary" 
+            className="mt-2 bg-accent text-accent-foreground font-semibold px-3 py-1 text-xs rounded-full"
+          >
+            {product.grade}-GRADE
+          </Badge>
+          <p className="mt-3 text-sm text-muted-foreground">
+            {product.manufacturer} | {product.storage} Storage
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cost per Unit: <span className="font-semibold text-card-foreground">{formatPrice(product.pricePerUnit)}</span>
+            Cost per Unit: <span className="font-bold text-card-foreground">{formatPrice(product.pricePerUnit)}</span>
           </p>
         </div>
 
-        {/* Right: Stats & Actions */}
+        {/* Right: Actions */}
         <div className="flex flex-col items-end gap-2">
-          {/* Stats Boxes */}
-          <div className="flex gap-2">
-            <div className="flex flex-col items-center">
-              <div className="flex h-10 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/5">
-                <span className="text-base font-bold text-primary">{product.availableUnits}</span>
-              </div>
-              <span className="mt-0.5 text-[10px] text-muted-foreground">Available</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="flex h-10 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <span className="text-base font-bold items-stretch ">{product.securedUnits}</span>
-              </div>
-              <span className="mt-0.5 text-[10px] text-muted-foreground">Secured</span>
-            </div>
-          </div>
+          {/* Claim All Button */}
+          <Button
+            onClick={handleClaimAll}
+            className="h-10 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+            disabled={product.availableUnits === 0 || quantity >= product.availableUnits}
+          >
+            Claim All
+          </Button>
 
-          {/* Action Buttons */}
+          {/* Quantity Controls */}
           <div className="flex items-center gap-2">
+            {quantity > 0 && (
+              <Button
+                onClick={handleRemove}
+                size="sm"
+                variant="outline"
+                className="h-10 w-10 rounded-lg p-0 border-primary/20"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+            )}
+            <div className="flex h-10 min-w-[3rem] items-center justify-center rounded-lg bg-primary text-primary-foreground px-3">
+              <span className="text-base font-bold">{quantity}</span>
+            </div>
             <Button
-              onClick={() => addItem(product, product.availableUnits - quantity)}
+              onClick={handleAdd}
               size="sm"
-              variant="outline"
-              className="h-8 px-2 text-xs"
-              disabled={product.availableUnits === 0 || quantity >= product.availableUnits}
+              className="h-10 w-10 rounded-lg bg-accent p-0 text-accent-foreground hover:bg-accent/90"
+              disabled={quantity >= product.availableUnits}
             >
-              Alle
+              <Plus className="h-5 w-5" />
             </Button>
-
-            {quantity === 0 ? <Button onClick={handleAdd} size="sm" className="h-8 w-10 rounded-lg bg-accent p-0 text-accent-foreground hover:bg-accent/90" disabled={product.availableUnits === 0}>
-                <Plus className="h-5 w-5" />
-              </Button> : <div className="flex items-center gap-1">
-                <Button onClick={handleRemove} size="sm" variant="outline" className="h-8 w-8 rounded-lg p-0">
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-6 text-center text-sm font-medium">{quantity}</span>
-                <Button onClick={handleAdd} size="sm" className="h-8 w-10 rounded-lg bg-accent p-0 text-accent-foreground hover:bg-accent/90" disabled={quantity >= product.availableUnits}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>}
           </div>
+
+          {/* Available Count */}
+          <span className="text-sm text-muted-foreground">
+            Available: {product.availableUnits}
+          </span>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 }
