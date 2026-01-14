@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -293,6 +293,15 @@ export default function Admin() {
     }
   };
 
+  // Calculate statistics
+  const totalUnits = useMemo(() => {
+    return products.reduce((sum, p) => sum + p.available_units, 0);
+  }, [products]);
+
+  const totalValue = useMemo(() => {
+    return products.reduce((sum, p) => sum + (p.price_per_unit * p.available_units), 0);
+  }, [products]);
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -301,6 +310,28 @@ export default function Admin() {
         <p className="mt-1 text-muted-foreground">
           Verwalten Sie den Gerätekatalog
         </p>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Produktarten</CardDescription>
+            <CardTitle className="text-3xl">{products.length}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Gesamteinheiten</CardDescription>
+            <CardTitle className="text-3xl">{totalUnits.toLocaleString('de-DE')}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Gesamtwert</CardDescription>
+            <CardTitle className="text-3xl">{totalValue.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</CardTitle>
+          </CardHeader>
+        </Card>
       </div>
 
       {/* Upload Section */}

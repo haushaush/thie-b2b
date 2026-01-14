@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Filter, X } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,6 +18,8 @@ export interface FilterState {
   models: string[];
   storage: string[];
   grades: ("A" | "B" | "C")[];
+  colors: string[];
+  batteryRange: [number, number];
   priceRange: [number, number];
 }
 
@@ -25,9 +27,10 @@ interface FilterModalProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   activeFilterCount: number;
+  availableColors?: string[];
 }
 
-export function FilterModal({ filters, onFiltersChange, activeFilterCount }: FilterModalProps) {
+export function FilterModal({ filters, onFiltersChange, activeFilterCount, availableColors = [] }: FilterModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
 
@@ -46,6 +49,8 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount }: Fil
       models: [],
       storage: [],
       grades: [],
+      colors: [],
+      batteryRange: [0, 100],
       priceRange: [0, 2000],
     };
     setLocalFilters(resetFilters);
@@ -147,6 +152,47 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount }: Fil
                 </label>
               ))}
             </div>
+          </div>
+
+          {/* Color */}
+          {availableColors.length > 0 && (
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Farbe</Label>
+              <div className="flex flex-wrap gap-2">
+                {availableColors.map((color) => (
+                  <label
+                    key={color}
+                    className="flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted"
+                  >
+                    <Checkbox
+                      checked={localFilters.colors.includes(color)}
+                      onCheckedChange={() => toggleArrayFilter("colors", color)}
+                    />
+                    {color}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Battery Range */}
+          <div className="space-y-4">
+            <Label className="text-sm font-medium">
+              Batteriezustand: {localFilters.batteryRange[0]}% – {localFilters.batteryRange[1]}%
+            </Label>
+            <Slider
+              value={localFilters.batteryRange}
+              onValueChange={(value) =>
+                setLocalFilters((prev) => ({
+                  ...prev,
+                  batteryRange: value as [number, number],
+                }))
+              }
+              min={0}
+              max={100}
+              step={5}
+              className="w-full"
+            />
           </div>
 
           {/* Price Range */}
