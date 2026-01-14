@@ -3,7 +3,9 @@ export interface Product {
   name: string;
   manufacturer: string;
   storage: string;
-  grade: "A" | "B";
+  color: string;
+  batteryHealth: number;
+  grade: "A" | "B" | "C";
   pricePerUnit: number;
   availableUnits: number;
   securedUnits: number;
@@ -15,6 +17,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 16 Pro",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Black Titanium",
+    batteryHealth: 98,
     grade: "A",
     pricePerUnit: 899,
     availableUnits: 45,
@@ -25,6 +29,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 16 Pro",
     manufacturer: "Apple",
     storage: "512GB",
+    color: "Black Titanium",
+    batteryHealth: 100,
     grade: "A",
     pricePerUnit: 1049,
     availableUnits: 28,
@@ -35,6 +41,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 16 Pro Max",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Black Titanium",
+    batteryHealth: 99,
     grade: "A",
     pricePerUnit: 1099,
     availableUnits: 32,
@@ -45,6 +53,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 16 Pro Max",
     manufacturer: "Apple",
     storage: "512GB",
+    color: "White Titanium",
+    batteryHealth: 95,
     grade: "B",
     pricePerUnit: 999,
     availableUnits: 18,
@@ -55,6 +65,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 15 Pro",
     manufacturer: "Apple",
     storage: "128GB",
+    color: "Black Titanium",
+    batteryHealth: 92,
     grade: "A",
     pricePerUnit: 749,
     availableUnits: 56,
@@ -65,6 +77,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 15 Pro",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Black Titanium",
+    batteryHealth: 88,
     grade: "B",
     pricePerUnit: 699,
     availableUnits: 41,
@@ -75,6 +89,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 15",
     manufacturer: "Apple",
     storage: "128GB",
+    color: "Black",
+    batteryHealth: 94,
     grade: "A",
     pricePerUnit: 549,
     availableUnits: 78,
@@ -85,6 +101,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 15",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Black",
+    batteryHealth: 90,
     grade: "B",
     pricePerUnit: 499,
     availableUnits: 62,
@@ -95,6 +113,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 14 Pro",
     manufacturer: "Apple",
     storage: "128GB",
+    color: "Space Black",
+    batteryHealth: 87,
     grade: "A",
     pricePerUnit: 649,
     availableUnits: 34,
@@ -105,6 +125,8 @@ export const mockProducts: Product[] = [
     name: "iPhone 14 Pro",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Space Black",
+    batteryHealth: 85,
     grade: "B",
     pricePerUnit: 579,
     availableUnits: 45,
@@ -115,6 +137,8 @@ export const mockProducts: Product[] = [
     name: "MacBook Pro 14\"",
     manufacturer: "Apple",
     storage: "512GB",
+    color: "Space Gray",
+    batteryHealth: 91,
     grade: "A",
     pricePerUnit: 1599,
     availableUnits: 15,
@@ -125,6 +149,8 @@ export const mockProducts: Product[] = [
     name: "MacBook Air M2",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Midnight",
+    batteryHealth: 96,
     grade: "A",
     pricePerUnit: 899,
     availableUnits: 28,
@@ -135,6 +161,8 @@ export const mockProducts: Product[] = [
     name: "iPad Pro 12.9\"",
     manufacturer: "Apple",
     storage: "256GB",
+    color: "Space Gray",
+    batteryHealth: 93,
     grade: "A",
     pricePerUnit: 899,
     availableUnits: 22,
@@ -145,6 +173,8 @@ export const mockProducts: Product[] = [
     name: "iPad Air",
     manufacturer: "Apple",
     storage: "64GB",
+    color: "Space Gray",
+    batteryHealth: 89,
     grade: "B",
     pricePerUnit: 449,
     availableUnits: 38,
@@ -153,7 +183,7 @@ export const mockProducts: Product[] = [
 ];
 
 export const storageOptions = ["64GB", "128GB", "256GB", "512GB", "1TB"];
-export const gradeOptions = ["A", "B"] as const;
+export const gradeOptions = ["A", "B", "C"] as const;
 export const modelOptions = [
   "iPhone 16 Pro",
   "iPhone 16 Pro Max",

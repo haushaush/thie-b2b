@@ -24,6 +24,8 @@ export interface ProductData {
   name: string;
   manufacturer: string;
   storage: string;
+  color: string;
+  battery_health: number;
   grade: string;
   price_per_unit: number;
   available_units: number;
@@ -97,6 +99,31 @@ export function ProductEditModal({
                 id="storage"
                 value={formData.storage}
                 onChange={(e) => setFormData({ ...formData, storage: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="color">Farbe</Label>
+              <Input
+                id="color"
+                value={formData.color}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="battery_health">Batteriezustand (%)</Label>
+              <Input
+                id="battery_health"
+                type="number"
+                min="0"
+                max="100"
+                value={formData.battery_health}
+                onChange={(e) =>
+                  setFormData({ ...formData, battery_health: parseInt(e.target.value, 10) || 0 })
+                }
               />
             </div>
 

@@ -17,7 +17,7 @@ import { modelOptions, storageOptions, gradeOptions } from "@/data/mockProducts"
 export interface FilterState {
   models: string[];
   storage: string[];
-  grades: ("A" | "B")[];
+  grades: ("A" | "B" | "C")[];
   priceRange: [number, number];
 }
 

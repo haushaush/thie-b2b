@@ -54,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.grade}-GRADE
           </Badge>
           <p className="mt-3 text-sm text-muted-foreground">
-            {product.manufacturer} | {product.storage} Storage
+            {product.manufacturer} | {product.storage} Storage{product.color ? ` | ${product.color}` : ""}{product.batteryHealth ? ` | ${product.batteryHealth}% Battery` : ""}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             Cost per Unit: <span className="font-bold text-card-foreground">{formatPrice(product.pricePerUnit)}</span>
