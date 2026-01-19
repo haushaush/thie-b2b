@@ -18,14 +18,14 @@ export default function ForgotPassword() {
     setError("");
 
     if (!email) {
-      setError("Bitte geben Sie Ihre E-Mail-Adresse ein");
+      setError("Please enter your email address");
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Bitte geben Sie eine gültige E-Mail-Adresse ein");
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -37,13 +37,13 @@ export default function ForgotPassword() {
       });
 
       if (resetError) {
-        setError("Fehler beim Senden der E-Mail. Bitte versuchen Sie es später erneut.");
+        setError("Error sending email. Please try again later.");
         return;
       }
       
       setIsSubmitted(true);
     } catch {
-      setError("Ein unerwarteter Fehler ist aufgetreten");
+      setError("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -62,11 +62,11 @@ export default function ForgotPassword() {
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl">Passwort zurücksetzen</CardTitle>
+            <CardTitle className="text-xl">Reset Password</CardTitle>
             <CardDescription>
               {isSubmitted
-                ? "Prüfen Sie Ihren Posteingang"
-                : "Geben Sie Ihre E-Mail ein, um einen Reset-Link zu erhalten"}
+                ? "Check your inbox"
+                : "Enter your email to receive a reset link"}
             </CardDescription>
           </CardHeader>
 
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
                   <CheckCircle className="h-8 w-8 text-success" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Falls ein Konto mit <strong>{email}</strong> existiert, haben wir Ihnen eine E-Mail mit Anweisungen zum Zurücksetzen des Passworts gesendet.
+                  If an account with <strong>{email}</strong> exists, we have sent you an email with instructions to reset your password.
                 </p>
               </div>
             </CardContent>
@@ -91,11 +91,11 @@ export default function ForgotPassword() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">E-Mail</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="ihre@email.de"
+                    placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
@@ -109,10 +109,10 @@ export default function ForgotPassword() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Wird gesendet...
+                      Sending...
                     </>
                   ) : (
-                    "Reset-Link senden"
+                    "Send Reset Link"
                   )}
                 </Button>
               </CardFooter>
@@ -126,7 +126,7 @@ export default function ForgotPassword() {
             className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
-            Zurück zur Anmeldung
+            Back to Sign In
           </Link>
         </div>
       </div>

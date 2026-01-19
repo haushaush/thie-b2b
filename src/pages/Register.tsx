@@ -32,17 +32,17 @@ export default function Register() {
 
     // Validation
     if (!formData.companyName || !formData.contactPerson || !formData.email || !formData.password) {
-      setError("Bitte füllen Sie alle Felder aus");
+      setError("Please fill in all fields");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Das Passwort muss mindestens 6 Zeichen lang sein");
+      setError("Password must be at least 6 characters long");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Die Passwörter stimmen nicht überein");
+      setError("Passwords do not match");
       return;
     }
 
@@ -58,7 +58,7 @@ export default function Register() {
     if (result.success) {
       navigate("/dashboard", { replace: true });
     } else {
-      setError(result.error || "Registrierung fehlgeschlagen");
+      setError(result.error || "Registration failed");
     }
   };
 
@@ -71,14 +71,14 @@ export default function Register() {
             <span className="text-2xl font-bold text-primary-foreground">T</span>
           </div>
           <h1 className="text-2xl font-bold text-primary">Thie B2B Portal</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Registrieren Sie Ihr Unternehmen</p>
+          <p className="mt-1 text-sm text-muted-foreground">Register your company</p>
         </div>
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl">Registrierung</CardTitle>
+            <CardTitle className="text-xl">Registration</CardTitle>
             <CardDescription>
-              Erstellen Sie ein Konto für Ihr Unternehmen
+              Create an account for your company
             </CardDescription>
           </CardHeader>
 
@@ -91,11 +91,11 @@ export default function Register() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="companyName">Firmenname</Label>
+                <Label htmlFor="companyName">Company Name</Label>
                 <Input
                   id="companyName"
                   name="companyName"
-                  placeholder="Ihre Firma GmbH"
+                  placeholder="Your Company Inc."
                   value={formData.companyName}
                   onChange={handleChange}
                   disabled={isSubmitting}
@@ -103,11 +103,11 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contactPerson">Ansprechpartner</Label>
+                <Label htmlFor="contactPerson">Contact Person</Label>
                 <Input
                   id="contactPerson"
                   name="contactPerson"
-                  placeholder="Max Mustermann"
+                  placeholder="John Doe"
                   value={formData.contactPerson}
                   onChange={handleChange}
                   disabled={isSubmitting}
@@ -115,12 +115,12 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">E-Mail</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="ihre@email.de"
+                  placeholder="your@email.com"
                   value={formData.email}
                   onChange={handleChange}
                   autoComplete="email"
@@ -129,13 +129,13 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Passwort</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Mindestens 6 Zeichen"
+                    placeholder="At least 6 characters"
                     value={formData.password}
                     onChange={handleChange}
                     autoComplete="new-password"
@@ -153,12 +153,12 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Passwort wiederholen"
+                  placeholder="Repeat password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   autoComplete="new-password"
@@ -172,17 +172,17 @@ export default function Register() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Registrieren...
+                    Registering...
                   </>
                 ) : (
-                  "Registrieren"
+                  "Register"
                 )}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Bereits registriert?{" "}
+                Already registered?{" "}
                 <Link to="/login" className="font-medium text-primary hover:underline">
-                  Anmelden
+                  Sign In
                 </Link>
               </p>
             </CardFooter>

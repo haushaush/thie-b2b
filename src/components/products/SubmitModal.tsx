@@ -21,7 +21,7 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
   const { items, totalDevices, totalAmount } = useCart();
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("de-DE", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "EUR",
     }).format(price);
@@ -31,9 +31,9 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Anfrage bestätigen</DialogTitle>
+          <DialogTitle>Confirm Request</DialogTitle>
           <DialogDescription>
-            Überprüfen Sie Ihre Auswahl bevor Sie die Anfrage absenden.
+            Review your selection before submitting the request.
           </DialogDescription>
         </DialogHeader>
 
@@ -61,27 +61,27 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
 
         <div className="border-t pt-4">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Anzahl Geräte</span>
+            <span className="text-muted-foreground">Number of Devices</span>
             <span className="font-medium">{totalDevices}</span>
           </div>
           <div className="mt-2 flex justify-between text-lg font-bold">
-            <span>Gesamtsumme</span>
+            <span>Total</span>
             <span className="text-primary">{formatPrice(totalAmount)}</span>
           </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
-            Abbrechen
+            Cancel
           </Button>
           <Button onClick={onConfirm} disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Wird gesendet...
+                Submitting...
               </>
             ) : (
-              "Request absenden"
+              "Submit Request"
             )}
           </Button>
         </DialogFooter>

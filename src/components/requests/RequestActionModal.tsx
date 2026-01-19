@@ -50,8 +50,8 @@ export function RequestActionModal({
     onSuccess: () => {
       toast.success(
         action === "approve"
-          ? "Anfrage wurde genehmigt"
-          : "Anfrage wurde abgelehnt"
+          ? "Request has been approved"
+          : "Request has been rejected"
       );
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       onOpenChange(false);
@@ -59,7 +59,7 @@ export function RequestActionModal({
     },
     onError: (error) => {
       console.error("Error updating request:", error);
-      toast.error("Fehler beim Aktualisieren der Anfrage");
+      toast.error("Error updating request");
     },
   });
 
@@ -79,21 +79,21 @@ export function RequestActionModal({
             ) : (
               <XCircle className="h-5 w-5 text-destructive" />
             )}
-            {isApprove ? "Anfrage genehmigen" : "Anfrage ablehnen"}
+            {isApprove ? "Approve Request" : "Reject Request"}
           </DialogTitle>
           <DialogDescription>
             {isApprove
-              ? "Bestätigen Sie die Genehmigung dieser Anfrage."
-              : "Bestätigen Sie die Ablehnung dieser Anfrage."}
+              ? "Confirm the approval of this request."
+              : "Confirm the rejection of this request."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="message">Nachricht an den Anfragenden (optional)</Label>
+            <Label htmlFor="message">Message to requester (optional)</Label>
             <Textarea
               id="message"
-              placeholder="Fügen Sie eine optionale Nachricht hinzu..."
+              placeholder="Add an optional message..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
@@ -107,7 +107,7 @@ export function RequestActionModal({
             onClick={() => onOpenChange(false)}
             disabled={mutation.isPending}
           >
-            Abbrechen
+            Cancel
           </Button>
           <Button
             variant={isApprove ? "default" : "destructive"}
@@ -117,12 +117,12 @@ export function RequestActionModal({
             {mutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Wird verarbeitet...
+                Processing...
               </>
             ) : isApprove ? (
-              "Genehmigen"
+              "Approve"
             ) : (
-              "Ablehnen"
+              "Reject"
             )}
           </Button>
         </DialogFooter>
