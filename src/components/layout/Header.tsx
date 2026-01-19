@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Menu, X, LayoutDashboard, FileText, User, LogOut, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   Sheet,
   SheetContent,
@@ -11,20 +13,21 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const navigationItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Requests", href: "/requests", icon: FileText },
-  { name: "Profile", href: "/profile", icon: User },
-];
-
-const adminNavigationItems = [
-  { name: "Admin", href: "/admin", icon: Settings },
-];
-
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout, isAdmin } = useAuth();
+  const { t } = useLanguage();
   
+  const navigationItems = [
+    { name: t.nav.dashboard, href: "/dashboard", icon: LayoutDashboard },
+    { name: t.nav.requests, href: "/requests", icon: FileText },
+    { name: t.nav.profile, href: "/profile", icon: User },
+  ];
+
+  const adminNavigationItems = [
+    { name: t.nav.admin, href: "/admin", icon: Settings },
+  ];
+
   const allNavItems = isAdmin 
     ? [...navigationItems, ...adminNavigationItems] 
     : navigationItems;
@@ -49,8 +52,11 @@ export function Header() {
           />
         </Link>
 
-        {/* Right side: User initials + Hamburger */}
-        <div className="flex items-center gap-3">
+        {/* Right side: Language Switcher + User initials + Hamburger */}
+        <div className="flex items-center gap-2">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {/* User Initials Badge */}
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
             {user?.initials || "??"}
@@ -61,7 +67,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">{t.nav.openMenu}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-sidebar p-0">
@@ -84,7 +90,7 @@ export function Header() {
                   const isActive = location.pathname === item.href;
                   return (
                     <Link
-                      key={item.name}
+                      key={item.href}
                       to={item.href}
                       onClick={() => setIsOpen(false)}
                       className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
@@ -106,7 +112,7 @@ export function Header() {
                   className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-destructive/20 hover:text-destructive"
                 >
                   <LogOut className="h-5 w-5" />
-                  Logout
+                  {t.nav.logout}
                 </button>
               </nav>
             </SheetContent>

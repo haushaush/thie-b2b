@@ -4,6 +4,7 @@ import { Search, Loader2 } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -28,6 +29,7 @@ export default function Dashboard() {
   
   const { items, clearCart } = useCart();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -139,15 +141,15 @@ export default function Dashboard() {
       clearCart();
       
       toast({
-        title: "Request submitted successfully",
-        description: "You can find your request under 'Requests'.",
+        title: t.submit.success,
+        description: t.submit.successDesc,
       });
       
       navigate("/requests");
     } catch (error: any) {
       toast({
-        title: "Error submitting request",
-        description: error.message || "Please try again.",
+        title: t.submit.error,
+        description: t.submit.errorDesc,
         variant: "destructive",
       });
     } finally {
@@ -166,7 +168,7 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-destructive">Error loading products</p>
+        <p className="text-destructive">{t.common.error}</p>
         <p className="text-sm text-muted-foreground">{error.message}</p>
       </div>
     );
@@ -176,9 +178,9 @@ export default function Dashboard() {
     <div className="pb-24">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Available Devices</h1>
+        <h1 className="text-2xl font-bold">{t.dashboard.title}</h1>
         <p className="mt-1 text-muted-foreground">
-          Select the products you want for your request
+          {t.dashboard.noProductsDesc}
         </p>
       </div>
 
@@ -187,7 +189,7 @@ export default function Dashboard() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search products..."
+            placeholder={t.dashboard.searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -213,9 +215,9 @@ export default function Dashboard() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Search className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium">No products found</h3>
+          <h3 className="text-lg font-medium">{t.dashboard.noResults}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Try different search terms or filters
+            {t.dashboard.noResultsDesc}
           </p>
         </div>
       )}

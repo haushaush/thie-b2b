@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,21 +20,15 @@ interface SubmitModalProps {
 
 export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: SubmitModalProps) {
   const { items, totalDevices, totalAmount } = useCart();
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price);
-  };
+  const { t, formatCurrency } = useLanguage();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Confirm Request</DialogTitle>
+          <DialogTitle>{t.submit.title}</DialogTitle>
           <DialogDescription>
-            Review your selection before submitting the request.
+            {t.submit.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -52,7 +47,7 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
               <div className="text-right">
                 <p className="font-medium">{item.quantity}x</p>
                 <p className="text-sm text-muted-foreground">
-                  {formatPrice(item.product.pricePerUnit)}
+                  {formatCurrency(item.product.pricePerUnit)}
                 </p>
               </div>
             </div>
@@ -61,27 +56,27 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
 
         <div className="border-t pt-4">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Number of Devices</span>
+            <span className="text-muted-foreground">{t.submit.quantity}</span>
             <span className="font-medium">{totalDevices}</span>
           </div>
           <div className="mt-2 flex justify-between text-lg font-bold">
-            <span>Total</span>
-            <span className="text-primary">{formatPrice(totalAmount)}</span>
+            <span>{t.submit.total}</span>
+            <span className="text-primary">{formatCurrency(totalAmount)}</span>
           </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
-            Cancel
+            {t.submit.cancel}
           </Button>
           <Button onClick={onConfirm} disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Submitting...
+                {t.common.loading}
               </>
             ) : (
-              "Submit Request"
+              t.submit.confirm
             )}
           </Button>
         </DialogFooter>

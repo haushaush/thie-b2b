@@ -6,26 +6,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (!email) {
-      setError("Please enter your email address");
+      setError(t.auth.forgotPassword.error);
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
+      setError(t.auth.forgotPassword.error);
       return;
     }
 
@@ -37,13 +40,13 @@ export default function ForgotPassword() {
       });
 
       if (resetError) {
-        setError("Error sending email. Please try again later.");
+        setError(t.auth.forgotPassword.error);
         return;
       }
       
       setIsSubmitted(true);
     } catch {
-      setError("An unexpected error occurred");
+      setError(t.auth.forgotPassword.error);
     } finally {
       setIsSubmitting(false);
     }
@@ -51,6 +54,9 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
@@ -62,11 +68,11 @@ export default function ForgotPassword() {
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl">Reset Password</CardTitle>
+            <CardTitle className="text-xl">{t.auth.forgotPassword.title}</CardTitle>
             <CardDescription>
               {isSubmitted
-                ? "Check your inbox"
-                : "Enter your email to receive a reset link"}
+                ? t.auth.forgotPassword.success
+                : t.auth.forgotPassword.description}
             </CardDescription>
           </CardHeader>
 
@@ -77,7 +83,7 @@ export default function ForgotPassword() {
                   <CheckCircle className="h-8 w-8 text-success" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  If an account with <strong>{email}</strong> exists, we have sent you an email with instructions to reset your password.
+                  {t.auth.forgotPassword.successDesc}
                 </p>
               </div>
             </CardContent>
@@ -91,11 +97,11 @@ export default function ForgotPassword() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t.auth.forgotPassword.email}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your@email.com"
+                    placeholder={t.auth.forgotPassword.emailPlaceholder}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
@@ -109,10 +115,10 @@ export default function ForgotPassword() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
+                      {t.auth.forgotPassword.loading}
                     </>
                   ) : (
-                    "Send Reset Link"
+                    t.auth.forgotPassword.submit
                   )}
                 </Button>
               </CardFooter>
@@ -126,7 +132,7 @@ export default function ForgotPassword() {
             className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Sign In
+            {t.auth.forgotPassword.backToLogin}
           </Link>
         </div>
       </div>

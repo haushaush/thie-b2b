@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShoppingCart, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -19,16 +20,10 @@ interface CartBarProps {
 
 export function CartBar({ onSubmit }: CartBarProps) {
   const { totalDevices, totalAmount, clearCart } = useCart();
+  const { t, formatCurrency } = useLanguage();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   if (totalDevices === 0) return null;
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price);
-  };
 
   const handleClearCart = () => {
     clearCart();
@@ -45,10 +40,10 @@ export function CartBar({ onSubmit }: CartBarProps) {
             </div>
             <div className="flex flex-col">
               <span className="text-sm text-muted-foreground">
-                Amount: <strong className="text-foreground">{totalDevices} Devices</strong>
+                <strong className="text-foreground">{totalDevices}</strong> {totalDevices === 1 ? "Device" : "Devices"}
               </span>
               <span className="text-lg font-bold text-primary">
-                Total: {formatPrice(totalAmount)}
+                {t.cart.total}: {formatCurrency(totalAmount)}
               </span>
             </div>
           </div>
@@ -61,10 +56,10 @@ export function CartBar({ onSubmit }: CartBarProps) {
               className="px-4"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Clear
+              {t.common.clear}
             </Button>
             <Button onClick={onSubmit} size="lg" className="px-6">
-              Submit Request
+              {t.cart.submitRequest}
             </Button>
           </div>
         </div>
@@ -73,16 +68,15 @@ export function CartBar({ onSubmit }: CartBarProps) {
       <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Clear Cart?</AlertDialogTitle>
+            <AlertDialogTitle>{t.common.clear} {t.cart.title}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove all {totalDevices} devices from the cart? 
-              This action cannot be undone.
+              {t.cart.emptyDesc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleClearCart}>
-              Yes, Clear
+              {t.common.yes}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
