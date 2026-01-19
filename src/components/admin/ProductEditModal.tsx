@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,7 @@ interface ProductEditModalProps { product: ProductData | null; open: boolean; on
 
 export function ProductEditModal({ product, open, onOpenChange, onSave, isSaving }: ProductEditModalProps) {
   const [formData, setFormData] = useState<ProductData | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => { if (product) setFormData({ ...product }); }, [product]);
 
@@ -22,23 +24,23 @@ export function ProductEditModal({ product, open, onOpenChange, onSave, isSaving
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader><DialogTitle>Edit Product</DialogTitle><DialogDescription>Modify the product details and save.</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>{t.admin.editModal.title}</DialogTitle><DialogDescription>{t.admin.editModal.description}</DialogDescription></DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2"><Label htmlFor="name">Name</Label><Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required /></div>
-          <div className="space-y-2"><Label htmlFor="manufacturer">Manufacturer</Label><Input id="manufacturer" value={formData.manufacturer} onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })} required /></div>
+          <div className="space-y-2"><Label htmlFor="name">{t.admin.addModal.name}</Label><Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required /></div>
+          <div className="space-y-2"><Label htmlFor="manufacturer">{t.admin.addModal.manufacturer}</Label><Input id="manufacturer" value={formData.manufacturer} onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })} required /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2"><Label htmlFor="storage">Storage</Label><Input id="storage" value={formData.storage} onChange={(e) => setFormData({ ...formData, storage: e.target.value })} /></div>
-            <div className="space-y-2"><Label htmlFor="color">Color</Label><Input id="color" value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value })} /></div>
+            <div className="space-y-2"><Label htmlFor="storage">{t.admin.addModal.storage}</Label><Input id="storage" value={formData.storage} onChange={(e) => setFormData({ ...formData, storage: e.target.value })} /></div>
+            <div className="space-y-2"><Label htmlFor="color">{t.admin.addModal.color}</Label><Input id="color" value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value })} /></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2"><Label htmlFor="battery_health">Battery Health (%)</Label><Input id="battery_health" type="number" min="0" max="100" value={formData.battery_health} onChange={(e) => setFormData({ ...formData, battery_health: parseInt(e.target.value, 10) || 0 })} /></div>
-            <div className="space-y-2"><Label htmlFor="grade">Grade</Label><Select value={formData.grade} onValueChange={(value) => setFormData({ ...formData, grade: value })}><SelectTrigger id="grade"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="A">A</SelectItem><SelectItem value="B">B</SelectItem><SelectItem value="C">C</SelectItem></SelectContent></Select></div>
+            <div className="space-y-2"><Label htmlFor="battery_health">{t.admin.addModal.batteryHealth}</Label><Input id="battery_health" type="number" min="0" max="100" value={formData.battery_health} onChange={(e) => setFormData({ ...formData, battery_health: parseInt(e.target.value, 10) || 0 })} /></div>
+            <div className="space-y-2"><Label htmlFor="grade">{t.admin.addModal.grade}</Label><Select value={formData.grade} onValueChange={(value) => setFormData({ ...formData, grade: value })}><SelectTrigger id="grade"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="A">A</SelectItem><SelectItem value="B">B</SelectItem><SelectItem value="C">C</SelectItem></SelectContent></Select></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2"><Label htmlFor="price">Price per Unit (€)</Label><Input id="price" type="number" min="0" step="0.01" value={formData.price_per_unit} onChange={(e) => setFormData({ ...formData, price_per_unit: parseFloat(e.target.value) || 0 })} required /></div>
-            <div className="space-y-2"><Label htmlFor="units">Available Units</Label><Input id="units" type="number" min="0" value={formData.available_units} onChange={(e) => setFormData({ ...formData, available_units: parseInt(e.target.value, 10) || 0 })} required /></div>
+            <div className="space-y-2"><Label htmlFor="price">{t.admin.addModal.price}</Label><Input id="price" type="number" min="0" step="0.01" value={formData.price_per_unit} onChange={(e) => setFormData({ ...formData, price_per_unit: parseFloat(e.target.value) || 0 })} required /></div>
+            <div className="space-y-2"><Label htmlFor="units">{t.admin.addModal.available}</Label><Input id="units" type="number" min="0" value={formData.available_units} onChange={(e) => setFormData({ ...formData, available_units: parseInt(e.target.value, 10) || 0 })} required /></div>
           </div>
-          <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button><Button type="submit" disabled={isSaving}>{isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save</Button></DialogFooter>
+          <DialogFooter><Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t.common.cancel}</Button><Button type="submit" disabled={isSaving}>{isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{isSaving ? t.admin.editModal.saving : t.admin.editModal.save}</Button></DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

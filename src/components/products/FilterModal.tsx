@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Sheet,
   SheetContent,
@@ -33,6 +34,7 @@ interface FilterModalProps {
 export function FilterModal({ filters, onFiltersChange, activeFilterCount, availableColors = [] }: FilterModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
+  const { t } = useLanguage();
 
   const handleOpen = () => {
     setLocalFilters(filters);
@@ -76,7 +78,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
       <SheetTrigger asChild>
         <Button variant="outline" className="gap-2" onClick={handleOpen}>
           <Filter className="h-4 w-4" />
-          FILTER
+          {t.dashboard.filters}
           {activeFilterCount > 0 && (
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
               {activeFilterCount}
@@ -87,10 +89,10 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
       <SheetContent side="right" className="w-full sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="flex items-center justify-between">
-            Filter
+            {t.filter.title}
             {activeFilterCount > 0 && (
               <Button variant="ghost" size="sm" onClick={handleReset} className="text-sm">
-                Reset
+                {t.filter.reset}
               </Button>
             )}
           </SheetTitle>
@@ -99,7 +101,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
         <div className="mt-6 space-y-6 overflow-y-auto pb-20">
           {/* Models */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Model</Label>
+            <Label className="text-sm font-medium">{t.products.manufacturer}</Label>
             <div className="grid grid-cols-2 gap-2">
               {modelOptions.map((model) => (
                 <label
@@ -118,7 +120,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
 
           {/* Storage */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Storage</Label>
+            <Label className="text-sm font-medium">{t.products.storage}</Label>
             <div className="flex flex-wrap gap-2">
               {storageOptions.map((storage) => (
                 <label
@@ -137,7 +139,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
 
           {/* Grade */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Grade</Label>
+            <Label className="text-sm font-medium">{t.products.grade}</Label>
             <div className="flex gap-2">
               {gradeOptions.map((grade) => (
                 <label
@@ -157,7 +159,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
           {/* Color */}
           {availableColors.length > 0 && (
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Color</Label>
+              <Label className="text-sm font-medium">{t.products.color}</Label>
               <div className="flex flex-wrap gap-2">
                 {availableColors.map((color) => (
                   <label
@@ -178,7 +180,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
           {/* Battery Range */}
           <div className="space-y-4">
             <Label className="text-sm font-medium">
-              Battery Health: {localFilters.batteryRange[0]}% – {localFilters.batteryRange[1]}%
+              {t.products.batteryHealth}: {localFilters.batteryRange[0]}% – {localFilters.batteryRange[1]}%
             </Label>
             <Slider
               value={localFilters.batteryRange}
@@ -198,7 +200,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
           {/* Price Range */}
           <div className="space-y-4">
             <Label className="text-sm font-medium">
-              Price: €{localFilters.priceRange[0]} – €{localFilters.priceRange[1]}
+              {t.admin.products.table.price}: €{localFilters.priceRange[0]} – €{localFilters.priceRange[1]}
             </Label>
             <Slider
               value={localFilters.priceRange}
@@ -218,7 +220,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
 
         <SheetFooter className="absolute bottom-0 left-0 right-0 border-t bg-background p-4">
           <Button onClick={handleApply} className="w-full">
-            Apply Filters
+            {t.filter.apply}
           </Button>
         </SheetFooter>
       </SheetContent>
