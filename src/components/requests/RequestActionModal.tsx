@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -31,6 +32,7 @@ export function RequestActionModal({
 }: RequestActionModalProps) {
   const [message, setMessage] = useState("");
   const { user } = useAuth();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -50,8 +52,8 @@ export function RequestActionModal({
     onSuccess: () => {
       toast.success(
         action === "approve"
-          ? "Request has been approved"
-          : "Request has been rejected"
+          ? t.admin.actionModal.approveSuccess
+          : t.admin.actionModal.rejectSuccess
       );
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       onOpenChange(false);
@@ -59,7 +61,7 @@ export function RequestActionModal({
     },
     onError: (error) => {
       console.error("Error updating request:", error);
-      toast.error("Error updating request");
+      toast.error(t.admin.actionModal.error);
     },
   });
 
@@ -79,21 +81,19 @@ export function RequestActionModal({
             ) : (
               <XCircle className="h-5 w-5 text-destructive" />
             )}
-            {isApprove ? "Approve Request" : "Reject Request"}
+            {isApprove ? t.admin.actionModal.approve : t.admin.actionModal.reject}
           </DialogTitle>
           <DialogDescription>
-            {isApprove
-              ? "Confirm the approval of this request."
-              : "Confirm the rejection of this request."}
+            {t.admin.actionModal.descPending}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="message">Message to requester (optional)</Label>
+            <Label htmlFor="message">{t.admin.actionModal.message}</Label>
             <Textarea
               id="message"
-              placeholder="Add an optional message..."
+              placeholder={t.admin.actionModal.messagePlaceholder}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
@@ -107,7 +107,7 @@ export function RequestActionModal({
             onClick={() => onOpenChange(false)}
             disabled={mutation.isPending}
           >
-            Cancel
+            {t.common.cancel}
           </Button>
           <Button
             variant={isApprove ? "default" : "destructive"}
@@ -117,12 +117,12 @@ export function RequestActionModal({
             {mutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
+                {t.admin.actionModal.processing}
               </>
             ) : isApprove ? (
-              "Approve"
+              t.admin.actionModal.approve
             ) : (
-              "Reject"
+              t.admin.actionModal.reject
             )}
           </Button>
         </DialogFooter>

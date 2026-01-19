@@ -1,40 +1,17 @@
 import { useState } from "react";
-import { format } from "date-fns";
-import { enUS } from "date-fns/locale";
 import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useRequests, type Request } from "@/hooks/useRequests";
 import { RequestActionModal } from "@/components/requests/RequestActionModal";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 type RequestStatus = "pending" | "approved" | "rejected";
 
-const statusConfig: Record<RequestStatus, { label: string; icon: typeof Clock; className: string }> = {
-  pending: {
-    label: "Pending",
-    icon: Clock,
-    className: "border-warning/30 bg-warning/10 text-warning",
-  },
-  approved: {
-    label: "Approved",
-    icon: CheckCircle,
-    className: "border-success/30 bg-success/10 text-success",
-  },
-  rejected: {
-    label: "Rejected",
-    icon: XCircle,
-    className: "border-destructive/30 bg-destructive/10 text-destructive",
-  },
-};
-
 export default function Requests() {
   const { isAdmin } = useAuth();
+  const { t, formatCurrency, formatDate } = useLanguage();
   const { data: requests, isLoading, error } = useRequests();
   const [actionModal, setActionModal] = useState<{
     open: boolean;
@@ -42,15 +19,22 @@ export default function Requests() {
     action: "approve" | "reject";
   }>({ open: false, requestId: "", action: "approve" });
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price);
-  };
-
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "MMMM d, yyyy", { locale: enUS });
+  const statusConfig: Record<RequestStatus, { label: string; icon: typeof Clock; className: string }> = {
+    pending: {
+      label: t.requests.status.pending,
+      icon: Clock,
+      className: "border-warning/30 bg-warning/10 text-warning",
+    },
+    approved: {
+      label: t.requests.status.approved,
+      icon: CheckCircle,
+      className: "border-success/30 bg-success/10 text-success",
+    },
+    rejected: {
+      label: t.requests.status.rejected,
+      icon: XCircle,
+      className: "border-destructive/30 bg-destructive/10 text-destructive",
+    },
   };
 
   const calculateTotal = (request: Request) => {
@@ -82,9 +66,9 @@ export default function Requests() {
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
           <XCircle className="h-8 w-8 text-destructive" />
         </div>
-        <h3 className="text-lg font-medium">Error Loading</h3>
+        <h3 className="text-lg font-medium">{t.common.error}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          The requests could not be loaded.
+          {t.common.error}
         </p>
       </div>
     );
@@ -95,12 +79,10 @@ export default function Requests() {
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold">
-          {isAdmin ? "All Requests" : "My Requests"}
+          {isAdmin ? t.admin.tabs.requests : t.requests.title}
         </h1>
         <p className="mt-1 text-muted-foreground">
-          {isAdmin
-            ? "Overview of all customer requests with management functions"
-            : "Overview of all your previous requests"}
+          {t.requests.description}
         </p>
       </div>
 
@@ -162,7 +144,7 @@ export default function Requests() {
                         {item.quantity}x {item.product_name}
                       </span>
                       <span className="font-medium">
-                        {formatPrice(item.quantity * item.price_per_unit)}
+                        {formatCurrency(item.quantity * item.price_per_unit)}
                       </span>
                     </div>
                   ))}
@@ -175,7 +157,7 @@ export default function Requests() {
                       <MessageSquare className="mt-0.5 h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-xs font-medium text-muted-foreground">
-                          Admin Message
+                          {t.requests.adminMessage}
                         </p>
                         <p className="mt-1 text-sm">{request.admin_message}</p>
                       </div>
@@ -186,10 +168,10 @@ export default function Requests() {
                 {/* Footer */}
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
                   <span className="text-sm text-muted-foreground">
-                    {totalDevices} Devices
+                    {totalDevices} {totalDevices === 1 ? "Device" : "Devices"}
                   </span>
                   <span className="text-lg font-bold text-primary">
-                    {formatPrice(totalAmount)}
+                    {formatCurrency(totalAmount)}
                   </span>
                 </div>
 
@@ -203,7 +185,7 @@ export default function Requests() {
                       onClick={() => handleAction(request.id, "approve")}
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />
-                      Approve
+                      {t.admin.actionModal.approve}
                     </Button>
                     <Button
                       variant="outline"
@@ -212,7 +194,7 @@ export default function Requests() {
                       onClick={() => handleAction(request.id, "reject")}
                     >
                       <XCircle className="mr-2 h-4 w-4" />
-                      Reject
+                      {t.admin.actionModal.reject}
                     </Button>
                   </div>
                 )}
@@ -225,11 +207,9 @@ export default function Requests() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <FileText className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium">No requests available</h3>
+          <h3 className="text-lg font-medium">{t.requests.noRequests}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            {isAdmin
-              ? "There are no customer requests yet"
-              : "Submit your first request via the Dashboard"}
+            {t.requests.noRequestsDesc}
           </p>
         </div>
       )}
