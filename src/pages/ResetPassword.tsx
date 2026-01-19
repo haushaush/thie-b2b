@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -16,6 +18,7 @@ export default function ResetPassword() {
   const [isValidSession, setIsValidSession] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Check if user has a valid recovery session
@@ -43,17 +46,17 @@ export default function ResetPassword() {
     setError("");
 
     if (!password) {
-      setError("Please enter a new password");
+      setError(t.auth.resetPassword.error);
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError(t.auth.resetPassword.error);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t.auth.resetPassword.passwordMismatch);
       return;
     }
 
@@ -65,7 +68,7 @@ export default function ResetPassword() {
       });
 
       if (updateError) {
-        setError("Error updating password. Please try again.");
+        setError(t.auth.resetPassword.error);
         return;
       }
       
@@ -76,7 +79,7 @@ export default function ResetPassword() {
         navigate("/dashboard");
       }, 2000);
     } catch {
-      setError("An unexpected error occurred");
+      setError(t.auth.resetPassword.error);
     } finally {
       setIsSubmitting(false);
     }
@@ -93,17 +96,20 @@ export default function ResetPassword() {
   if (!isValidSession && !isSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <div className="w-full max-w-md">
           <Card className="border-border/50 shadow-lg">
             <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-xl">Invalid Link</CardTitle>
+              <CardTitle className="text-xl">{t.auth.resetPassword.error}</CardTitle>
               <CardDescription>
-                The password reset link is invalid or has expired.
+                {t.auth.resetPassword.error}
               </CardDescription>
             </CardHeader>
             <CardFooter>
               <Button onClick={() => navigate("/forgot-password")} className="w-full">
-                Request New Link
+                {t.auth.forgotPassword.submit}
               </Button>
             </CardFooter>
           </Card>
@@ -114,6 +120,9 @@ export default function ResetPassword() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
@@ -127,12 +136,12 @@ export default function ResetPassword() {
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl">
               <KeyRound className="h-5 w-5" />
-              Set New Password
+              {t.auth.resetPassword.title}
             </CardTitle>
             <CardDescription>
               {isSuccess
-                ? "Password successfully changed"
-                : "Enter your new password"}
+                ? t.auth.resetPassword.success
+                : t.auth.resetPassword.description}
             </CardDescription>
           </CardHeader>
 
@@ -143,7 +152,7 @@ export default function ResetPassword() {
                   <CheckCircle className="h-8 w-8 text-success" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Your password has been successfully changed. You will be redirected automatically...
+                  {t.auth.resetPassword.successDesc}
                 </p>
               </div>
             </CardContent>
@@ -157,11 +166,11 @@ export default function ResetPassword() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">New Password</Label>
+                  <Label htmlFor="password">{t.auth.resetPassword.password}</Label>
                   <Input
                     id="password"
                     type="password"
-                    placeholder="At least 8 characters"
+                    placeholder={t.auth.resetPassword.passwordPlaceholder}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
@@ -170,11 +179,11 @@ export default function ResetPassword() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">{t.auth.resetPassword.confirmPassword}</Label>
                   <Input
                     id="confirmPassword"
                     type="password"
-                    placeholder="Repeat password"
+                    placeholder={t.auth.resetPassword.confirmPasswordPlaceholder}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
@@ -188,10 +197,10 @@ export default function ResetPassword() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving...
+                      {t.auth.resetPassword.loading}
                     </>
                   ) : (
-                    "Change Password"
+                    t.auth.resetPassword.submit
                   )}
                 </Button>
               </CardFooter>

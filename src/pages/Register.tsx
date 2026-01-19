@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -20,6 +22,7 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { register } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,17 +35,17 @@ export default function Register() {
 
     // Validation
     if (!formData.companyName || !formData.contactPerson || !formData.email || !formData.password) {
-      setError("Please fill in all fields");
+      setError(t.auth.register.error);
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
+      setError(t.auth.register.error);
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t.auth.register.passwordMismatch);
       return;
     }
 
@@ -58,12 +61,15 @@ export default function Register() {
     if (result.success) {
       navigate("/dashboard", { replace: true });
     } else {
-      setError(result.error || "Registration failed");
+      setError(result.error || t.auth.register.error);
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
@@ -71,14 +77,14 @@ export default function Register() {
             <span className="text-2xl font-bold text-primary-foreground">T</span>
           </div>
           <h1 className="text-2xl font-bold text-primary">Thie B2B Portal</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Register your company</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.auth.register.description}</p>
         </div>
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl">Registration</CardTitle>
+            <CardTitle className="text-xl">{t.auth.register.title}</CardTitle>
             <CardDescription>
-              Create an account for your company
+              {t.auth.register.description}
             </CardDescription>
           </CardHeader>
 
@@ -91,11 +97,11 @@ export default function Register() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name</Label>
+                <Label htmlFor="companyName">{t.auth.register.companyName}</Label>
                 <Input
                   id="companyName"
                   name="companyName"
-                  placeholder="Your Company Inc."
+                  placeholder={t.auth.register.companyNamePlaceholder}
                   value={formData.companyName}
                   onChange={handleChange}
                   disabled={isSubmitting}
@@ -103,11 +109,11 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contactPerson">Contact Person</Label>
+                <Label htmlFor="contactPerson">{t.auth.register.contactPerson}</Label>
                 <Input
                   id="contactPerson"
                   name="contactPerson"
-                  placeholder="John Doe"
+                  placeholder={t.auth.register.contactPersonPlaceholder}
                   value={formData.contactPerson}
                   onChange={handleChange}
                   disabled={isSubmitting}
@@ -115,12 +121,12 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t.auth.register.email}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t.auth.register.emailPlaceholder}
                   value={formData.email}
                   onChange={handleChange}
                   autoComplete="email"
@@ -129,13 +135,13 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t.auth.register.password}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="At least 6 characters"
+                    placeholder={t.auth.register.passwordPlaceholder}
                     value={formData.password}
                     onChange={handleChange}
                     autoComplete="new-password"
@@ -153,12 +159,12 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">{t.auth.register.confirmPassword}</Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Repeat password"
+                  placeholder={t.auth.register.confirmPasswordPlaceholder}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   autoComplete="new-password"
@@ -172,17 +178,17 @@ export default function Register() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Registering...
+                    {t.auth.register.loading}
                   </>
                 ) : (
-                  "Register"
+                  t.auth.register.submit
                 )}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Already registered?{" "}
+                {t.auth.register.hasAccount}{" "}
                 <Link to="/login" className="font-medium text-primary hover:underline">
-                  Sign In
+                  {t.auth.register.login}
                 </Link>
               </p>
             </CardFooter>

@@ -1,5 +1,6 @@
 import { Building2, User, Mail } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,14 +8,15 @@ import { Button } from "@/components/ui/button";
 
 export default function Profile() {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <div className="mx-auto max-w-2xl">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Profile</h1>
+        <h1 className="text-2xl font-bold">{t.profile.title}</h1>
         <p className="mt-1 text-muted-foreground">
-          Manage your company information
+          {t.profile.description}
         </p>
       </div>
 
@@ -36,7 +38,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label htmlFor="companyName" className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-muted-foreground" />
-              Company Name
+              {t.profile.companyName}
             </Label>
             <Input
               id="companyName"
@@ -50,7 +52,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label htmlFor="contactPerson" className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
-              Contact Person
+              {t.profile.contactPerson}
             </Label>
             <Input
               id="contactPerson"
@@ -64,7 +66,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              Email
+              {t.profile.email}
             </Label>
             <Input
               id="email"
@@ -78,10 +80,10 @@ export default function Profile() {
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 pt-4 sm:flex-row">
             <Button variant="outline" className="flex-1" disabled>
-              Edit Profile
+              {t.common.edit} {t.profile.title}
             </Button>
             <Button variant="outline" className="flex-1" disabled>
-              Change Password
+              {t.auth.resetPassword.title}
             </Button>
           </div>
 

@@ -1,6 +1,7 @@
 import { Plus, Minus } from "lucide-react";
 import { Product } from "@/hooks/useProducts";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -10,6 +11,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { items, addItem, removeItem, updateQuantity } = useCart();
+  const { formatCurrency } = useLanguage();
   const cartItem = items.find(item => item.product.id === product.id);
   const quantity = cartItem?.quantity || 0;
 
@@ -32,13 +34,6 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("de-DE", {
-      style: "currency",
-      currency: "EUR"
-    }).format(price);
-  };
-
   return (
     <div className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-6">
@@ -57,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.manufacturer} | {product.storage} Storage{product.color ? ` | ${product.color}` : ""}{product.batteryHealth ? ` | ${product.batteryHealth}% Battery` : ""}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cost per Unit: <span className="font-bold text-card-foreground">{formatPrice(product.pricePerUnit)}</span>
+            Cost per Unit: <span className="font-bold text-card-foreground">{formatCurrency(product.pricePerUnit)}</span>
           </p>
         </div>
 
