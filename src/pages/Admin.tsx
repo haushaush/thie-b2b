@@ -239,7 +239,7 @@ export default function Admin() {
             </label>
           </div>
           <div className="rounded-lg bg-muted p-4">
-            <h4 className="mb-2 font-medium">CSV Format</h4>
+            <h4 className="mb-2 font-medium">{t.admin.upload.csvFormat}</h4>
             <p className="mb-2 text-sm text-muted-foreground">{t.admin.upload.columns}</p>
             <code className="block rounded bg-background p-2 text-xs">name;manufacturer;storage;color;battery_health;grade;price_per_unit;available_units</code>
           </div>
@@ -259,7 +259,7 @@ export default function Admin() {
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
           <AlertDialogHeader><AlertDialogTitle className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" />{parsedProducts.length} {t.admin.stats.totalProducts}</AlertDialogTitle><AlertDialogDescription>{t.admin.upload.previewDesc.replace("{count}", String(parsedProducts.length))}</AlertDialogDescription></AlertDialogHeader>
-          {parseErrors.length > 0 && (<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3"><div className="flex items-center gap-2 text-destructive"><AlertCircle className="h-4 w-4" /><span className="font-medium">{parseErrors.length} Warnings</span></div><ul className="mt-2 max-h-20 overflow-y-auto text-sm text-destructive/80">{parseErrors.slice(0, 5).map((error, i) => (<li key={i}>• {error}</li>))}{parseErrors.length > 5 && (<li>... +{parseErrors.length - 5}</li>)}</ul></div>)}
+          {parseErrors.length > 0 && (<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3"><div className="flex items-center gap-2 text-destructive"><AlertCircle className="h-4 w-4" /><span className="font-medium">{parseErrors.length} {t.admin.upload.warnings}</span></div><ul className="mt-2 max-h-20 overflow-y-auto text-sm text-destructive/80">{parseErrors.slice(0, 5).map((error, i) => (<li key={i}>• {error}</li>))}{parseErrors.length > 5 && (<li>... +{parseErrors.length - 5}</li>)}</ul></div>)}
           <div className="flex-1 overflow-auto border rounded-lg">
             <Table><TableHeader><TableRow><TableHead>{t.admin.products.table.name}</TableHead><TableHead>{t.admin.products.table.manufacturer}</TableHead><TableHead>{t.admin.products.table.storage}</TableHead><TableHead>{t.admin.products.table.grade}</TableHead><TableHead className="text-right">{t.admin.products.table.price}</TableHead><TableHead className="text-right">{t.admin.products.table.available}</TableHead></TableRow></TableHeader><TableBody>{parsedProducts.slice(0, 10).map((product, i) => (<TableRow key={i}><TableCell className="font-medium">{product.name}</TableCell><TableCell>{product.manufacturer}</TableCell><TableCell>{product.storage}</TableCell><TableCell>{product.grade}</TableCell><TableCell className="text-right">{formatCurrency(product.price_per_unit)}</TableCell><TableCell className="text-right">{product.available_units}</TableCell></TableRow>))}{parsedProducts.length > 10 && (<TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">... +{parsedProducts.length - 10}</TableCell></TableRow>)}</TableBody></Table>
           </div>
