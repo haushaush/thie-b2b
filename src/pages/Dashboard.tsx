@@ -139,15 +139,15 @@ export default function Dashboard() {
       clearCart();
       
       toast({
-        title: "Anfrage erfolgreich gesendet",
-        description: "Sie finden Ihre Anfrage unter 'Requests'.",
+        title: "Request submitted successfully",
+        description: "You can find your request under 'Requests'.",
       });
       
       navigate("/requests");
     } catch (error: any) {
       toast({
-        title: "Fehler beim Senden",
-        description: error.message || "Bitte versuchen Sie es erneut.",
+        title: "Error submitting request",
+        description: error.message || "Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -166,7 +166,7 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-destructive">Fehler beim Laden der Produkte</p>
+        <p className="text-destructive">Error loading products</p>
         <p className="text-sm text-muted-foreground">{error.message}</p>
       </div>
     );
@@ -176,9 +176,9 @@ export default function Dashboard() {
     <div className="pb-24">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Verfügbare Geräte</h1>
+        <h1 className="text-2xl font-bold">Available Devices</h1>
         <p className="mt-1 text-muted-foreground">
-          Wählen Sie die gewünschten Produkte für Ihre Anfrage aus
+          Select the products you want for your request
         </p>
       </div>
 
@@ -187,7 +187,7 @@ export default function Dashboard() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Produkte suchen..."
+            placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -213,9 +213,9 @@ export default function Dashboard() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Search className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium">Keine Produkte gefunden</h3>
+          <h3 className="text-lg font-medium">No products found</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Versuchen Sie andere Suchbegriffe oder Filter
+            Try different search terms or filters
           </p>
         </div>
       )}

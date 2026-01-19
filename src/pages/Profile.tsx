@@ -12,9 +12,9 @@ export default function Profile() {
     <div className="mx-auto max-w-2xl">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Profil</h1>
+        <h1 className="text-2xl font-bold">Profile</h1>
         <p className="mt-1 text-muted-foreground">
-          Verwalten Sie Ihre Unternehmensdaten
+          Manage your company information
         </p>
       </div>
 
@@ -36,7 +36,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label htmlFor="companyName" className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-muted-foreground" />
-              Firmenname
+              Company Name
             </Label>
             <Input
               id="companyName"
@@ -50,7 +50,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label htmlFor="contactPerson" className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
-              Ansprechpartner
+              Contact Person
             </Label>
             <Input
               id="contactPerson"
@@ -64,7 +64,7 @@ export default function Profile() {
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              E-Mail
+              Email
             </Label>
             <Input
               id="email"
@@ -78,15 +78,15 @@ export default function Profile() {
           {/* Action Buttons */}
           <div className="flex flex-col gap-3 pt-4 sm:flex-row">
             <Button variant="outline" className="flex-1" disabled>
-              Profil bearbeiten
+              Edit Profile
             </Button>
             <Button variant="outline" className="flex-1" disabled>
-              Passwort ändern
+              Change Password
             </Button>
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
-            Profilbearbeitung ist in der Demo-Version deaktiviert
+            Profile editing is disabled in the demo version
           </p>
         </CardContent>
       </Card>

@@ -14,7 +14,7 @@ import {
 const navigationItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Requests", href: "/requests", icon: FileText },
-  { name: "Profil", href: "/profile", icon: User },
+  { name: "Profile", href: "/profile", icon: User },
 ];
 
 const adminNavigationItems = [
@@ -61,7 +61,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Menü öffnen</span>
+                <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 bg-sidebar p-0">

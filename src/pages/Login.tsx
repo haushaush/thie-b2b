@@ -25,7 +25,7 @@ export default function Login() {
     setError("");
     
     if (!email || !password) {
-      setError("Bitte füllen Sie alle Felder aus");
+      setError("Please fill in all fields");
       return;
     }
 
@@ -36,7 +36,7 @@ export default function Login() {
     if (result.success) {
       navigate(from, { replace: true });
     } else {
-      setError(result.error || "Login fehlgeschlagen");
+      setError(result.error || "Login failed");
     }
   };
 
@@ -49,14 +49,14 @@ export default function Login() {
             <span className="text-2xl font-bold text-primary-foreground">T</span>
           </div>
           <h1 className="text-2xl font-bold text-primary">Thie B2B Portal</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Refurbished Apple Geräte für Ihr Unternehmen</p>
+          <p className="mt-1 text-sm text-muted-foreground">Refurbished Apple devices for your business</p>
         </div>
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl">Anmelden</CardTitle>
+            <CardTitle className="text-xl">Sign In</CardTitle>
             <CardDescription>
-              Geben Sie Ihre Zugangsdaten ein, um auf das Portal zuzugreifen
+              Enter your credentials to access the portal
             </CardDescription>
           </CardHeader>
 
@@ -69,11 +69,11 @@ export default function Login() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">E-Mail</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="ihre@email.de"
+                  placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
@@ -82,7 +82,7 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Passwort</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -109,7 +109,7 @@ export default function Login() {
                   to="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
-                  Passwort vergessen?
+                  Forgot password?
                 </Link>
               </div>
             </CardContent>
@@ -119,17 +119,17 @@ export default function Login() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Anmelden...
+                    Signing in...
                   </>
                 ) : (
-                  "Anmelden"
+                  "Sign In"
                 )}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                Noch kein Konto?{" "}
+                Don't have an account?{" "}
                 <Link to="/register" className="font-medium text-primary hover:underline">
-                  Registrieren
+                  Register
                 </Link>
               </p>
             </CardFooter>

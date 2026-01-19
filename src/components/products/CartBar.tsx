@@ -24,7 +24,7 @@ export function CartBar({ onSubmit }: CartBarProps) {
   if (totalDevices === 0) return null;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("de-DE", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "EUR",
     }).format(price);
@@ -61,10 +61,10 @@ export function CartBar({ onSubmit }: CartBarProps) {
               className="px-4"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Leeren
+              Clear
             </Button>
             <Button onClick={onSubmit} size="lg" className="px-6">
-              Submit request
+              Submit Request
             </Button>
           </div>
         </div>
@@ -73,16 +73,16 @@ export function CartBar({ onSubmit }: CartBarProps) {
       <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Warenkorb leeren?</AlertDialogTitle>
+            <AlertDialogTitle>Clear Cart?</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchten Sie wirklich alle {totalDevices} Geräte aus dem Warenkorb entfernen? 
-              Diese Aktion kann nicht rückgängig gemacht werden.
+              Are you sure you want to remove all {totalDevices} devices from the cart? 
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleClearCart}>
-              Ja, leeren
+              Yes, Clear
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -43,17 +43,17 @@ export default function ResetPassword() {
     setError("");
 
     if (!password) {
-      setError("Bitte geben Sie ein neues Passwort ein");
+      setError("Please enter a new password");
       return;
     }
 
     if (password.length < 8) {
-      setError("Das Passwort muss mindestens 8 Zeichen lang sein");
+      setError("Password must be at least 8 characters long");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Die Passwörter stimmen nicht überein");
+      setError("Passwords do not match");
       return;
     }
 
@@ -65,7 +65,7 @@ export default function ResetPassword() {
       });
 
       if (updateError) {
-        setError("Fehler beim Aktualisieren des Passworts. Bitte versuchen Sie es erneut.");
+        setError("Error updating password. Please try again.");
         return;
       }
       
@@ -76,7 +76,7 @@ export default function ResetPassword() {
         navigate("/dashboard");
       }, 2000);
     } catch {
-      setError("Ein unerwarteter Fehler ist aufgetreten");
+      setError("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -96,14 +96,14 @@ export default function ResetPassword() {
         <div className="w-full max-w-md">
           <Card className="border-border/50 shadow-lg">
             <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-xl">Ungültiger Link</CardTitle>
+              <CardTitle className="text-xl">Invalid Link</CardTitle>
               <CardDescription>
-                Der Link zum Zurücksetzen des Passworts ist ungültig oder abgelaufen.
+                The password reset link is invalid or has expired.
               </CardDescription>
             </CardHeader>
             <CardFooter>
               <Button onClick={() => navigate("/forgot-password")} className="w-full">
-                Neuen Link anfordern
+                Request New Link
               </Button>
             </CardFooter>
           </Card>
@@ -127,12 +127,12 @@ export default function ResetPassword() {
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl">
               <KeyRound className="h-5 w-5" />
-              Neues Passwort festlegen
+              Set New Password
             </CardTitle>
             <CardDescription>
               {isSuccess
-                ? "Passwort erfolgreich geändert"
-                : "Geben Sie Ihr neues Passwort ein"}
+                ? "Password successfully changed"
+                : "Enter your new password"}
             </CardDescription>
           </CardHeader>
 
@@ -143,7 +143,7 @@ export default function ResetPassword() {
                   <CheckCircle className="h-8 w-8 text-success" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Ihr Passwort wurde erfolgreich geändert. Sie werden automatisch weitergeleitet...
+                  Your password has been successfully changed. You will be redirected automatically...
                 </p>
               </div>
             </CardContent>
@@ -157,11 +157,11 @@ export default function ResetPassword() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Neues Passwort</Label>
+                  <Label htmlFor="password">New Password</Label>
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Mindestens 8 Zeichen"
+                    placeholder="At least 8 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
@@ -170,11 +170,11 @@ export default function ResetPassword() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
                     id="confirmPassword"
                     type="password"
-                    placeholder="Passwort wiederholen"
+                    placeholder="Repeat password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
@@ -188,10 +188,10 @@ export default function ResetPassword() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Wird gespeichert...
+                      Saving...
                     </>
                   ) : (
-                    "Passwort ändern"
+                    "Change Password"
                   )}
                 </Button>
               </CardFooter>

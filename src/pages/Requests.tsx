@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,17 +17,17 @@ type RequestStatus = "pending" | "approved" | "rejected";
 
 const statusConfig: Record<RequestStatus, { label: string; icon: typeof Clock; className: string }> = {
   pending: {
-    label: "Ausstehend",
+    label: "Pending",
     icon: Clock,
     className: "border-warning/30 bg-warning/10 text-warning",
   },
   approved: {
-    label: "Genehmigt",
+    label: "Approved",
     icon: CheckCircle,
     className: "border-success/30 bg-success/10 text-success",
   },
   rejected: {
-    label: "Abgelehnt",
+    label: "Rejected",
     icon: XCircle,
     className: "border-destructive/30 bg-destructive/10 text-destructive",
   },
@@ -43,14 +43,14 @@ export default function Requests() {
   }>({ open: false, requestId: "", action: "approve" });
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("de-DE", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "EUR",
     }).format(price);
   };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "d. MMMM yyyy", { locale: de });
+    return format(new Date(dateString), "MMMM d, yyyy", { locale: enUS });
   };
 
   const calculateTotal = (request: Request) => {
@@ -82,9 +82,9 @@ export default function Requests() {
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
           <XCircle className="h-8 w-8 text-destructive" />
         </div>
-        <h3 className="text-lg font-medium">Fehler beim Laden</h3>
+        <h3 className="text-lg font-medium">Error Loading</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Die Anfragen konnten nicht geladen werden.
+          The requests could not be loaded.
         </p>
       </div>
     );
@@ -95,12 +95,12 @@ export default function Requests() {
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold">
-          {isAdmin ? "Alle Anfragen" : "Meine Anfragen"}
+          {isAdmin ? "All Requests" : "My Requests"}
         </h1>
         <p className="mt-1 text-muted-foreground">
           {isAdmin
-            ? "Übersicht aller Kundenanfragen mit Verwaltungsfunktionen"
-            : "Übersicht aller Ihrer bisherigen Anfragen"}
+            ? "Overview of all customer requests with management functions"
+            : "Overview of all your previous requests"}
         </p>
       </div>
 
@@ -175,7 +175,7 @@ export default function Requests() {
                       <MessageSquare className="mt-0.5 h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-xs font-medium text-muted-foreground">
-                          Admin-Nachricht
+                          Admin Message
                         </p>
                         <p className="mt-1 text-sm">{request.admin_message}</p>
                       </div>
@@ -186,7 +186,7 @@ export default function Requests() {
                 {/* Footer */}
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
                   <span className="text-sm text-muted-foreground">
-                    {totalDevices} Geräte
+                    {totalDevices} Devices
                   </span>
                   <span className="text-lg font-bold text-primary">
                     {formatPrice(totalAmount)}
@@ -203,7 +203,7 @@ export default function Requests() {
                       onClick={() => handleAction(request.id, "approve")}
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />
-                      Genehmigen
+                      Approve
                     </Button>
                     <Button
                       variant="outline"
@@ -212,7 +212,7 @@ export default function Requests() {
                       onClick={() => handleAction(request.id, "reject")}
                     >
                       <XCircle className="mr-2 h-4 w-4" />
-                      Ablehnen
+                      Reject
                     </Button>
                   </div>
                 )}
@@ -225,11 +225,11 @@ export default function Requests() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <FileText className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium">Keine Anfragen vorhanden</h3>
+          <h3 className="text-lg font-medium">No requests available</h3>
           <p className="mt-1 text-sm text-muted-foreground">
             {isAdmin
-              ? "Es gibt noch keine Kundenanfragen"
-              : "Stellen Sie Ihre erste Anfrage über das Dashboard"}
+              ? "There are no customer requests yet"
+              : "Submit your first request via the Dashboard"}
           </p>
         </div>
       )}
