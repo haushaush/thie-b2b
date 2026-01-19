@@ -11,7 +11,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { items, addItem, removeItem, updateQuantity } = useCart();
-  const { formatCurrency } = useLanguage();
+  const { formatCurrency, t } = useLanguage();
   const cartItem = items.find(item => item.product.id === product.id);
   const quantity = cartItem?.quantity || 0;
 
@@ -49,10 +49,10 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.grade}-GRADE
           </Badge>
           <p className="mt-3 text-sm text-muted-foreground">
-            {product.manufacturer} | {product.storage} Storage{product.color ? ` | ${product.color}` : ""}{product.batteryHealth ? ` | ${product.batteryHealth}% Battery` : ""}
+            {product.manufacturer} | {product.storage} {t.products.storage}{product.color ? ` | ${product.color}` : ""}{product.batteryHealth ? ` | ${product.batteryHealth}% ${t.products.battery}` : ""}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cost per Unit: <span className="font-bold text-card-foreground">{formatCurrency(product.pricePerUnit)}</span>
+            {t.products.costPerUnit}: <span className="font-bold text-card-foreground">{formatCurrency(product.pricePerUnit)}</span>
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
             className="h-10 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
             disabled={product.availableUnits === 0 || quantity >= product.availableUnits}
           >
-            Claim All
+            {t.products.claimAll}
           </Button>
 
           {/* Quantity Controls */}
@@ -94,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Available Count */}
           <span className="text-sm text-muted-foreground">
-            Available: {product.availableUnits}
+            {t.products.available}: {product.availableUnits}
           </span>
         </div>
       </div>
