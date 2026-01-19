@@ -380,7 +380,7 @@ export const translations = {
       available: "verfügbar",
       perUnit: "pro Stück",
       costPerUnit: "Preis pro Stück",
-      claimAll: "Alle beanspruchen",
+      claimAll: "Alle anfragen",
       addToCart: "In den Warenkorb",
       inCart: "Im Warenkorb",
       remove: "Entfernen",
