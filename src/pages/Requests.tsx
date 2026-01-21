@@ -17,6 +17,8 @@ export default function Requests() {
     open: boolean;
     requestId: string;
     action: "approve" | "reject";
+    userEmail?: string;
+    companyName?: string;
   }>({ open: false, requestId: "", action: "approve" });
 
   const statusConfig: Record<RequestStatus, { label: string; icon: typeof Clock; className: string }> = {
@@ -48,8 +50,8 @@ export default function Requests() {
     return request.items.reduce((sum, item) => sum + item.quantity, 0);
   };
 
-  const handleAction = (requestId: string, action: "approve" | "reject") => {
-    setActionModal({ open: true, requestId, action });
+  const handleAction = (requestId: string, action: "approve" | "reject", userEmail?: string, companyName?: string) => {
+    setActionModal({ open: true, requestId, action, userEmail, companyName });
   };
 
   if (isLoading) {
@@ -182,7 +184,7 @@ export default function Requests() {
                       variant="outline"
                       size="sm"
                       className="flex-1 border-success/30 text-success hover:bg-success/10 hover:text-success"
-                      onClick={() => handleAction(request.id, "approve")}
+                      onClick={() => handleAction(request.id, "approve", request.user_email, request.company_name)}
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />
                       {t.admin.actionModal.approve}
@@ -191,7 +193,7 @@ export default function Requests() {
                       variant="outline"
                       size="sm"
                       className="flex-1 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => handleAction(request.id, "reject")}
+                      onClick={() => handleAction(request.id, "reject", request.user_email, request.company_name)}
                     >
                       <XCircle className="mr-2 h-4 w-4" />
                       {t.admin.actionModal.reject}
@@ -220,6 +222,8 @@ export default function Requests() {
         onOpenChange={(open) => setActionModal((prev) => ({ ...prev, open }))}
         requestId={actionModal.requestId}
         action={actionModal.action}
+        userEmail={actionModal.userEmail}
+        companyName={actionModal.companyName}
       />
     </div>
   );

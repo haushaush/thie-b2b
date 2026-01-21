@@ -137,6 +137,32 @@ export default function Dashboard() {
 
       if (itemsError) throw itemsError;
 
+      // Calculate totals for email notification
+      const totalDevices = items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalAmount = items.reduce((sum, item) => sum + (item.quantity * item.product.pricePerUnit), 0);
+
+      // Send notification email to admins
+      try {
+        await supabase.functions.invoke("notify-new-request", {
+          body: {
+            requestId: request.id,
+            userEmail: user.email,
+            companyName: user.companyName,
+            items: requestItems.map(item => ({
+              product_name: item.product_name,
+              quantity: item.quantity,
+              price_per_unit: item.price_per_unit,
+            })),
+            totalDevices,
+            totalAmount,
+          },
+        });
+        console.log("Admin notification sent successfully");
+      } catch (notifyError) {
+        console.error("Failed to send admin notification:", notifyError);
+        // Don't fail the request if notification fails
+      }
+
       setIsSubmitModalOpen(false);
       clearCart();
       
