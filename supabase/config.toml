@@ -1,1 +1,10 @@
 project_id = "ujywjnyeprpwksoneavd"
+
+[functions.notify-new-products]
+verify_jwt = false
+
+[functions.notify-new-request]
+verify_jwt = false
+
+[functions.notify-request-status]
+verify_jwt = false

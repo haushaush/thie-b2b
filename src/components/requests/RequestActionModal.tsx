@@ -22,6 +22,8 @@ interface RequestActionModalProps {
   onOpenChange: (open: boolean) => void;
   requestId: string;
   action: "approve" | "reject";
+  userEmail?: string;
+  companyName?: string;
 }
 
 export function RequestActionModal({
@@ -29,6 +31,8 @@ export function RequestActionModal({
   onOpenChange,
   requestId,
   action,
+  userEmail,
+  companyName,
 }: RequestActionModalProps) {
   const [message, setMessage] = useState("");
   const { user } = useAuth();
@@ -48,13 +52,34 @@ export function RequestActionModal({
         .eq("id", requestId);
 
       if (error) throw error;
+      
+      return { status: action === "approve" ? "approved" : "rejected" };
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       toast.success(
         action === "approve"
           ? t.admin.actionModal.approveSuccess
           : t.admin.actionModal.rejectSuccess
       );
+      
+      // Send notification email to user about status change
+      if (userEmail) {
+        try {
+          await supabase.functions.invoke("notify-request-status", {
+            body: {
+              requestId,
+              userEmail,
+              companyName,
+              status: data.status,
+              adminMessage: message.trim() || undefined,
+            },
+          });
+          console.log("Status notification sent successfully");
+        } catch (notifyError) {
+          console.error("Failed to send status notification:", notifyError);
+        }
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       onOpenChange(false);
       setMessage("");
