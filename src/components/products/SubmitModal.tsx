@@ -1,5 +1,6 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, Building2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +21,7 @@ interface SubmitModalProps {
 
 export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: SubmitModalProps) {
   const { items, totalDevices, totalAmount } = useCart();
+  const { user } = useAuth();
   const { t, formatCurrency } = useLanguage();
 
   return (
@@ -30,6 +32,12 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
           <DialogDescription>
             {t.submit.description}
           </DialogDescription>
+          {user?.companyName && (
+            <div className="mt-3 flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">{user.companyName}</span>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="max-h-64 space-y-3 overflow-y-auto py-4">
