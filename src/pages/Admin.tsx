@@ -118,6 +118,32 @@ export default function Admin() {
     const products: CSVProduct[] = [];
     const errors: string[] = [];
 
+    // Column name mappings (alternative names -> standard names)
+    const columnMappings: Record<string, string> = {
+      // Standard names
+      "name": "name",
+      "manufacturer": "manufacturer",
+      "storage": "storage",
+      "color": "color",
+      "battery_health": "battery_health",
+      "grade": "grade",
+      "price_per_unit": "price_per_unit",
+      "available_units": "available_units",
+      // Alternative names from Thie stock list
+      "model": "name",
+      "make": "manufacturer",
+      "memory": "storage",
+      "battery avg.": "battery_health",
+      "battery avg": "battery_health",
+      "batteryavg": "battery_health",
+      "qty": "available_units",
+      "quantity": "available_units",
+      "price/model": "price_per_unit",
+      "pricemodel": "price_per_unit",
+      "price": "price_per_unit",
+      "units": "available_units",
+    };
+
     try {
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
@@ -129,33 +155,52 @@ export default function Admin() {
         return { products, errors };
       }
 
-      // Check for required columns (case-insensitive)
+      // Map actual column names to standard names
       const firstRow = rows[0];
-      const headers = Object.keys(firstRow).map(h => h.toLowerCase());
+      const actualHeaders = Object.keys(firstRow);
+      const headerMapping: Record<string, string> = {};
+      
+      actualHeaders.forEach(header => {
+        const normalizedHeader = header.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const originalLower = header.toLowerCase();
+        
+        // Try exact match first, then normalized match
+        if (columnMappings[originalLower]) {
+          headerMapping[header] = columnMappings[originalLower];
+        } else if (columnMappings[normalizedHeader]) {
+          headerMapping[header] = columnMappings[normalizedHeader];
+        }
+      });
+
+      // Check if we have all required standard columns after mapping
+      const mappedColumns = new Set(Object.values(headerMapping));
       const requiredColumns = ["name", "manufacturer", "storage", "color", "battery_health", "grade", "price_per_unit", "available_units"];
-      const missingColumns = requiredColumns.filter(col => !headers.some(h => h === col));
+      const missingColumns = requiredColumns.filter(col => !mappedColumns.has(col));
       
       if (missingColumns.length > 0) {
-        errors.push(`Missing columns: ${missingColumns.join(", ")}`);
+        errors.push(`Fehlende Spalten: ${missingColumns.join(", ")}. Gefundene Spalten: ${actualHeaders.join(", ")}`);
         return { products, errors };
       }
 
       rows.forEach((row, index) => {
-        // Normalize keys to lowercase
-        const normalizedRow: Record<string, any> = {};
-        Object.keys(row).forEach(key => {
-          normalizedRow[key.toLowerCase()] = row[key];
+        // Map row values to standard column names
+        const mappedRow: Record<string, any> = {};
+        Object.keys(row).forEach(header => {
+          const standardName = headerMapping[header];
+          if (standardName) {
+            mappedRow[standardName] = row[header];
+          }
         });
 
         const values = [
-          String(normalizedRow.name || ""),
-          String(normalizedRow.manufacturer || ""),
-          String(normalizedRow.storage || ""),
-          String(normalizedRow.color || ""),
-          String(normalizedRow.battery_health || "0"),
-          String(normalizedRow.grade || ""),
-          String(normalizedRow.price_per_unit || ""),
-          String(normalizedRow.available_units || ""),
+          String(mappedRow.name || ""),
+          String(mappedRow.manufacturer || ""),
+          String(mappedRow.storage || ""),
+          String(mappedRow.color || ""),
+          String(mappedRow.battery_health || "0").replace("%", ""),
+          String(mappedRow.grade || ""),
+          String(mappedRow.price_per_unit || "").replace("€", "").replace(",", ".").trim(),
+          String(mappedRow.available_units || ""),
         ];
 
         const columnIndices = { name: 0, manufacturer: 1, storage: 2, color: 3, battery_health: 4, grade: 5, price_per_unit: 6, available_units: 7 };
