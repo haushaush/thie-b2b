@@ -28,6 +28,7 @@ import {
 import { ProductsTable } from "@/components/admin/ProductsTable";
 import { ProductData } from "@/components/admin/ProductEditModal";
 import { z } from "zod";
+import * as XLSX from "xlsx";
 
 // Zod schema for comprehensive CSV product validation
 const CSVProductSchema = z.object({
@@ -47,7 +48,7 @@ const sanitizeText = (str: string): string => {
   return str.replace(/[\x00-\x1F\x7F]/g, "").trim();
 };
 
-const MAX_CSV_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 interface ParseResult {
   products: CSVProduct[];
@@ -107,51 +108,130 @@ export default function Admin() {
       const line = lines[i].trim();
       if (!line) continue;
       const values = line.split(";").map((v) => v.trim());
-      try {
-        const rawName = sanitizeText(values[columnIndices.name] || "");
-        const rawManufacturer = sanitizeText(values[columnIndices.manufacturer] || "");
-        const rawStorage = sanitizeText(values[columnIndices.storage] || "");
-        const rawColor = sanitizeText(values[columnIndices.color] || "");
-        const rawBatteryHealth = values[columnIndices.battery_health]?.replace("%", "");
-        const rawGrade = sanitizeText(values[columnIndices.grade] || "").toUpperCase();
-        const priceStr = values[columnIndices.price_per_unit]?.replace(",", ".");
-        const unitsStr = values[columnIndices.available_units];
-        const price = parseFloat(priceStr);
-        const units = parseInt(unitsStr, 10);
-        const batteryHealth = parseInt(rawBatteryHealth, 10);
-
-        const result = CSVProductSchema.safeParse({
-          name: rawName, manufacturer: rawManufacturer, storage: rawStorage, color: rawColor,
-          battery_health: isNaN(batteryHealth) ? 0 : batteryHealth, grade: rawGrade,
-          price_per_unit: isNaN(price) ? -1 : price, available_units: isNaN(units) ? -1 : units,
-        });
-
-        if (!result.success) {
-          const errorMessages = result.error.errors.map(e => e.message).join("; ");
-          errors.push(`${t.admin.upload.validationError.replace("{row}", String(i + 1))} ${errorMessages}`);
-          continue;
-        }
-        products.push(result.data);
-      } catch {
-        errors.push(`${t.admin.upload.validationError.replace("{row}", String(i + 1))} Parse error`);
-      }
+      const parseResult = validateProductRow(values, columnIndices, i + 1, errors);
+      if (parseResult) products.push(parseResult);
     }
     return { products, errors };
+  };
+
+  const parseXLSX = (data: ArrayBuffer): ParseResult => {
+    const products: CSVProduct[] = [];
+    const errors: string[] = [];
+
+    try {
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, { defval: "" });
+
+      if (rows.length === 0) {
+        errors.push("Excel file must contain at least one data row");
+        return { products, errors };
+      }
+
+      // Check for required columns (case-insensitive)
+      const firstRow = rows[0];
+      const headers = Object.keys(firstRow).map(h => h.toLowerCase());
+      const requiredColumns = ["name", "manufacturer", "storage", "color", "battery_health", "grade", "price_per_unit", "available_units"];
+      const missingColumns = requiredColumns.filter(col => !headers.some(h => h === col));
+      
+      if (missingColumns.length > 0) {
+        errors.push(`Missing columns: ${missingColumns.join(", ")}`);
+        return { products, errors };
+      }
+
+      rows.forEach((row, index) => {
+        // Normalize keys to lowercase
+        const normalizedRow: Record<string, any> = {};
+        Object.keys(row).forEach(key => {
+          normalizedRow[key.toLowerCase()] = row[key];
+        });
+
+        const values = [
+          String(normalizedRow.name || ""),
+          String(normalizedRow.manufacturer || ""),
+          String(normalizedRow.storage || ""),
+          String(normalizedRow.color || ""),
+          String(normalizedRow.battery_health || "0"),
+          String(normalizedRow.grade || ""),
+          String(normalizedRow.price_per_unit || ""),
+          String(normalizedRow.available_units || ""),
+        ];
+
+        const columnIndices = { name: 0, manufacturer: 1, storage: 2, color: 3, battery_health: 4, grade: 5, price_per_unit: 6, available_units: 7 };
+        const parseResult = validateProductRow(values, columnIndices, index + 2, errors);
+        if (parseResult) products.push(parseResult);
+      });
+    } catch (error) {
+      errors.push("Failed to parse Excel file");
+    }
+
+    return { products, errors };
+  };
+
+  const validateProductRow = (
+    values: string[],
+    columnIndices: Record<string, number>,
+    rowNumber: number,
+    errors: string[]
+  ): CSVProduct | null => {
+    try {
+      const rawName = sanitizeText(values[columnIndices.name] || "");
+      const rawManufacturer = sanitizeText(values[columnIndices.manufacturer] || "");
+      const rawStorage = sanitizeText(values[columnIndices.storage] || "");
+      const rawColor = sanitizeText(values[columnIndices.color] || "");
+      const rawBatteryHealth = String(values[columnIndices.battery_health] || "").replace("%", "");
+      const rawGrade = sanitizeText(values[columnIndices.grade] || "").toUpperCase();
+      const priceStr = String(values[columnIndices.price_per_unit] || "").replace(",", ".");
+      const unitsStr = String(values[columnIndices.available_units] || "");
+      const price = parseFloat(priceStr);
+      const units = parseInt(unitsStr, 10);
+      const batteryHealth = parseInt(rawBatteryHealth, 10);
+
+      const result = CSVProductSchema.safeParse({
+        name: rawName, manufacturer: rawManufacturer, storage: rawStorage, color: rawColor,
+        battery_health: isNaN(batteryHealth) ? 0 : batteryHealth, grade: rawGrade,
+        price_per_unit: isNaN(price) ? -1 : price, available_units: isNaN(units) ? -1 : units,
+      });
+
+      if (!result.success) {
+        const errorMessages = result.error.errors.map(e => e.message).join("; ");
+        errors.push(`${t.admin.upload.validationError.replace("{row}", String(rowNumber))} ${errorMessages}`);
+        return null;
+      }
+      return result.data;
+    } catch {
+      errors.push(`${t.admin.upload.validationError.replace("{row}", String(rowNumber))} Parse error`);
+      return null;
+    }
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!file.name.endsWith(".csv")) {
+    
+    const isCSV = file.name.endsWith(".csv");
+    const isXLSX = file.name.endsWith(".xlsx") || file.name.endsWith(".xls");
+    
+    if (!isCSV && !isXLSX) {
       toast({ variant: "destructive", title: t.admin.upload.error, description: t.admin.upload.invalidFormat });
       return;
     }
-    if (file.size > MAX_CSV_FILE_SIZE) {
+    if (file.size > MAX_FILE_SIZE) {
       toast({ variant: "destructive", title: t.admin.upload.error, description: "Max 5 MB" });
       return;
     }
-    const content = await file.text();
-    const result = parseCSV(content);
+    
+    let result: ParseResult;
+    
+    if (isXLSX) {
+      const arrayBuffer = await file.arrayBuffer();
+      result = parseXLSX(arrayBuffer);
+    } else {
+      const content = await file.text();
+      result = parseCSV(content);
+    }
+    
     setParsedProducts(result.products);
     setParseErrors(result.errors);
     if (result.products.length > 0) setShowConfirmDialog(true);
@@ -243,11 +323,11 @@ export default function Admin() {
         <CardHeader><CardTitle className="flex items-center gap-2"><FileSpreadsheet className="h-5 w-5" />{t.admin.upload.title}</CardTitle><CardDescription>{t.admin.upload.description}</CardDescription></CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg border-2 border-dashed p-8 text-center">
-            <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileSelect} className="hidden" id="csv-upload" />
+            <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFileSelect} className="hidden" id="csv-upload" />
             <label htmlFor="csv-upload" className="flex cursor-pointer flex-col items-center gap-2">
               <Upload className="h-10 w-10 text-muted-foreground" />
-              <span className="text-lg font-medium">{t.admin.upload.selectFile}</span>
-              <span className="text-sm text-muted-foreground">{t.admin.upload.dragDrop}</span>
+              <span className="text-lg font-medium">CSV oder Excel-Datei auswählen</span>
+              <span className="text-sm text-muted-foreground">.csv, .xlsx, .xls (max. 5 MB)</span>
             </label>
           </div>
           <div className="rounded-lg bg-muted p-4">
