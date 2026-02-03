@@ -10,7 +10,7 @@ import { RequestActionModal } from "@/components/requests/RequestActionModal";
 type RequestStatus = "pending" | "approved" | "rejected";
 
 export default function Requests() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const { t, formatCurrency, formatDate } = useLanguage();
   const { data: requests, isLoading, error } = useRequests();
   const [actionModal, setActionModal] = useState<{
@@ -111,23 +111,21 @@ export default function Requests() {
                     <p className="mt-0.5 text-sm text-muted-foreground">
                       {formatDate(request.created_at)}
                     </p>
-                    {/* Admin: Show user info */}
-                    {isAdmin && (
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                        {request.company_name && (
-                          <span className="flex items-center gap-1">
-                            <Building2 className="h-3.5 w-3.5" />
-                            {request.company_name}
-                          </span>
-                        )}
-                        {request.user_email && (
-                          <span className="flex items-center gap-1">
-                            <Mail className="h-3.5 w-3.5" />
-                            {request.user_email}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {/* Show user info - admin sees all, user sees own company */}
+                    <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      {(isAdmin ? request.company_name : user?.companyName) && (
+                        <span className="flex items-center gap-1">
+                          <Building2 className="h-3.5 w-3.5" />
+                          {isAdmin ? request.company_name : user?.companyName}
+                        </span>
+                      )}
+                      {isAdmin && request.user_email && (
+                        <span className="flex items-center gap-1">
+                          <Mail className="h-3.5 w-3.5" />
+                          {request.user_email}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Badge variant="outline" className={status.className}>
                     <StatusIcon className="mr-1 h-3.5 w-3.5" />
