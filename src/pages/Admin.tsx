@@ -297,21 +297,19 @@ export default function Admin() {
       const { error: insertError } = await supabase.from("products").insert(productsForInsert);
       if (insertError) throw insertError;
       
-      // Send notification email to all users about new products
-      try {
-        await supabase.functions.invoke("notify-new-products", {
-          body: { productCount: parsedProducts.length },
-        });
-        console.log("New product notification sent successfully");
-      } catch (notifyError) {
-        console.error("Failed to send new product notification:", notifyError);
-        // Don't fail the upload if notification fails
-      }
-      
       toast({ title: t.admin.upload.success, description: t.admin.upload.successDesc.replace("{count}", String(parsedProducts.length)) });
       setParsedProducts([]);
       setParseErrors([]);
       refetchProducts();
+      
+      // Send notification email to all users about new products (fire and forget)
+      supabase.functions.invoke("notify-new-products", {
+        body: { productCount: parsedProducts.length },
+      }).then(() => {
+        console.log("New product notification sent successfully");
+      }).catch((notifyError) => {
+        console.error("Failed to send new product notification:", notifyError);
+      });
     } catch (error: any) {
       toast({ variant: "destructive", title: t.admin.upload.error, description: error.message || t.common.error });
     } finally {
