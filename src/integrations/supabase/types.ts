@@ -60,27 +60,33 @@ export type Database = {
         Row: {
           company_name: string | null
           contact_person: string | null
+          contact_phone: string | null
           created_at: string
           email: string
           id: string
+          logo_url: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           company_name?: string | null
           contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
           email: string
           id?: string
+          logo_url?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           company_name?: string | null
           contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
           email?: string
           id?: string
+          logo_url?: string | null
           updated_at?: string
           user_id?: string
         }

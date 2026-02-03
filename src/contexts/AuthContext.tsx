@@ -7,6 +7,8 @@ export interface AppUser {
   email: string;
   companyName: string;
   contactPerson: string;
+  contactPhone: string;
+  logoUrl: string | null;
   initials: string;
   isAdmin: boolean;
 }
@@ -69,6 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: email,
         companyName: profile?.company_name || "",
         contactPerson: profile?.contact_person || "",
+        contactPhone: profile?.contact_phone || "",
+        logoUrl: profile?.logo_url || null,
         initials,
         isAdmin: hasAdminRole,
       };
