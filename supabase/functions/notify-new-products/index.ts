@@ -6,7 +6,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface NotifyNewProductsRequest {
@@ -20,15 +20,71 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // ============ AUTHENTICATION CHECK - ADMIN ONLY ============
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    
+    // Create client with user's JWT to validate authentication
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      console.error("Invalid JWT token:", claimsError);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("Authenticated user:", userId);
+
+    // Check if user is admin using service role client
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
+
+    const { data: roles, error: rolesError } = await supabaseService
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+
+    if (rolesError) {
+      console.error("Error checking user roles:", rolesError);
+      return new Response(
+        JSON.stringify({ error: "Failed to verify permissions" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const isAdmin = roles?.some((r) => r.role === "admin");
+    if (!isAdmin) {
+      console.error("User is not an admin:", userId);
+      return new Response(
+        JSON.stringify({ error: "Forbidden - Admin access required" }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log("Admin verified:", userId);
+    // ============ END AUTHENTICATION CHECK ============
+
     const { productCount }: NotifyNewProductsRequest = await req.json();
 
-    // Create Supabase client with service role to access all profiles
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Fetch all user profiles
-    const { data: profiles, error: profilesError } = await supabase.from("profiles").select("email, company_name");
+    // Fetch all user profiles using service role
+    const { data: profiles, error: profilesError } = await supabaseService.from("profiles").select("email, company_name");
 
     if (profilesError) {
       console.error("Error fetching profiles:", profilesError);
@@ -45,10 +101,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending notification to ${profiles.length} users about ${productCount} new products`);
 
-    // Send emails to all users
+    // Send emails to all users - don't expose email addresses in response
     const emailPromises = profiles.map(async (profile) => {
       try {
-        const result = await resend.emails.send({
+        await resend.emails.send({
           from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [profile.email],
           subject: "Neue Produkte verfügbar!",
@@ -63,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
                 Schauen Sie sich die neuesten Angebote an!
               </p>
               <div style="margin: 30px 0;">
-                <a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/dashboard" 
+                <a href="https://thie-b2b.lovable.app/dashboard" 
                    style="background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
                   Katalog ansehen
                 </a>
@@ -75,11 +131,11 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
           `,
         });
-        console.log(`Email sent to ${profile.email}:`, result);
-        return { email: profile.email, success: true };
+        console.log("Email sent successfully");
+        return { success: true };
       } catch (error) {
-        console.error(`Failed to send email to ${profile.email}:`, error);
-        return { email: profile.email, success: false, error };
+        console.error("Failed to send email:", error);
+        return { success: false };
       }
     });
 
@@ -92,7 +148,6 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         success: true,
         message: `Notified ${successCount} users`,
-        results,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
