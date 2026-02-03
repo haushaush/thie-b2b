@@ -170,14 +170,14 @@ export default function Profile() {
       {/* Profile Card */}
       <Card>
         <CardHeader className="pb-4">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left">
             {/* Logo/Avatar */}
             <div className="relative">
-              <Avatar className="h-16 w-16">
+              <Avatar className="h-20 w-20 sm:h-16 sm:w-16">
                 {formData.logoUrl ? (
                   <AvatarImage src={formData.logoUrl} alt="Company logo" />
                 ) : null}
-                <AvatarFallback className="bg-primary text-xl font-bold text-primary-foreground">
+                <AvatarFallback className="bg-primary text-2xl font-bold text-primary-foreground sm:text-xl">
                   {user?.initials}
                 </AvatarFallback>
               </Avatar>
@@ -207,12 +207,12 @@ export default function Profile() {
             </div>
             
             <div className="flex-1">
-              <CardTitle>{isEditing ? formData.contactPerson || user?.email : user?.contactPerson || user?.email}</CardTitle>
+              <CardTitle className="text-lg sm:text-base">{isEditing ? formData.contactPerson || user?.email : user?.contactPerson || user?.email}</CardTitle>
               <CardDescription>{isEditing ? formData.companyName : user?.companyName}</CardDescription>
             </div>
             
             {canEdit && !isEditing && (
-              <Button variant="outline" size="sm" onClick={startEditing}>
+              <Button variant="outline" size="sm" onClick={startEditing} className="mt-2 sm:mt-0">
                 <Pencil className="mr-2 h-4 w-4" />
                 {t.profile.editProfile}
               </Button>
