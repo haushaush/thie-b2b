@@ -28,9 +28,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch all user profiles
-    const { data: profiles, error: profilesError } = await supabase
-      .from("profiles")
-      .select("email, company_name");
+    const { data: profiles, error: profilesError } = await supabase.from("profiles").select("email, company_name");
 
     if (profilesError) {
       console.error("Error fetching profiles:", profilesError);
@@ -39,10 +37,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!profiles || profiles.length === 0) {
       console.log("No profiles found to notify");
-      return new Response(
-        JSON.stringify({ success: true, message: "No users to notify" }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return new Response(JSON.stringify({ success: true, message: "No users to notify" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     console.log(`Sending notification to ${profiles.length} users about ${productCount} new products`);
@@ -51,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailPromises = profiles.map(async (profile) => {
       try {
         const result = await resend.emails.send({
-          from: "THIE B2B <onboarding@resend.dev>",
+          from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [profile.email],
           subject: "Neue Produkte verfügbar!",
           html: `
@@ -65,7 +63,7 @@ const handler = async (req: Request): Promise<Response> => {
                 Schauen Sie sich die neuesten Angebote an!
               </p>
               <div style="margin: 30px 0;">
-                <a href="${Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '.lovable.app')}/dashboard" 
+                <a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/dashboard" 
                    style="background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
                   Katalog ansehen
                 </a>
@@ -86,24 +84,24 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const results = await Promise.all(emailPromises);
-    const successCount = results.filter(r => r.success).length;
+    const successCount = results.filter((r) => r.success).length;
 
     console.log(`Successfully sent ${successCount}/${profiles.length} emails`);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: `Notified ${successCount} users`,
-        results 
+        results,
       }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (error: any) {
     console.error("Error in notify-new-products function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
