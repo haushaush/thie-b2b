@@ -19,7 +19,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending test email to: ${email}`);
 
     const result = await resend.emails.send({
-      from: "THIE B2B <onboarding@resend.dev>",
+      from: "THIE B2B <onboarding@updates.haushhaush.de>",
       to: [email],
       subject: "Test E-Mail - THIE B2B",
       html: `
@@ -38,16 +38,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Test email sent:", result);
 
-    return new Response(
-      JSON.stringify({ success: true, result }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return new Response(JSON.stringify({ success: true, result }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   } catch (error: any) {
     console.error("Error sending test email:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 

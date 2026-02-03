@@ -54,14 +54,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!adminRoles || adminRoles.length === 0) {
       console.log("No admin users found");
-      return new Response(
-        JSON.stringify({ success: true, message: "No admins to notify" }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return new Response(JSON.stringify({ success: true, message: "No admins to notify" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Fetch admin profiles to get emails
-    const adminUserIds = adminRoles.map(r => r.user_id);
+    const adminUserIds = adminRoles.map((r) => r.user_id);
     const { data: adminProfiles, error: profilesError } = await supabase
       .from("profiles")
       .select("email")
@@ -74,22 +74,26 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!adminProfiles || adminProfiles.length === 0) {
       console.log("No admin profiles found");
-      return new Response(
-        JSON.stringify({ success: true, message: "No admin profiles to notify" }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return new Response(JSON.stringify({ success: true, message: "No admin profiles to notify" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     console.log(`Sending request notification to ${adminProfiles.length} admins`);
 
     // Generate items HTML
-    const itemsHtml = items.map(item => `
+    const itemsHtml = items
+      .map(
+        (item) => `
       <tr>
         <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.product_name}</td>
         <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
         <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${item.price_per_unit.toFixed(2)} €</td>
       </tr>
-    `).join("");
+    `,
+      )
+      .join("");
 
     const baseUrl = "https://thie-b2b.lovable.app";
 
@@ -97,7 +101,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailPromises = adminProfiles.map(async (admin) => {
       try {
         const result = await resend.emails.send({
-          from: "THIE B2B <onboarding@resend.dev>",
+          from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [admin.email],
           subject: `Neue Geräteanfrage von ${companyName || userEmail}`,
           html: `
@@ -153,24 +157,24 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const results = await Promise.all(emailPromises);
-    const successCount = results.filter(r => r.success).length;
+    const successCount = results.filter((r) => r.success).length;
 
     console.log(`Successfully sent ${successCount}/${adminProfiles.length} admin notification emails`);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: `Notified ${successCount} admins`,
-        results 
+        results,
       }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (error: any) {
     console.error("Error in notify-new-request function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 

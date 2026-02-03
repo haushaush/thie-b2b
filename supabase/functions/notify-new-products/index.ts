@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
               </div>
               <p style="color: #999; font-size: 14px;">
                 Mit freundlichen Grüßen,<br>
-                Das THIE Team
+                Das Thie Team
               </p>
             </div>
           `,

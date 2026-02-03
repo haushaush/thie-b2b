@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
     const baseUrl = "https://thie-b2b.lovable.app";
 
     const emailResult = await resend.emails.send({
-      from: "THIE B2B <onboarding@resend.dev>",
+      from: "THIE B2B <onboarding@updates.haushhaush.de>",
       to: [userEmail],
       subject: `${statusEmoji} Ihre Anfrage wurde ${statusText}`,
       html: `
@@ -54,22 +54,30 @@ const handler = async (req: Request): Promise<Response> => {
             <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>.
           </p>
 
-          ${adminMessage ? `
+          ${
+            adminMessage
+              ? `
             <div style="background-color: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${statusColor};">
               <p style="margin: 0 0 8px 0; font-weight: bold; color: #333;">Nachricht vom Admin:</p>
               <p style="margin: 0; color: #666;">${adminMessage}</p>
             </div>
-          ` : ""}
+          `
+              : ""
+          }
 
-          ${isApproved ? `
+          ${
+            isApproved
+              ? `
             <p style="color: #666; font-size: 16px; line-height: 1.6;">
               Wir werden uns in Kürze mit Ihnen in Verbindung setzen, um die weiteren Schritte zu besprechen.
             </p>
-          ` : `
+          `
+              : `
             <p style="color: #666; font-size: 16px; line-height: 1.6;">
               Falls Sie Fragen haben oder eine neue Anfrage stellen möchten, besuchen Sie bitte unser Portal.
             </p>
-          `}
+          `
+          }
 
           <div style="margin: 30px 0;">
             <a href="${baseUrl}/requests" 
@@ -88,16 +96,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Email sent successfully:", emailResult);
 
-    return new Response(
-      JSON.stringify({ success: true, result: emailResult }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return new Response(JSON.stringify({ success: true, result: emailResult }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   } catch (error: any) {
     console.error("Error in notify-request-status function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
