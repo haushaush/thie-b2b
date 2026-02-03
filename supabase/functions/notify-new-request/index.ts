@@ -6,7 +6,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface RequestItem {
@@ -31,13 +31,45 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // ============ AUTHENTICATION CHECK ============
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    
+    // Create client with user's JWT to validate authentication
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      console.error("Invalid JWT token:", claimsError);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log("Authenticated user:", userId);
+    // ============ END AUTHENTICATION CHECK ============
+
     const payload: NotifyNewRequestPayload = await req.json();
     const { requestId, userEmail, companyName, items, totalDevices, totalAmount } = payload;
 
     console.log("Processing new request notification:", { requestId, userEmail, companyName });
 
     // Create Supabase client with service role to access admin users
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -97,10 +129,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const baseUrl = "https://thie-b2b.lovable.app";
 
-    // Send emails to all admins
+    // Send emails to all admins - don't expose email addresses in response
     const emailPromises = adminProfiles.map(async (admin) => {
       try {
-        const result = await resend.emails.send({
+        await resend.emails.send({
           from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [admin.email],
           subject: `Neue Geräteanfrage von ${companyName || userEmail}`,
@@ -148,11 +180,11 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
           `,
         });
-        console.log(`Email sent to admin ${admin.email}:`, result);
-        return { email: admin.email, success: true };
+        console.log("Email sent to admin successfully");
+        return { success: true };
       } catch (error) {
-        console.error(`Failed to send email to admin ${admin.email}:`, error);
-        return { email: admin.email, success: false, error };
+        console.error("Failed to send email to admin:", error);
+        return { success: false };
       }
     });
 
@@ -165,7 +197,6 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({
         success: true,
         message: `Notified ${successCount} admins`,
-        results,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );

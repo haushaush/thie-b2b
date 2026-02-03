@@ -8,6 +8,3 @@ verify_jwt = false
 
 [functions.notify-request-status]
 verify_jwt = false
-
-[functions.test-email]
-verify_jwt = false
