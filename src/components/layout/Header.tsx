@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import {
   Sheet,
@@ -57,10 +58,15 @@ export function Header() {
           {/* Language Switcher */}
           <LanguageSwitcher />
 
-          {/* User Initials Badge */}
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
-            {user?.initials || "??"}
-          </div>
+          {/* User Avatar/Logo Badge */}
+          <Avatar className="h-9 w-9">
+            {!isAdmin && user?.logoUrl ? (
+              <AvatarImage src={user.logoUrl} alt="Company logo" />
+            ) : null}
+            <AvatarFallback className="bg-primary text-sm font-medium text-primary-foreground">
+              {user?.initials || "??"}
+            </AvatarFallback>
+          </Avatar>
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -74,9 +80,14 @@ export function Header() {
               <SheetHeader className="border-b border-sidebar-border p-6">
                 <SheetTitle className="text-left text-sidebar-foreground">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sidebar-accent text-sm font-medium">
-                      {user?.initials || "??"}
-                    </div>
+                    <Avatar className="h-10 w-10">
+                      {!isAdmin && user?.logoUrl ? (
+                        <AvatarImage src={user.logoUrl} alt="Company logo" />
+                      ) : null}
+                      <AvatarFallback className="bg-sidebar-accent text-sm font-medium">
+                        {user?.initials || "??"}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">{user?.contactPerson}</span>
                       <span className="text-xs text-sidebar-foreground/70">{user?.companyName}</span>
