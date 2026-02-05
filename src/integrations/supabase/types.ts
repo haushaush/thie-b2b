@@ -141,9 +141,11 @@ export type Database = {
         Row: {
           admin_message: string | null
           created_at: string
+          express_shipping: boolean
           id: string
           processed_at: string | null
           processed_by: string | null
+          shipping_cost: number
           status: Database["public"]["Enums"]["request_status"]
           updated_at: string
           user_id: string
@@ -151,9 +153,11 @@ export type Database = {
         Insert: {
           admin_message?: string | null
           created_at?: string
+          express_shipping?: boolean
           id?: string
           processed_at?: string | null
           processed_by?: string | null
+          shipping_cost?: number
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
           user_id: string
@@ -161,9 +165,11 @@ export type Database = {
         Update: {
           admin_message?: string | null
           created_at?: string
+          express_shipping?: boolean
           id?: string
           processed_at?: string | null
           processed_by?: string | null
+          shipping_cost?: number
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
           user_id?: string
