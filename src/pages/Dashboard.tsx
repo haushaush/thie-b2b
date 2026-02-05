@@ -8,6 +8,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductList } from "@/components/products/ProductList";
+import { ViewToggle, ViewMode } from "@/components/products/ViewToggle";
 import { CartBar } from "@/components/products/CartBar";
 import { FilterModal, FilterState } from "@/components/products/FilterModal";
 import { SubmitModal } from "@/components/products/SubmitModal";
@@ -26,6 +28,7 @@ export default function Dashboard() {
   });
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   
   const { items, clearCart } = useCart();
   const { user } = useAuth();
@@ -221,21 +224,28 @@ export default function Dashboard() {
             className="pl-9"
           />
         </div>
-        <FilterModal
-          filters={filters}
-          onFiltersChange={setFilters}
-          activeFilterCount={activeFilterCount}
-          availableColors={availableColors}
-        />
+        <div className="flex items-center gap-2">
+          <ViewToggle value={viewMode} onChange={setViewMode} />
+          <FilterModal
+            filters={filters}
+            onFiltersChange={setFilters}
+            activeFilterCount={activeFilterCount}
+            availableColors={availableColors}
+          />
+        </div>
       </div>
 
-      {/* Products Grid */}
+      {/* Products Grid/List */}
       {filteredProducts.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        viewMode === "grid" ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <ProductList products={filteredProducts} />
+        )
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
