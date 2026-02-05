@@ -77,6 +77,19 @@ export const translations = {
       error: "Error",
       errorDesc: "There was an error submitting your request. Please try again.",
     },
+    // Shipping
+    shipping: {
+      title: "Shipping",
+      freeShipping: "Free Shipping",
+      freeShippingDesc: "Free shipping from 50 devices",
+      standardShipping: "Standard Shipping",
+      standardShippingCost: "€20.00",
+      expressShipping: "Express Shipping",
+      expressShippingDesc: "€50 + 1% of order value",
+      devicesThreshold: "50 devices",
+      shippingCost: "Shipping Cost",
+      grandTotal: "Grand Total",
+    },
     // Requests page
     requests: {
       title: "My Requests",
@@ -437,6 +450,19 @@ export const translations = {
       successDesc: "Ihre Anfrage wurde erfolgreich gesendet und wird geprüft.",
       error: "Fehler",
       errorDesc: "Beim Senden Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    },
+    // Shipping
+    shipping: {
+      title: "Versand",
+      freeShipping: "Kostenloser Versand",
+      freeShippingDesc: "Kostenloser Versand ab 50 Geräten",
+      standardShipping: "Standardversand",
+      standardShippingCost: "20,00 €",
+      expressShipping: "Expressversand",
+      expressShippingDesc: "50 € + 1% des Bestellwerts",
+      devicesThreshold: "50 Geräte",
+      shippingCost: "Versandkosten",
+      grandTotal: "Gesamtsumme",
     },
     // Requests page
     requests: {

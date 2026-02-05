@@ -19,6 +19,8 @@ export interface Request {
   processed_at: string | null;
   created_at: string;
   updated_at: string;
+  shipping_cost: number;
+  express_shipping: boolean;
   items: RequestItem[];
   user_email?: string;
   company_name?: string;
@@ -73,6 +75,8 @@ export function useRequests() {
       const requestsWithItems: Request[] = requests.map((request) => ({
         ...request,
         status: request.status as "pending" | "approved" | "rejected",
+        shipping_cost: Number(request.shipping_cost),
+        express_shipping: request.express_shipping,
         items: (items || [])
           .filter((item) => item.request_id === request.id)
           .map((item) => ({

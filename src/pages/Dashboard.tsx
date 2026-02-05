@@ -107,18 +107,20 @@ export default function Dashboard() {
     });
   }, [products, searchQuery, filters]);
 
-  const handleSubmitRequest = async () => {
+  const handleSubmitRequest = async (expressShipping: boolean, shippingCost: number) => {
     if (!user || items.length === 0) return;
     
     setIsSubmitting(true);
     
     try {
-      // Create the request
+      // Create the request with shipping info
       const { data: request, error: requestError } = await supabase
         .from("requests")
         .insert({
           user_id: user.id,
           status: "pending",
+          shipping_cost: shippingCost,
+          express_shipping: expressShipping,
         })
         .select()
         .single();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2 } from "lucide-react";
+import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2, Truck, Zap, Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -165,14 +165,39 @@ export default function Requests() {
                   </div>
                 )}
 
+                {/* Shipping Info */}
+                <div className="mt-4 rounded-lg bg-muted/50 p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    {request.express_shipping ? (
+                      <Zap className="h-4 w-4 text-warning" />
+                    ) : (
+                      <Truck className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <span className="font-medium">
+                      {request.express_shipping ? t.shipping.expressShipping : t.shipping.standardShipping}
+                    </span>
+                    <span className="ml-auto font-bold">
+                      {request.shipping_cost === 0 
+                        ? t.shipping.freeShipping 
+                        : formatCurrency(request.shipping_cost)
+                      }
+                    </span>
+                  </div>
+                </div>
+
                 {/* Footer */}
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
                   <span className="text-sm text-muted-foreground">
                     {totalDevices} {totalDevices === 1 ? "Device" : "Devices"}
                   </span>
-                  <span className="text-lg font-bold text-primary">
-                    {formatCurrency(totalAmount)}
-                  </span>
+                  <div className="text-right">
+                    <span className="text-sm text-muted-foreground block">
+                      {t.shipping.grandTotal}
+                    </span>
+                    <span className="text-lg font-bold text-primary">
+                      {formatCurrency(totalAmount + request.shipping_cost)}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Admin Actions */}
