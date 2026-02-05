@@ -374,7 +374,7 @@ export const translations = {
     },
     // Footer
     footer: {
-      companyName: "B2B Portal",
+      companyName: "Thie GmbH",
       allRightsReserved: "All rights reserved",
       terms: "Terms & Conditions",
       privacy: "Privacy Policy",
@@ -756,7 +756,7 @@ export const translations = {
     },
     // Footer
     footer: {
-      companyName: "B2B Portal",
+      companyName: "Thie GmbH",
       allRightsReserved: "Alle Rechte vorbehalten",
       terms: "AGB",
       privacy: "Datenschutz",
