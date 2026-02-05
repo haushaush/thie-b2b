@@ -372,6 +372,14 @@ export const translations = {
       en: "English",
       de: "German",
     },
+    // Footer
+    footer: {
+      companyName: "B2B Portal",
+      allRightsReserved: "All rights reserved",
+      terms: "Terms & Conditions",
+      privacy: "Privacy Policy",
+      imprint: "Imprint",
+    },
   },
   de: {
     // Navigation
@@ -745,6 +753,14 @@ export const translations = {
     language: {
       en: "Englisch",
       de: "Deutsch",
+    },
+    // Footer
+    footer: {
+      companyName: "B2B Portal",
+      allRightsReserved: "Alle Rechte vorbehalten",
+      terms: "AGB",
+      privacy: "Datenschutz",
+      imprint: "Impressum",
     },
   },
 };
