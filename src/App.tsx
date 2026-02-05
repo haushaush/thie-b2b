@@ -19,6 +19,9 @@ import Dashboard from "@/pages/Dashboard";
 import Requests from "@/pages/Requests";
 import Profile from "@/pages/Profile";
 import Admin from "@/pages/Admin";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
+import Imprint from "@/pages/Imprint";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +53,9 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/requests" element={<Requests />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/imprint" element={<Imprint />} />
                 <Route
                   path="/admin"
                   element={
