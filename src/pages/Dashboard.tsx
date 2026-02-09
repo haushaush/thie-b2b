@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Loader2 } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
+import { modelOptions } from "@/data/mockProducts";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const { data: products = [], isLoading, error } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({
+    categories: [],
     models: [],
     storage: [],
     grades: [],
@@ -48,6 +50,7 @@ export default function Dashboard() {
   // Calculate active filter count
   const activeFilterCount = useMemo(() => {
     let count = 0;
+    if (filters.categories.length > 0) count++;
     if (filters.models.length > 0) count++;
     if (filters.storage.length > 0) count++;
     if (filters.grades.length > 0) count++;
@@ -65,6 +68,12 @@ export default function Dashboard() {
         const query = searchQuery.toLowerCase();
         const searchable = `${product.name} ${product.manufacturer} ${product.storage}`.toLowerCase();
         if (!searchable.includes(query)) return false;
+      }
+
+      // Category filter
+      if (filters.categories.length > 0) {
+        const modelsInCategories = filters.categories.flatMap((cat) => modelOptions[cat] || []);
+        if (!modelsInCategories.includes(product.name)) return false;
       }
 
       // Model filter

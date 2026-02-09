@@ -50,8 +50,10 @@ export const translations = {
     // Filter Modal
     filter: {
       title: "Filter Products",
+      category: "Category",
       manufacturer: "Manufacturer",
       allManufacturers: "All Manufacturers",
+      model: "Model",
       grade: "Grade",
       allGrades: "All Grades",
       storage: "Storage",
@@ -432,8 +434,10 @@ export const translations = {
     // Filter Modal
     filter: {
       title: "Produkte filtern",
+      category: "Kategorie",
       manufacturer: "Hersteller",
       allManufacturers: "Alle Hersteller",
+      model: "Modell",
       grade: "Zustand",
       allGrades: "Alle Zustände",
       storage: "Speicher",

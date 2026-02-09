@@ -184,14 +184,26 @@ export const mockProducts: Product[] = [
 
 export const storageOptions = ["64GB", "128GB", "256GB", "512GB", "1TB"];
 export const gradeOptions = ["A", "B", "C"] as const;
-export const modelOptions = [
-  "iPhone 16 Pro",
-  "iPhone 16 Pro Max",
-  "iPhone 15 Pro",
-  "iPhone 15",
-  "iPhone 14 Pro",
-  "MacBook Pro 14\"",
-  "MacBook Air M2",
-  "iPad Pro 12.9\"",
-  "iPad Air",
-];
+export const categoryOptions = ["Smartphones", "Laptops", "Tablets"] as const;
+export const modelOptions: Record<string, string[]> = {
+  Smartphones: [
+    "iPhone 16 Pro",
+    "iPhone 16 Pro Max",
+    "iPhone 15 Pro",
+    "iPhone 15",
+    "iPhone 14 Pro",
+  ],
+  Laptops: [
+    "MacBook Pro 14\"",
+    "MacBook Pro 16\"",
+    "MacBook Air M2",
+    "MacBook Air M3",
+  ],
+  Tablets: [
+    "iPad Pro 12.9\"",
+    "iPad Pro 11\"",
+    "iPad Air",
+    "iPad Mini",
+  ],
+};
+export const allModelOptions = Object.values(modelOptions).flat();

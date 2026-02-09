@@ -13,9 +13,10 @@ import {
   SheetTrigger,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { modelOptions, storageOptions, gradeOptions } from "@/data/mockProducts";
+import { modelOptions, storageOptions, gradeOptions, categoryOptions } from "@/data/mockProducts";
 
 export interface FilterState {
+  categories: string[];
   models: string[];
   storage: string[];
   grades: ("A" | "B" | "C")[];
@@ -48,6 +49,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
 
   const handleReset = () => {
     const resetFilters: FilterState = {
+      categories: [],
       models: [],
       storage: [],
       grades: [],
@@ -72,6 +74,14 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
       return { ...prev, [key]: [...array, value] };
     });
   };
+
+  // Get available models based on selected categories
+  const availableModels = useMemo(() => {
+    const selectedCategories = localFilters.categories.length > 0
+      ? localFilters.categories
+      : (categoryOptions as readonly string[]);
+    return selectedCategories.flatMap((cat) => modelOptions[cat] || []);
+  }, [localFilters.categories]);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -99,11 +109,46 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
         </SheetHeader>
 
         <div className="mt-6 space-y-6 overflow-y-auto pb-20">
+          {/* Category */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">{t.filter.category}</Label>
+            <div className="flex flex-wrap gap-2">
+              {categoryOptions.map((category) => (
+                <label
+                  key={category}
+                  className="flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm hover:bg-muted"
+                >
+                  <Checkbox
+                    checked={localFilters.categories.includes(category)}
+                    onCheckedChange={() => {
+                      toggleArrayFilter("categories", category);
+                      // Clear models that don't belong to selected categories
+                      setLocalFilters((prev) => {
+                        const newCategories = prev.categories.includes(category)
+                          ? prev.categories.filter((c) => c !== category)
+                          : [...prev.categories, category];
+                        const validModels = newCategories.length > 0
+                          ? newCategories.flatMap((cat) => modelOptions[cat] || [])
+                          : Object.values(modelOptions).flat();
+                        return {
+                          ...prev,
+                          categories: newCategories,
+                          models: prev.models.filter((m) => validModels.includes(m)),
+                        };
+                      });
+                    }}
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+          </div>
+
           {/* Models */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">{t.products.manufacturer}</Label>
+            <Label className="text-sm font-medium">{t.filter.model}</Label>
             <div className="grid grid-cols-2 gap-2">
-              {modelOptions.map((model) => (
+              {availableModels.map((model) => (
                 <label
                   key={model}
                   className="flex cursor-pointer items-center gap-2 rounded-lg border p-3 text-sm hover:bg-muted"
