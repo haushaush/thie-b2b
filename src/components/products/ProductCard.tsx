@@ -44,7 +44,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </h3>
           <Badge 
             variant="secondary" 
-            className="mt-2 bg-accent text-accent-foreground font-semibold px-3 py-1 text-xs rounded-full"
+            className="mt-2 bg-accent text-accent-foreground hover:bg-accent font-semibold px-3 py-1 text-xs rounded-full"
           >
             {product.grade}-GRADE
           </Badge>
