@@ -26,6 +26,8 @@ export function CartBar({ onSubmit }: CartBarProps) {
 
   if (totalDevices === 0) return null;
 
+  const shippingCost = totalDevices >= 50 ? 0 : 20;
+
   const handleClearCart = () => {
     clearCart();
     setShowClearConfirm(false);
@@ -105,6 +107,11 @@ export function CartBar({ onSubmit }: CartBarProps) {
               </span>
               <span className="text-lg font-bold text-primary">
                 {t.cart.total}: {formatCurrency(totalAmount)}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {shippingCost === 0
+                  ? t.cart.freeShipping || "Kostenloser Versand"
+                  : `${t.cart.shipping || "Versand"}: ${formatCurrency(shippingCost)}`}
               </span>
             </div>
             {expanded ? (
