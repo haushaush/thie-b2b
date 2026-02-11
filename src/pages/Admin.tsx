@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo } from "react";
-import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle, UserPlus, ShoppingCart, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ProductsTable } from "@/components/admin/ProductsTable";
 import { ProductData } from "@/components/admin/ProductEditModal";
+import { CreateCustomerModal } from "@/components/admin/CreateCustomerModal";
+import { CreateOrderModal } from "@/components/admin/CreateOrderModal";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 
@@ -62,9 +64,12 @@ export default function Admin() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showCreateCustomer, setShowCreateCustomer] = useState(false);
+  const [showCreateOrder, setShowCreateOrder] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { t, formatCurrency } = useLanguage();
+  const queryClient = useQueryClient();
 
   const { data: products = [], isLoading: isLoadingProducts, refetch: refetchProducts } = useQuery({
     queryKey: ["admin-products"],
@@ -78,6 +83,22 @@ export default function Admin() {
       })) as ProductData[];
     },
   });
+
+  // Fetch customers (profiles)
+  const { data: customers = [], refetch: refetchCustomers } = useQuery({
+    queryKey: ["admin-customers"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("user_id, email, company_name, contact_person, contact_phone").order("company_name");
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Products formatted for order modal
+  const productsForOrder = useMemo(() => products.map(p => ({
+    id: p.id, name: p.name, manufacturer: p.manufacturer, storage: p.storage,
+    price_per_unit: p.price_per_unit, available_units: p.available_units, grade: p.grade,
+  })), [products]);
 
   const parseCSV = (content: string): ParseResult => {
     const lines = content.trim().split("\n");
@@ -349,6 +370,18 @@ export default function Admin() {
         <p className="mt-1 text-muted-foreground">{t.admin.description}</p>
       </div>
 
+      {/* Admin Action Buttons */}
+      <div className="flex flex-wrap gap-3">
+        <Button onClick={() => setShowCreateCustomer(true)}>
+          <UserPlus className="mr-2 h-4 w-4" />
+          {t.admin.customers.createTitle}
+        </Button>
+        <Button variant="outline" onClick={() => setShowCreateOrder(true)}>
+          <ShoppingCart className="mr-2 h-4 w-4" />
+          {t.admin.orders.createTitle}
+        </Button>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         <Card><CardHeader className="pb-2"><CardDescription>{t.admin.stats.totalProducts}</CardDescription><CardTitle className="text-3xl">{products.length}</CardTitle></CardHeader></Card>
         <Card><CardHeader className="pb-2"><CardDescription>{t.admin.products.table.available}</CardDescription><CardTitle className="text-3xl">{totalUnits.toLocaleString()}</CardTitle></CardHeader></Card>
@@ -408,6 +441,20 @@ export default function Admin() {
           <AlertDialogFooter><AlertDialogCancel>{t.common.cancel}</AlertDialogCancel><AlertDialogAction onClick={handleDeleteAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t.common.delete}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Customer & Order Modals */}
+      <CreateCustomerModal
+        open={showCreateCustomer}
+        onOpenChange={setShowCreateCustomer}
+        onCreated={() => refetchCustomers()}
+      />
+      <CreateOrderModal
+        open={showCreateOrder}
+        onOpenChange={setShowCreateOrder}
+        customers={customers}
+        products={productsForOrder}
+        onCreated={() => queryClient.invalidateQueries({ queryKey: ["requests"] })}
+      />
     </div>
   );
 }

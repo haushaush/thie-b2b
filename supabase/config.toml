@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.notify-request-status]
 verify_jwt = false
+
+[functions.create-customer]
+verify_jwt = false
