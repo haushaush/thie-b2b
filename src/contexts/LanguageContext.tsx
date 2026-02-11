@@ -17,12 +17,14 @@ const LANGUAGE_STORAGE_KEY = "preferred-language";
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (stored === "en" || stored === "de") {
+    if (stored === "en" || stored === "de" || stored === "fr") {
       return stored;
     }
     // Default to browser language or English
     const browserLang = navigator.language.split("-")[0];
-    return browserLang === "de" ? "de" : "en";
+    if (browserLang === "de") return "de";
+    if (browserLang === "fr") return "fr";
+    return "en";
   });
 
   const setLanguage = useCallback((lang: Language) => {
@@ -32,7 +34,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const t = translations[language];
 
-  const locale = language === "de" ? "de-DE" : "en-US";
+  const locale = language === "de" ? "de-DE" : language === "fr" ? "fr-FR" : "en-US";
 
   const formatNumber = useCallback(
     (num: number, options?: Intl.NumberFormatOptions) => {
