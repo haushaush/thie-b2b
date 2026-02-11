@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Loader2 } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Search, Loader2, Smartphone, Tablet } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { modelOptions } from "@/data/mockProducts";
 import { useCart } from "@/contexts/CartContext";
@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
   const { data: products = [], isLoading, error } = useProducts();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeCategory = searchParams.get("category") || null;
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
@@ -37,6 +39,20 @@ export default function Dashboard() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const categoryTiles = [
+    { key: "iphones", label: t.dashboard.categoryIphones, icon: Smartphone, filter: (p: any) => p.manufacturer === "Apple" && p.name.toLowerCase().includes("iphone") },
+    { key: "samsung", label: t.dashboard.categorySamsung, icon: Smartphone, filter: (p: any) => p.manufacturer === "Samsung" },
+    { key: "tablets", label: t.dashboard.categoryTablets, icon: Tablet, filter: (p: any) => p.name.toLowerCase().includes("ipad") || p.name.toLowerCase().includes("tablet") },
+  ];
+
+  const handleCategoryClick = (key: string) => {
+    if (activeCategory === key) {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category: key });
+    }
+  };
 
   // Extract unique colors from products
   const availableColors = useMemo(() => {
@@ -63,6 +79,12 @@ export default function Dashboard() {
   // Filter products
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      // Category tile filter
+      if (activeCategory) {
+        const tile = categoryTiles.find(t => t.key === activeCategory);
+        if (tile && !tile.filter(product)) return false;
+      }
+
       // Search query
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -114,7 +136,7 @@ export default function Dashboard() {
 
       return true;
     });
-  }, [products, searchQuery, filters]);
+  }, [products, searchQuery, filters, activeCategory]);
 
   const handleSubmitRequest = async (expressShipping: boolean, shippingCost: number) => {
     if (!user || items.length === 0) return;
@@ -244,6 +266,28 @@ export default function Dashboard() {
             availableColors={availableColors}
           />
         </div>
+      </div>
+
+      {/* Category Tiles */}
+      <div className="mb-6 grid grid-cols-3 gap-4">
+        {categoryTiles.map((tile) => {
+          const Icon = tile.icon;
+          const isActive = activeCategory === tile.key;
+          return (
+            <button
+              key={tile.key}
+              onClick={() => handleCategoryClick(tile.key)}
+              className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-colors ${
+                isActive
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-card hover:border-primary/50 hover:bg-accent/50"
+              }`}
+            >
+              <Icon className="h-6 w-6 shrink-0" />
+              <span className="font-semibold">{tile.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Products Grid/List */}
