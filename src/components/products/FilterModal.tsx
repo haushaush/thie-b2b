@@ -109,7 +109,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-md">
+      <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="flex items-center justify-between">
             {t.filter.title}
@@ -121,7 +121,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6 overflow-y-auto pb-20">
+        <div className="mt-6 flex-1 space-y-6 overflow-y-auto pb-20">
           {/* Category - hidden when category tile is active */}
           {!activeCategory && (
             <div className="space-y-3">
