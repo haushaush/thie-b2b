@@ -264,6 +264,7 @@ export default function Dashboard() {
             onFiltersChange={setFilters}
             activeFilterCount={activeFilterCount}
             availableColors={availableColors}
+            activeCategory={activeCategory}
           />
         </div>
       </div>
