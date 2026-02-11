@@ -265,6 +265,7 @@ export default function Dashboard() {
             activeFilterCount={activeFilterCount}
             availableColors={availableColors}
             activeCategory={activeCategory}
+            products={products}
           />
         </div>
       </div>
