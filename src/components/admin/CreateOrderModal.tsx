@@ -100,6 +100,48 @@ function ProductCombobox({ products, value, onSelect, formatCurrency }: {
   );
 }
 
+function CustomerCombobox({ customers, value, onSelect }: {
+  customers: CustomerProfile[];
+  value: string;
+  onSelect: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = customers.find(c => c.user_id === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
+          {selected
+            ? `${selected.company_name || selected.email} ${selected.contact_person ? `(${selected.contact_person})` : ""}`
+            : "Kunde auswählen..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Kunde suchen..." />
+          <CommandList>
+            <CommandEmpty>Kein Kunde gefunden.</CommandEmpty>
+            <CommandGroup>
+              {customers.map(c => (
+                <CommandItem
+                  key={c.user_id}
+                  value={`${c.company_name || ""} ${c.contact_person || ""} ${c.email}`}
+                  onSelect={() => { onSelect(c.user_id); setOpen(false); }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", value === c.user_id ? "opacity-100" : "opacity-0")} />
+                  {c.company_name || c.email} {c.contact_person ? `(${c.contact_person})` : ""}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function CreateOrderModal({ open, onOpenChange, customers, products, onCreated }: CreateOrderModalProps) {
   const { t, formatCurrency } = useLanguage();
   const { toast } = useToast();
@@ -207,18 +249,7 @@ export function CreateOrderModal({ open, onOpenChange, customers, products, onCr
           {/* Customer Selection */}
           <div className="space-y-2">
             <Label>{t.admin.requests.customer} *</Label>
-            <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Kunde auswählen..." />
-              </SelectTrigger>
-              <SelectContent>
-                {customers.map(c => (
-                  <SelectItem key={c.user_id} value={c.user_id}>
-                    {c.company_name || c.email} {c.contact_person ? `(${c.contact_person})` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CustomerCombobox customers={customers} value={selectedCustomerId} onSelect={setSelectedCustomerId} />
           </div>
 
           {/* Order Items */}
