@@ -32,9 +32,10 @@ interface FilterModalProps {
   availableColors?: string[];
   activeCategory?: string | null;
   products?: Array<{ name: string; manufacturer: string }>;
+  className?: string;
 }
 
-export function FilterModal({ filters, onFiltersChange, activeFilterCount, availableColors = [], activeCategory, products = [] }: FilterModalProps) {
+export function FilterModal({ filters, onFiltersChange, activeFilterCount, availableColors = [], activeCategory, products = [], className }: FilterModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
   const { t } = useLanguage();
@@ -99,7 +100,7 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="gap-2" onClick={handleOpen}>
+        <Button variant="outline" className={`gap-2 ${className || ''}`} onClick={handleOpen}>
           <Filter className="h-4 w-4" />
           {t.dashboard.filters}
           {activeFilterCount > 0 && (

@@ -258,7 +258,6 @@ export default function Dashboard() {
           />
         </div>
         <div className="flex w-full sm:w-1/2 items-center gap-2">
-          <ViewToggle value={viewMode} onChange={setViewMode} />
           <FilterModal
             filters={filters}
             onFiltersChange={setFilters}
@@ -266,7 +265,9 @@ export default function Dashboard() {
             availableColors={availableColors}
             activeCategory={activeCategory}
             products={products}
+            className="flex-1"
           />
+          <ViewToggle value={viewMode} onChange={setViewMode} />
         </div>
       </div>
 
