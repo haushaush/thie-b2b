@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, Loader2, Smartphone, Tablet } from "lucide-react";
+import { Search, Loader2, Tablet } from "lucide-react";
+import { AppleLogo } from "@/components/icons/AppleLogo";
+import { SamsungLogo } from "@/components/icons/SamsungLogo";
 import { useProducts } from "@/hooks/useProducts";
 import { modelOptions } from "@/data/mockProducts";
 import { useCart } from "@/contexts/CartContext";
@@ -41,8 +43,8 @@ export default function Dashboard() {
   const { toast } = useToast();
 
   const categoryTiles = [
-    { key: "iphones", label: t.dashboard.categoryIphones, icon: Smartphone, filter: (p: any) => p.manufacturer === "Apple" && p.name.toLowerCase().includes("iphone") },
-    { key: "samsung", label: t.dashboard.categorySamsung, icon: Smartphone, filter: (p: any) => p.manufacturer === "Samsung" },
+    { key: "iphones", label: t.dashboard.categoryIphones, icon: AppleLogo, filter: (p: any) => p.manufacturer === "Apple" && p.name.toLowerCase().includes("iphone") },
+    { key: "samsung", label: t.dashboard.categorySamsung, icon: SamsungLogo, filter: (p: any) => p.manufacturer === "Samsung" },
     { key: "tablets", label: t.dashboard.categoryTablets, icon: Tablet, filter: (p: any) => p.name.toLowerCase().includes("ipad") || p.name.toLowerCase().includes("tablet") },
   ];
 
