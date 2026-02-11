@@ -32,6 +32,12 @@ export function LanguageSwitcher() {
         >
           🇩🇪 {t.language.de}
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setLanguage("fr")}
+          className={language === "fr" ? "bg-accent" : ""}
+        >
+          🇫🇷 {t.language.fr}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
