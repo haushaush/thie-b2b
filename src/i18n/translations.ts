@@ -49,6 +49,8 @@ export const translations = {
       submitRequest: "Submit Request",
       empty: "Your cart is empty",
       emptyDesc: "Add products from the catalog to get started.",
+      shipping: "Shipping",
+      freeShipping: "Free Shipping",
     },
     // Filter Modal
     filter: {
@@ -455,6 +457,8 @@ export const translations = {
       submitRequest: "Anfrage senden",
       empty: "Ihr Warenkorb ist leer",
       emptyDesc: "Fügen Sie Produkte aus dem Katalog hinzu, um zu beginnen.",
+      shipping: "Versand",
+      freeShipping: "Kostenloser Versand",
     },
     // Filter Modal
     filter: {
