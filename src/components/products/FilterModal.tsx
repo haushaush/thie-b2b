@@ -31,9 +31,10 @@ interface FilterModalProps {
   activeFilterCount: number;
   availableColors?: string[];
   activeCategory?: string | null;
+  products?: Array<{ name: string; manufacturer: string }>;
 }
 
-export function FilterModal({ filters, onFiltersChange, activeFilterCount, availableColors = [], activeCategory }: FilterModalProps) {
+export function FilterModal({ filters, onFiltersChange, activeFilterCount, availableColors = [], activeCategory, products = [] }: FilterModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
   const { t } = useLanguage();
@@ -76,23 +77,24 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
     });
   };
 
-  // Map category tiles to modelOptions keys
-  const categoryTileToModels: Record<string, string[]> = {
-    iphones: modelOptions["Smartphones"]?.filter(m => m.toLowerCase().includes("iphone")) || [],
-    samsung: [], // Samsung models would go here when available
-    tablets: modelOptions["Tablets"] || [],
+  // Category tile filter functions (same as Dashboard)
+  const categoryTileFilters: Record<string, (p: { name: string; manufacturer: string }) => boolean> = {
+    iphones: (p) => p.manufacturer === "Apple" && p.name.toLowerCase().includes("iphone"),
+    samsung: (p) => p.manufacturer === "Samsung",
+    tablets: (p) => p.name.toLowerCase().includes("ipad") || p.name.toLowerCase().includes("tablet"),
   };
 
-  // Get available models based on active category tile or selected filter categories
+  // Get available models dynamically from products
   const availableModels = useMemo(() => {
-    if (activeCategory && categoryTileToModels[activeCategory]) {
-      return categoryTileToModels[activeCategory];
+    if (activeCategory && categoryTileFilters[activeCategory]) {
+      const filtered = products.filter(categoryTileFilters[activeCategory]);
+      return [...new Set(filtered.map(p => p.name))].sort();
     }
     const selectedCategories = localFilters.categories.length > 0
       ? localFilters.categories
       : (categoryOptions as readonly string[]);
     return selectedCategories.flatMap((cat) => modelOptions[cat] || []);
-  }, [localFilters.categories, activeCategory]);
+  }, [localFilters.categories, activeCategory, products]);
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
