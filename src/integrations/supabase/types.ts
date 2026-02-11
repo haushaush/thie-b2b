@@ -25,6 +25,7 @@ export type Database = {
           manufacturer: string
           name: string
           price_per_unit: number
+          sku: string | null
           storage: string | null
           updated_at: string
         }
@@ -38,6 +39,7 @@ export type Database = {
           manufacturer: string
           name: string
           price_per_unit: number
+          sku?: string | null
           storage?: string | null
           updated_at?: string
         }
@@ -51,6 +53,7 @@ export type Database = {
           manufacturer?: string
           name?: string
           price_per_unit?: number
+          sku?: string | null
           storage?: string | null
           updated_at?: string
         }
