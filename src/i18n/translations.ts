@@ -20,6 +20,9 @@ export const translations = {
       noResultsDesc: "Try adjusting your search or filter criteria.",
       clearFilters: "Clear Filters",
       showingProducts: "{count} of {total} products",
+      categoryIphones: "iPhones",
+      categorySamsung: "Samsung",
+      categoryTablets: "Tablets",
     },
     // Products
     products: {
@@ -423,6 +426,9 @@ export const translations = {
       noResultsDesc: "Versuchen Sie, Ihre Such- oder Filterkriterien anzupassen.",
       clearFilters: "Filter zurücksetzen",
       showingProducts: "{count} von {total} Produkten",
+      categoryIphones: "iPhones",
+      categorySamsung: "Samsung",
+      categoryTablets: "Tablets",
     },
     // Products
     products: {
