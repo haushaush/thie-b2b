@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Loader2, ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart, Check, ChevronsUpDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +56,49 @@ const STANDARD_SHIPPING_COST = 20;
 const EXPRESS_BASE_COST = 50;
 const EXPRESS_PERCENTAGE = 0.01;
 const FREE_SHIPPING_THRESHOLD = 50;
+
+function ProductCombobox({ products, value, onSelect, formatCurrency }: {
+  products: ProductData[];
+  value: string;
+  onSelect: (id: string) => void;
+  formatCurrency: (n: number) => string;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = products.find(p => p.id === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between font-normal">
+          {selected
+            ? `${selected.name} (${selected.storage}) - ${formatCurrency(selected.price_per_unit)}`
+            : "Produkt wählen..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Produkt suchen..." />
+          <CommandList>
+            <CommandEmpty>Kein Produkt gefunden.</CommandEmpty>
+            <CommandGroup>
+              {products.map(p => (
+                <CommandItem
+                  key={p.id}
+                  value={`${p.name} ${p.storage} ${p.manufacturer}`}
+                  onSelect={() => { onSelect(p.id); setOpen(false); }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", value === p.id ? "opacity-100" : "opacity-0")} />
+                  {p.name} ({p.storage}) - {formatCurrency(p.price_per_unit)}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export function CreateOrderModal({ open, onOpenChange, customers, products, onCreated }: CreateOrderModalProps) {
   const { t, formatCurrency } = useLanguage();
@@ -181,18 +227,12 @@ export function CreateOrderModal({ open, onOpenChange, customers, products, onCr
             {orderItems.map((item, index) => (
               <div key={index} className="flex items-center gap-2 rounded-lg border p-3">
                 <div className="flex-1">
-                  <Select value={item.productId} onValueChange={(v) => updateItem(index, "productId", v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Produkt wählen..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {products.map(p => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name} ({p.storage}) - {formatCurrency(p.price_per_unit)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <ProductCombobox
+                    products={products}
+                    value={item.productId}
+                    onSelect={(v) => updateItem(index, "productId", v)}
+                    formatCurrency={formatCurrency}
+                  />
                 </div>
                 <Input
                   type="number"
