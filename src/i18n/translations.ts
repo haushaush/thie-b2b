@@ -51,6 +51,7 @@ export const translations = {
       emptyDesc: "Add products from the catalog to get started.",
       shipping: "Shipping",
       freeShipping: "Free Shipping",
+      reservationTimer: "Products reserved for {time}",
     },
     // Filter Modal
     filter: {
@@ -460,6 +461,7 @@ export const translations = {
       emptyDesc: "Fügen Sie Produkte aus dem Katalog hinzu, um zu beginnen.",
       shipping: "Versand",
       freeShipping: "Kostenloser Versand",
+      reservationTimer: "Produkte reserviert für {time}",
     },
     // Filter Modal
     filter: {
@@ -869,6 +871,7 @@ export const translations = {
       emptyDesc: "Ajoutez des produits du catalogue pour commencer.",
       shipping: "Livraison",
       freeShipping: "Livraison gratuite",
+      reservationTimer: "Produits réservés pour {time}",
     },
     // Filter Modal
     filter: {
