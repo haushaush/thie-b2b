@@ -270,19 +270,22 @@ export default function Dashboard() {
             products={products}
             className="flex-1"
           />
-          {activeFilterCount > 0 && (
+          {(activeFilterCount > 0 || activeCategory) && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setFilters({
-                categories: [],
-                models: [],
-                storage: [],
-                grades: [],
-                colors: [],
-                batteryRange: [0, 100],
-                priceRange: [0, 2000],
-              })}
+              onClick={() => {
+                setFilters({
+                  categories: [],
+                  models: [],
+                  storage: [],
+                  grades: [],
+                  colors: [],
+                  batteryRange: [0, 100],
+                  priceRange: [0, 2000],
+                });
+                setSearchParams({});
+              }}
               className="shrink-0 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4 mr-1" />
