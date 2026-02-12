@@ -373,34 +373,34 @@ export default function Admin() {
       {/* Admin Action Cards */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Card
-          className="cursor-pointer transition-colors hover:border-primary/50 hover:bg-accent/50"
+          className="cursor-pointer border-primary bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
           onClick={() => setShowCreateCustomer(true)}
         >
           <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
+            <CardDescription className="flex items-center gap-2 text-primary-foreground/70">
               <UserPlus className="h-4 w-4" />
               {t.admin.customers.createTitle}
             </CardDescription>
-            <CardTitle className="text-3xl">
+            <CardTitle className="text-3xl text-primary-foreground">
               <div className="flex items-center gap-2">
-                <Users className="h-6 w-6 text-muted-foreground" />
+                <Users className="h-6 w-6 text-primary-foreground/70" />
                 {customers.length}
               </div>
             </CardTitle>
           </CardHeader>
         </Card>
         <Card
-          className="cursor-pointer transition-colors hover:border-primary/50 hover:bg-accent/50"
+          className="cursor-pointer border-primary bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
           onClick={() => setShowCreateOrder(true)}
         >
           <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2">
+            <CardDescription className="flex items-center gap-2 text-primary-foreground/70">
               <ShoppingCart className="h-4 w-4" />
               {t.admin.orders.createTitle}
             </CardDescription>
-            <CardTitle className="text-3xl">
+            <CardTitle className="text-3xl text-primary-foreground">
               <div className="flex items-center gap-2">
-                <FileSpreadsheet className="h-6 w-6 text-muted-foreground" />
+                <FileSpreadsheet className="h-6 w-6 text-primary-foreground/70" />
                 {requestStats.total}
               </div>
             </CardTitle>
