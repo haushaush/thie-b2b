@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, Loader2, Tablet } from "lucide-react";
+import { Search, Loader2, Tablet, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AppleLogo } from "@/components/icons/AppleLogo";
 import { SamsungLogo } from "@/components/icons/SamsungLogo";
 import { useProducts } from "@/hooks/useProducts";
@@ -269,6 +270,25 @@ export default function Dashboard() {
             products={products}
             className="flex-1"
           />
+          {activeFilterCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFilters({
+                categories: [],
+                models: [],
+                storage: [],
+                grades: [],
+                colors: [],
+                batteryRange: [0, 100],
+                priceRange: [0, 2000],
+              })}
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4 mr-1" />
+              {t.dashboard.clearFilters}
+            </Button>
+          )}
           <ViewToggle value={viewMode} onChange={setViewMode} />
         </div>
       </div>
