@@ -4,7 +4,6 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -23,8 +22,7 @@ interface SubmitModalProps {
 }
 
 const STANDARD_SHIPPING_COST = 20;
-const EXPRESS_BASE_COST = 50;
-const EXPRESS_PERCENTAGE = 0.01;
+const EXPRESS_FLAT_COST = 50;
 const FREE_SHIPPING_THRESHOLD = 50;
 
 export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: SubmitModalProps) {
@@ -36,7 +34,7 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
   const shippingDetails = useMemo(() => {
     const isFreeShipping = totalDevices >= FREE_SHIPPING_THRESHOLD;
     const standardCost = isFreeShipping ? 0 : STANDARD_SHIPPING_COST;
-    const expressCost = EXPRESS_BASE_COST + (totalAmount * EXPRESS_PERCENTAGE);
+    const expressCost = EXPRESS_FLAT_COST;
     const selectedShippingCost = expressShipping ? expressCost : standardCost;
     const grandTotal = totalAmount + selectedShippingCost;
 
@@ -98,9 +96,22 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
             {t.shipping.title}
           </div>
 
-          {/* Free Shipping Info */}
-          <div className={`rounded-lg p-3 ${shippingDetails.isFreeShipping ? 'bg-success/10 border border-success/30' : 'bg-muted/50'}`}>
-            <div className="flex items-center gap-2">
+          {/* Standard Shipping Button */}
+          <button
+            type="button"
+            onClick={() => setExpressShipping(false)}
+            className={`w-full rounded-lg p-3 border text-left transition-colors ${
+              !expressShipping
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
+                !expressShipping ? "border-primary" : "border-muted-foreground"
+              }`}>
+                {!expressShipping && <div className="h-2 w-2 rounded-full bg-primary" />}
+              </div>
               <Package className="h-4 w-4 text-muted-foreground" />
               <div className="flex-1">
                 <p className="text-sm font-medium">
@@ -110,36 +121,40 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
                   {t.shipping.freeShippingDesc}
                 </p>
               </div>
-              <span className="font-bold">
+              <span className="font-bold text-sm">
                 {shippingDetails.isFreeShipping ? formatCurrency(0) : formatCurrency(STANDARD_SHIPPING_COST)}
               </span>
             </div>
-          </div>
+          </button>
 
-          {/* Express Shipping Option */}
-          <div className={`rounded-lg p-3 border ${expressShipping ? 'border-primary bg-primary/5' : 'border-border'}`}>
+          {/* Express Shipping Button */}
+          <button
+            type="button"
+            onClick={() => setExpressShipping(true)}
+            className={`w-full rounded-lg p-3 border text-left transition-colors ${
+              expressShipping
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
+            }`}
+          >
             <div className="flex items-center gap-3">
-              <Checkbox
-                id="expressShipping"
-                checked={expressShipping}
-                onCheckedChange={(checked) => setExpressShipping(checked === true)}
-              />
-              <Label htmlFor="expressShipping" className="flex-1 cursor-pointer">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-warning" />
-                  <div>
-                    <p className="text-sm font-medium">{t.shipping.expressShipping}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {t.shipping.expressShippingDesc}
-                    </p>
-                  </div>
-                </div>
-              </Label>
+              <div className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
+                expressShipping ? "border-primary" : "border-muted-foreground"
+              }`}>
+                {expressShipping && <div className="h-2 w-2 rounded-full bg-primary" />}
+              </div>
+              <Zap className="h-4 w-4 text-warning" />
+              <div className="flex-1">
+                <p className="text-sm font-medium">{t.shipping.expressShipping}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t.shipping.expressShippingDesc}
+                </p>
+              </div>
               <span className="font-bold text-sm">
-                +{formatCurrency(shippingDetails.expressCost)}
+                {formatCurrency(EXPRESS_FLAT_COST)}
               </span>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Totals */}
@@ -156,7 +171,7 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
             <span className="text-muted-foreground">{t.shipping.shippingCost}</span>
             <span className="font-medium">
               {expressShipping 
-                ? formatCurrency(shippingDetails.expressCost)
+                ? formatCurrency(EXPRESS_FLAT_COST)
                 : (shippingDetails.isFreeShipping ? t.shipping.freeShipping : formatCurrency(STANDARD_SHIPPING_COST))
               }
             </span>
