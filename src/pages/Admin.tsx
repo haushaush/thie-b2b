@@ -370,16 +370,42 @@ export default function Admin() {
         <p className="mt-1 text-muted-foreground">{t.admin.description}</p>
       </div>
 
-      {/* Admin Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <Button onClick={() => setShowCreateCustomer(true)}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          {t.admin.customers.createTitle}
-        </Button>
-        <Button variant="outline" onClick={() => setShowCreateOrder(true)}>
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          {t.admin.orders.createTitle}
-        </Button>
+      {/* Admin Action Cards */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card
+          className="cursor-pointer transition-colors hover:border-primary/50 hover:bg-accent/50"
+          onClick={() => setShowCreateCustomer(true)}
+        >
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-2">
+              <UserPlus className="h-4 w-4" />
+              {t.admin.customers.createTitle}
+            </CardDescription>
+            <CardTitle className="text-3xl">
+              <div className="flex items-center gap-2">
+                <Users className="h-6 w-6 text-muted-foreground" />
+                {customers.length}
+              </div>
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card
+          className="cursor-pointer transition-colors hover:border-primary/50 hover:bg-accent/50"
+          onClick={() => setShowCreateOrder(true)}
+        >
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4" />
+              {t.admin.orders.createTitle}
+            </CardDescription>
+            <CardTitle className="text-3xl">
+              <div className="flex items-center gap-2">
+                <FileSpreadsheet className="h-6 w-6 text-muted-foreground" />
+                {requestStats.total}
+              </div>
+            </CardTitle>
+          </CardHeader>
+        </Card>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
