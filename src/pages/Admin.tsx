@@ -377,13 +377,13 @@ export default function Admin() {
           onClick={() => setShowCreateCustomer(true)}
         >
           <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2 text-primary-foreground/70">
-              <UserPlus className="h-4 w-4" />
+            <CardDescription className="flex items-center gap-2 text-lg font-semibold text-white">
+              <UserPlus className="h-5 w-5" />
               {t.admin.customers.createTitle}
             </CardDescription>
-            <CardTitle className="text-3xl text-primary-foreground">
+            <CardTitle className="text-4xl text-white">
               <div className="flex items-center gap-2">
-                <Users className="h-6 w-6 text-primary-foreground/70" />
+                <Users className="h-7 w-7 text-white/80" />
                 {customers.length}
               </div>
             </CardTitle>
@@ -394,13 +394,13 @@ export default function Admin() {
           onClick={() => setShowCreateOrder(true)}
         >
           <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2 text-primary-foreground/70">
-              <ShoppingCart className="h-4 w-4" />
+            <CardDescription className="flex items-center gap-2 text-lg font-semibold text-white">
+              <ShoppingCart className="h-5 w-5" />
               {t.admin.orders.createTitle}
             </CardDescription>
-            <CardTitle className="text-3xl text-primary-foreground">
+            <CardTitle className="text-4xl text-white">
               <div className="flex items-center gap-2">
-                <FileSpreadsheet className="h-6 w-6 text-primary-foreground/70" />
+                <FileSpreadsheet className="h-7 w-7 text-white/80" />
                 {requestStats.total}
               </div>
             </CardTitle>
