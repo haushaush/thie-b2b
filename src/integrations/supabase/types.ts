@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      cart_reservations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          product_id: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          product_id: string
+          quantity: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_reservations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           available_units: number
@@ -212,6 +247,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      release_user_reservations: { Args: never; Returns: undefined }
+      reserve_product: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: undefined
+      }
+      reset_reservation_timer: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"

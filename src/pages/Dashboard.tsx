@@ -203,7 +203,7 @@ export default function Dashboard() {
       }
 
       setIsSubmitModalOpen(false);
-      clearCart();
+      clearCart(true); // Skip release - units are now part of the order
       
       toast({
         title: t.submit.success,
