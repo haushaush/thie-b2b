@@ -376,34 +376,28 @@ export default function Admin() {
           className="cursor-pointer border-primary bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
           onClick={() => setShowCreateCustomer(true)}
         >
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2 text-lg font-semibold text-white">
-              <UserPlus className="h-5 w-5" />
-              {t.admin.customers.createTitle}
-            </CardDescription>
-            <CardTitle className="text-4xl text-white">
-              <div className="flex items-center gap-2">
-                <Users className="h-7 w-7 text-white/80" />
-                {customers.length}
-              </div>
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardDescription className="text-lg font-semibold text-white">
+                {t.admin.customers.createTitle}
+              </CardDescription>
+              <CardTitle className="text-4xl text-white">{customers.length}</CardTitle>
+            </div>
+            <UserPlus className="h-8 w-8 text-white/80" />
           </CardHeader>
         </Card>
         <Card
           className="cursor-pointer border-primary bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
           onClick={() => setShowCreateOrder(true)}
         >
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-2 text-lg font-semibold text-white">
-              <ShoppingCart className="h-5 w-5" />
-              {t.admin.orders.createTitle}
-            </CardDescription>
-            <CardTitle className="text-4xl text-white">
-              <div className="flex items-center gap-2">
-                <FileSpreadsheet className="h-7 w-7 text-white/80" />
-                {requestStats.total}
-              </div>
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardDescription className="text-lg font-semibold text-white">
+                {t.admin.orders.createTitle}
+              </CardDescription>
+              <CardTitle className="text-4xl text-white">{requestStats.total}</CardTitle>
+            </div>
+            <ShoppingCart className="h-8 w-8 text-white/80" />
           </CardHeader>
         </Card>
       </div>
