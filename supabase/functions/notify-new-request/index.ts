@@ -117,68 +117,101 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate items HTML
     const itemsHtml = items
       .map(
-        (item) => `
-      <tr>
-        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.product_name}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${item.price_per_unit.toFixed(2)} €</td>
-      </tr>
-    `,
+        (item) =>
+          `<li>${item.quantity}x ${item.product_name}</li>`
       )
       .join("");
 
     const baseUrl = "https://thie-b2b.lovable.app";
+    const shortId = requestId.slice(0, 8).toUpperCase();
 
-    // Send emails to all admins - don't expose email addresses in response
+    const customerName = companyName || userEmail;
+
+    const emailHtmlTemplate = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neue Geräteanfrage - Thie B2B Portal</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: Arial, Helvetica, sans-serif;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f7f6; padding: 20px 0;">
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+<!-- Header -->
+<tr>
+<td align="center" style="background-color: #009c77; padding: 30px 20px;">
+<h1 style="color: #ffffff; font-size: 24px; margin: 0; font-weight: bold;">Thie B2B Portal – Systeminfo</h1>
+</td>
+</tr>
+
+<!-- Body -->
+<tr>
+<td style="padding: 40px 30px; color: #333333; line-height: 1.6; font-size: 16px;">
+<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Neue Geräteanfrage eingegangen</h2>
+
+<p style="margin: 0 0 15px 0;">Hallo Admin-Team,</p>
+
+<p style="margin: 0 0 15px 0;">ein Kunde hat soeben eine neue Anfrage für refurbished Hardware über das B2B-Portal eingereicht. Bitte prüft die Bestände und bearbeitet die Anfrage zeitnah.</p>
+
+<div style="background-color: #f9f9f9; border-left: 4px solid #009c77; padding: 15px; margin-bottom: 20px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 15px;">
+<tr>
+<td width="35%" style="padding-bottom: 8px; color: #777777;"><strong>Unternehmen:</strong></td>
+<td width="65%" style="padding-bottom: 8px;">${customerName}</td>
+</tr>
+<tr>
+<td style="padding-bottom: 8px; color: #777777;"><strong>Ansprechpartner:</strong></td>
+<td style="padding-bottom: 8px;">${userEmail}</td>
+</tr>
+<tr>
+<td style="padding-bottom: 15px; color: #777777;"><strong>Anfrage-ID:</strong></td>
+<td style="padding-bottom: 15px;">#${shortId}</td>
+</tr>
+</table>
+
+<p style="margin: 0 0 10px 0; border-top: 1px solid #eeeeee; padding-top: 15px;"><strong>Gewünschte Hardware:</strong></p>
+<ul style="margin: 0; padding-left: 20px; color: #555555;">
+${itemsHtml}
+</ul>
+</div>
+
+<p style="margin: 0 0 25px 0;">Loggt euch ins System ein, um die Details einzusehen, Bestände zu matchen und dem Kunden eine Rückmeldung zu geben.</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<a href="${baseUrl}/requests" style="background-color: #009c77; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 4px; font-weight: bold; display: inline-block;">Anfrage im Portal bearbeiten</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color: #eeeeee; padding: 25px 30px; color: #777777; font-size: 13px; text-align: center; line-height: 1.5;">
+<p style="margin: 0 0 10px 0;">Automatisch generierte Systemnachricht des Thie B2B Portals.</p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
+    // Send emails to all admins
     const emailPromises = adminProfiles.map(async (admin) => {
       try {
         await resend.emails.send({
           from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [admin.email],
-          subject: `Neue Geräteanfrage von ${companyName || userEmail}`,
-          html: `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h1 style="color: #333; margin-bottom: 20px;">Neue Geräteanfrage eingegangen</h1>
-              
-              <div style="background-color: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                <p style="margin: 0 0 8px 0;"><strong>Kunde:</strong> ${companyName || "N/A"}</p>
-                <p style="margin: 0 0 8px 0;"><strong>E-Mail:</strong> ${userEmail}</p>
-                <p style="margin: 0;"><strong>Anfrage-ID:</strong> ${requestId.slice(0, 8)}...</p>
-              </div>
-
-              <h2 style="color: #333; font-size: 18px; margin-bottom: 12px;">Bestellte Geräte</h2>
-              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <thead>
-                  <tr style="background-color: #f5f5f5;">
-                    <th style="padding: 8px; text-align: left;">Produkt</th>
-                    <th style="padding: 8px; text-align: center;">Anzahl</th>
-                    <th style="padding: 8px; text-align: right;">Preis/Stück</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${itemsHtml}
-                </tbody>
-                <tfoot>
-                  <tr style="font-weight: bold; background-color: #f9f9f9;">
-                    <td style="padding: 12px 8px;">Gesamt</td>
-                    <td style="padding: 12px 8px; text-align: center;">${totalDevices} Geräte</td>
-                    <td style="padding: 12px 8px; text-align: right;">${totalAmount.toFixed(2)} €</td>
-                  </tr>
-                </tfoot>
-              </table>
-
-              <div style="margin: 30px 0;">
-                <a href="${baseUrl}/requests" 
-                   style="background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; margin-right: 10px;">
-                  Anfragen verwalten
-                </a>
-              </div>
-
-              <p style="color: #999; font-size: 14px;">
-                Diese Nachricht wurde automatisch generiert.
-              </p>
-            </div>
-          `,
+          subject: `Neue Geräteanfrage #${shortId} von ${customerName}`,
+          html: emailHtmlTemplate,
         });
         console.log("Email sent to admin successfully");
         return { success: true };
