@@ -9,8 +9,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface ProductInfo {
+  name: string;
+  quantity: number;
+  grade?: string;
+}
+
 interface NotifyNewProductsRequest {
   productCount: number;
+  products?: ProductInfo[];
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -81,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Admin verified:", userId);
     // ============ END AUTHENTICATION CHECK ============
 
-    const { productCount }: NotifyNewProductsRequest = await req.json();
+    const { productCount, products }: NotifyNewProductsRequest = await req.json();
 
     // Fetch all user profiles using service role
     const { data: profiles, error: profilesError } = await supabaseService.from("profiles").select("email, company_name");
@@ -101,35 +108,100 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending notification to ${profiles.length} users about ${productCount} new products`);
 
-    // Send emails to all users - don't expose email addresses in response
+    const baseUrl = "https://thie-b2b.lovable.app";
+
+    // Build product list HTML
+    const productListHtml = products && products.length > 0
+      ? products.slice(0, 10).map(p => 
+          `<p style="margin: 0 0 8px 0; color: #555555;">${p.quantity}x ${p.name}${p.grade ? ` (Zustand: ${p.grade})` : ""}</p>`
+        ).join("\n")
+      : `<p style="margin: 0; color: #555555;">${productCount} neue Geräte verfügbar</p>`;
+
+    // Send emails to all users
     const emailPromises = profiles.map(async (profile) => {
       try {
+        const emailHtml = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neue Geräte - Thie B2B Portal</title>
+<style>
+body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+body { margin: 0; padding: 0; width: 100% !important; font-family: Arial, Helvetica, sans-serif; background-color: #f4f7f6; }
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f7f6; padding: 20px 0;">
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+<tr>
+<td align="center" style="background-color: #009c77; padding: 30px 20px;">
+<h1 style="color: #ffffff; font-size: 24px; margin: 0; font-weight: bold;">Thie B2B Portal</h1>
+</td>
+</tr>
+
+<tr>
+<td style="padding: 40px 30px; color: #333333; line-height: 1.6; font-size: 16px;">
+<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Frische refurbished Hardware auf Lager!</h2>
+
+<p style="margin: 0 0 15px 0;">Hallo${profile.company_name ? ` ${profile.company_name}` : ""},</p>
+
+<p style="margin: 0 0 15px 0;">wir haben soeben unseren Bestand im B2B-Portal für Sie aufgefüllt. Ab sofort stehen Ihnen wieder neue, hochwertig aufbereitete IT-Geräte zur Verfügung.</p>
+
+<div style="background-color: #f9f9f9; border-left: 4px solid #009c77; padding: 15px; margin-bottom: 20px;">
+<p style="margin: 0 0 10px 0;"><strong>Neu eingetroffen:</strong></p>
+${productListHtml}
+<div style="margin-top: 15px; background-color: #e8f5e9; padding: 10px; border-radius: 4px;">
+<p style="margin: 0; font-size: 14px; color: #555555;"><strong>Tipp:</strong> Schnell sein lohnt sich. Die Vergabe erfolgt nach Bestelleingang im Portal.</p>
+</div>
+</div>
+
+<p style="margin: 0 0 25px 0;">Loggen Sie sich ein, um die genauen Spezifikationen der Geräte zu sehen und direkt eine neue Bedarfsanfrage für Ihr Unternehmen zu stellen.</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<a href="${baseUrl}/dashboard" style="background-color: #009c77; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 4px; font-weight: bold; display: inline-block;">Jetzt Bestand im Portal prüfen</a>
+</td>
+</tr>
+</table>
+
+<p style="margin: 25px 0 0 0;">Mit nachhaltigen Grüßen,<br>Ihr Team der Thie GmbH</p>
+</td>
+</tr>
+
+<tr>
+<td style="background-color: #eeeeee; padding: 25px 30px; color: #777777; font-size: 13px; text-align: center; line-height: 1.5;">
+<p style="margin: 0 0 5px 0;">Thie GmbH</p>
+<p style="margin: 0 0 5px 0;">Navarrastraße 15</p>
+<p style="margin: 0 0 10px 0;">33106 Paderborn</p>
+<p style="margin: 0 0 5px 0;">Telefon: 05251 5438 006</p>
+<p style="margin: 0 0 10px 0;">E-Mail: <a href="mailto:kontakt@thie-eco.de" style="color: #009c77; text-decoration: none;">kontakt@thie-eco.de</a></p>
+<p style="margin: 0 0 10px 0;">
+<a href="${baseUrl}/imprint" style="color: #009c77; text-decoration: none;">Impressum</a> |
+<a href="${baseUrl}/privacy" style="color: #009c77; text-decoration: none;">Datenschutz</a>
+</p>
+<p style="margin: 0; font-size: 12px;">Sie erhalten diese E-Mail, da Sie Benachrichtigungen für neue Geräte im Thie B2B-Portal aktiviert haben.</p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
         await resend.emails.send({
           from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [profile.email],
-          subject: "Neue Produkte verfügbar!",
-          html: `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h1 style="color: #333; margin-bottom: 20px;">Neue Produkte im Katalog!</h1>
-              <p style="color: #666; font-size: 16px; line-height: 1.6;">
-                Hallo${profile.company_name ? ` ${profile.company_name}` : ""},
-              </p>
-              <p style="color: #666; font-size: 16px; line-height: 1.6;">
-                Wir haben <strong>${productCount} neue Produkte</strong> zu unserem Katalog hinzugefügt. 
-                Schauen Sie sich die neuesten Angebote an!
-              </p>
-              <div style="margin: 30px 0;">
-                <a href="https://thie-b2b.lovable.app/dashboard" 
-                   style="background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
-                  Katalog ansehen
-                </a>
-              </div>
-              <p style="color: #999; font-size: 14px;">
-                Mit freundlichen Grüßen,<br>
-                Das Thie Team
-              </p>
-            </div>
-          `,
+          subject: "🆕 Frische refurbished Hardware auf Lager!",
+          html: emailHtml,
         });
         console.log("Email sent successfully");
         return { success: true };
