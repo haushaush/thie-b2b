@@ -199,7 +199,25 @@ export default function Dashboard() {
         console.log("Admin notification sent successfully");
       } catch (notifyError) {
         console.error("Failed to send admin notification:", notifyError);
-        // Don't fail the request if notification fails
+      }
+
+      // Send confirmation email to the customer
+      try {
+        await supabase.functions.invoke("notify-request-confirmation", {
+          body: {
+            requestId: request.id,
+            userEmail: user.email,
+            companyName: user.companyName,
+            contactPerson: user.contactPerson,
+            items: requestItems.map(item => ({
+              product_name: item.product_name,
+              quantity: item.quantity,
+            })),
+          },
+        });
+        console.log("Customer confirmation email sent successfully");
+      } catch (notifyError) {
+        console.error("Failed to send customer confirmation:", notifyError);
       }
 
       setIsSubmitModalOpen(false);
