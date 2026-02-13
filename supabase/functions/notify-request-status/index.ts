@@ -91,69 +91,100 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Processing request status notification:", { requestId, userEmail, status });
 
     const isApproved = status === "approved";
-    const statusText = isApproved ? "genehmigt" : "abgelehnt";
-    const statusColor = isApproved ? "#22c55e" : "#ef4444";
+    const statusText = isApproved ? "Genehmigt ✅" : "Abgelehnt ❌";
+    const statusColor = isApproved ? "#28a745" : "#dc3545";
     const statusEmoji = isApproved ? "✅" : "❌";
 
     const baseUrl = "https://thie-b2b.lovable.app";
 
+    const messageBlock = adminMessage
+      ? `<p style="margin: 10px 0 0 0; font-style: italic; color: #555555;">"${adminMessage}"</p>`
+      : "";
+
+    const messageSection = adminMessage
+      ? `<p style="margin: 15px 0 0 0; font-size: 14px;"><strong>Nachricht unseres Teams:</strong></p>${messageBlock}`
+      : "";
+
+    const emailHtml = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statusupdate - Thie B2B Portal</title>
+<style>
+body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+body { margin: 0; padding: 0; width: 100% !important; font-family: Arial, Helvetica, sans-serif; background-color: #f4f7f6; }
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f7f6; padding: 20px 0;">
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+<tr>
+<td align="center" style="background-color: #009c77; padding: 30px 20px;">
+<h1 style="color: #ffffff; font-size: 24px; margin: 0; font-weight: bold;">Thie B2B Portal</h1>
+</td>
+</tr>
+
+<tr>
+<td style="padding: 40px 30px; color: #333333; line-height: 1.6; font-size: 16px;">
+<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Statusupdate zu Ihrer Anfrage</h2>
+
+<p style="margin: 0 0 15px 0;">Hallo${companyName ? ` ${companyName}` : ""},</p>
+
+<p style="margin: 0 0 15px 0;">unser Team hat Ihre aktuelle Anfrage (Nummer: #${requestId.slice(0, 8)}) für refurbished Hardware geprüft. Es gibt Neuigkeiten zum Bearbeitungsstatus:</p>
+
+<div style="background-color: #f9f9f9; border-left: 4px solid ${statusColor}; padding: 15px; margin-bottom: 20px;">
+<p style="margin: 0; font-size: 15px;">
+<strong>Aktueller Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>
+</p>
+${messageSection}
+</div>
+
+<p style="margin: 0 0 25px 0;">Alle weiteren Details, wie z. B. angepasste Stückzahlen, mögliche Alternativgeräte oder die nächsten Schritte zur Auslieferung, finden Sie direkt in unserem B2B-Portal. Bei Rückfragen stehen wir Ihnen jederzeit gerne zur Verfügung.</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<a href="${baseUrl}/requests" style="background-color: #009c77; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 4px; font-weight: bold; display: inline-block;">Details im Portal ansehen</a>
+</td>
+</tr>
+</table>
+
+<p style="margin: 25px 0 0 0;">Mit nachhaltigen Grüßen,<br>Ihr Team der Thie GmbH</p>
+</td>
+</tr>
+
+<tr>
+<td style="background-color: #eeeeee; padding: 25px 30px; color: #777777; font-size: 13px; text-align: center; line-height: 1.5;">
+<p style="margin: 0 0 5px 0;">Thie GmbH</p>
+<p style="margin: 0 0 5px 0;">Navarrastraße 15</p>
+<p style="margin: 0 0 10px 0;">33106 Paderborn</p>
+<p style="margin: 0 0 5px 0;">Telefon: 05251 5438 006</p>
+<p style="margin: 0 0 10px 0;">E-Mail: <a href="mailto:kontakt@thie-eco.de" style="color: #009c77; text-decoration: none;">kontakt@thie-eco.de</a></p>
+<p style="margin: 0;">
+<a href="${baseUrl}/imprint" style="color: #009c77; text-decoration: none;">Impressum</a> |
+<a href="${baseUrl}/privacy" style="color: #009c77; text-decoration: none;">Datenschutz</a>
+</p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
     const emailResult = await resend.emails.send({
       from: "THIE B2B <onboarding@updates.haushhaush.de>",
       to: [userEmail],
-      subject: `${statusEmoji} Ihre Anfrage wurde ${statusText}`,
-      html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #333; margin-bottom: 20px;">
-            Ihre Anfrage wurde ${statusText}
-          </h1>
-          
-          <p style="color: #666; font-size: 16px; line-height: 1.6;">
-            Hallo${companyName ? ` ${companyName}` : ""},
-          </p>
-          
-          <p style="color: #666; font-size: 16px; line-height: 1.6;">
-            Ihre Geräteanfrage (ID: ${requestId.slice(0, 8)}...) wurde 
-            <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span>.
-          </p>
-
-          ${
-            adminMessage
-              ? `
-            <div style="background-color: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${statusColor};">
-              <p style="margin: 0 0 8px 0; font-weight: bold; color: #333;">Nachricht vom Admin:</p>
-              <p style="margin: 0; color: #666;">${adminMessage}</p>
-            </div>
-          `
-              : ""
-          }
-
-          ${
-            isApproved
-              ? `
-            <p style="color: #666; font-size: 16px; line-height: 1.6;">
-              Wir werden uns in Kürze mit Ihnen in Verbindung setzen, um die weiteren Schritte zu besprechen.
-            </p>
-          `
-              : `
-            <p style="color: #666; font-size: 16px; line-height: 1.6;">
-              Falls Sie Fragen haben oder eine neue Anfrage stellen möchten, besuchen Sie bitte unser Portal.
-            </p>
-          `
-          }
-
-          <div style="margin: 30px 0;">
-            <a href="${baseUrl}/requests" 
-               style="background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
-              Anfragen ansehen
-            </a>
-          </div>
-
-          <p style="color: #999; font-size: 14px;">
-            Mit freundlichen Grüßen,<br>
-            Das THIE Team
-          </p>
-        </div>
-      `,
+      subject: `${statusEmoji} Statusupdate zu Ihrer Anfrage #${requestId.slice(0, 8)}`,
+      html: emailHtml,
     });
 
     console.log("Email sent successfully");
