@@ -133,21 +133,25 @@ const handler = async (req: Request): Promise<Response> => {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neue Geräteanfrage - Thie B2B Portal</title>
+<style>
+body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+body { margin: 0; padding: 0; width: 100% !important; font-family: Arial, Helvetica, sans-serif; background-color: #f4f7f6; }
+</style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: Arial, Helvetica, sans-serif;">
+<body style="margin: 0; padding: 0; background-color: #f4f7f6;">
 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f7f6; padding: 20px 0;">
 <tr>
 <td align="center">
 <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
 
-<!-- Header -->
 <tr>
 <td align="center" style="background-color: #009c77; padding: 30px 20px;">
 <h1 style="color: #ffffff; font-size: 24px; margin: 0; font-weight: bold;">Thie B2B Portal – Systeminfo</h1>
 </td>
 </tr>
 
-<!-- Body -->
 <tr>
 <td style="padding: 40px 30px; color: #333333; line-height: 1.6; font-size: 16px;">
 <h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Neue Geräteanfrage eingegangen</h2>
@@ -190,7 +194,6 @@ ${itemsHtml}
 </td>
 </tr>
 
-<!-- Footer -->
 <tr>
 <td style="background-color: #eeeeee; padding: 25px 30px; color: #777777; font-size: 13px; text-align: center; line-height: 1.5;">
 <p style="margin: 0 0 10px 0;">Automatisch generierte Systemnachricht des Thie B2B Portals.</p>
