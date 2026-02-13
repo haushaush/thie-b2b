@@ -325,7 +325,14 @@ export default function Admin() {
       
       // Send notification email to all users about new products (fire and forget)
       supabase.functions.invoke("notify-new-products", {
-        body: { productCount: parsedProducts.length },
+        body: {
+          productCount: parsedProducts.length,
+          products: parsedProducts.slice(0, 10).map(p => ({
+            name: p.name,
+            quantity: p.available_units,
+            grade: p.grade || undefined,
+          })),
+        },
       }).then(() => {
         console.log("New product notification sent successfully");
       }).catch((notifyError) => {
