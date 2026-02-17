@@ -100,11 +100,11 @@ export function FilterModal({ filters, onFiltersChange, activeFilterCount, avail
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className={`gap-2 ${className || ''}`} onClick={handleOpen}>
+        <Button className={`gap-2 bg-[#009c77] text-white hover:bg-[#008568] ${className || ''}`} onClick={handleOpen}>
           <Filter className="h-4 w-4" />
           {t.dashboard.filters}
           {activeFilterCount > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs text-white">
               {activeFilterCount}
             </span>
           )}
