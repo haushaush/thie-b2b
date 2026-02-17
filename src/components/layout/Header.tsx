@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, LayoutDashboard, FileText, User, LogOut, Settings, Users } from "lucide-react";
+import { Menu, X, LayoutDashboard, FileText, User, LogOut, Settings, Users, Package } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -28,6 +28,7 @@ export function Header() {
   const adminNavigationItems = [
     { name: t.nav.admin, href: "/admin", icon: Settings },
     { name: t.nav.customers, href: "/kunden", icon: Users },
+    { name: t.nav.orders, href: "/orders", icon: Package },
   ];
 
   const allNavItems = isAdmin 
