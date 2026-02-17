@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle, UserPlus, ShoppingCart, Users } from "lucide-react";
+import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle, UserPlus, ShoppingCart, Users, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -29,6 +29,8 @@ import { ProductsTable } from "@/components/admin/ProductsTable";
 import { ProductData } from "@/components/admin/ProductEditModal";
 import { CreateCustomerModal } from "@/components/admin/CreateCustomerModal";
 import { CreateOrderModal } from "@/components/admin/CreateOrderModal";
+import { CustomersTab } from "@/components/admin/CustomersTab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 
@@ -85,7 +87,7 @@ export default function Admin() {
   });
 
   // Fetch customers (profiles)
-  const { data: customers = [], refetch: refetchCustomers } = useQuery({
+  const { data: customers = [], isLoading: isLoadingCustomers, refetch: refetchCustomers } = useQuery({
     queryKey: ["admin-customers"],
     queryFn: async () => {
       const { data, error } = await supabase.from("profiles").select("user_id, email, company_name, contact_person, contact_phone").order("company_name");
@@ -422,34 +424,58 @@ export default function Admin() {
         <Card className="border-red-500/20 bg-red-500/5"><CardHeader className="pb-2"><CardDescription className="flex items-center gap-1 text-red-600"><XCircle className="h-4 w-4" />{t.admin.stats.rejected}</CardDescription><CardTitle className="text-3xl text-red-600">{requestStats.rejected}</CardTitle></CardHeader></Card>
       </div>
 
-      <Card>
-        <CardHeader><CardTitle className="flex items-center gap-2"><FileSpreadsheet className="h-5 w-5" />{t.admin.upload.title}</CardTitle><CardDescription>{t.admin.upload.description}</CardDescription></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-lg border-2 border-dashed p-8 text-center">
-            <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFileSelect} className="hidden" id="csv-upload" />
-            <label htmlFor="csv-upload" className="flex cursor-pointer flex-col items-center gap-2">
-              <Upload className="h-10 w-10 text-muted-foreground" />
-              <span className="text-lg font-medium">CSV oder Excel-Datei auswählen</span>
-              <span className="text-sm text-muted-foreground">.csv, .xlsx, .xls (max. 5 MB)</span>
-            </label>
-          </div>
-          <div className="rounded-lg bg-muted p-4">
-            <h4 className="mb-2 font-medium">{t.admin.upload.csvFormat}</h4>
-            <p className="mb-2 text-sm text-muted-foreground">{t.admin.upload.columns}</p>
-            <code className="block rounded bg-background p-2 text-xs">name;manufacturer;storage;color;battery_health;grade;price_per_unit;available_units</code>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="destructive" onClick={() => setShowDeleteDialog(true)} disabled={isDeleting || isUploading}>
-              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}{t.common.delete}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Tabs for Products and Customers */}
+      <Tabs defaultValue="products" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="products" className="gap-2">
+            <Package className="h-4 w-4" />
+            {t.admin.tabs.products}
+          </TabsTrigger>
+          <TabsTrigger value="customers" className="gap-2">
+            <Users className="h-4 w-4" />
+            {t.admin.customers.title}
+          </TabsTrigger>
+        </TabsList>
 
-      <Card>
-        <CardHeader><CardTitle>{t.admin.tabs.products}</CardTitle><CardDescription>{products.length} {t.admin.stats.totalProducts}</CardDescription></CardHeader>
-        <CardContent><ProductsTable products={products} isLoading={isLoadingProducts} onProductUpdated={refetchProducts} /></CardContent>
-      </Card>
+        <TabsContent value="products" className="space-y-4">
+          <Card>
+            <CardHeader><CardTitle className="flex items-center gap-2"><FileSpreadsheet className="h-5 w-5" />{t.admin.upload.title}</CardTitle><CardDescription>{t.admin.upload.description}</CardDescription></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-lg border-2 border-dashed p-8 text-center">
+                <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFileSelect} className="hidden" id="csv-upload" />
+                <label htmlFor="csv-upload" className="flex cursor-pointer flex-col items-center gap-2">
+                  <Upload className="h-10 w-10 text-muted-foreground" />
+                  <span className="text-lg font-medium">CSV oder Excel-Datei auswählen</span>
+                  <span className="text-sm text-muted-foreground">.csv, .xlsx, .xls (max. 5 MB)</span>
+                </label>
+              </div>
+              <div className="rounded-lg bg-muted p-4">
+                <h4 className="mb-2 font-medium">{t.admin.upload.csvFormat}</h4>
+                <p className="mb-2 text-sm text-muted-foreground">{t.admin.upload.columns}</p>
+                <code className="block rounded bg-background p-2 text-xs">name;manufacturer;storage;color;battery_health;grade;price_per_unit;available_units</code>
+              </div>
+              <div className="flex gap-3">
+                <Button variant="destructive" onClick={() => setShowDeleteDialog(true)} disabled={isDeleting || isUploading}>
+                  {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}{t.common.delete}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>{t.admin.tabs.products}</CardTitle><CardDescription>{products.length} {t.admin.stats.totalProducts}</CardDescription></CardHeader>
+            <CardContent><ProductsTable products={products} isLoading={isLoadingProducts} onProductUpdated={refetchProducts} /></CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="customers">
+          <CustomersTab
+            customers={customers}
+            isLoading={isLoadingCustomers}
+            onRefetch={() => refetchCustomers()}
+          />
+        </TabsContent>
+      </Tabs>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
