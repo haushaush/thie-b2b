@@ -19,6 +19,7 @@ import Dashboard from "@/pages/Dashboard";
 import Requests from "@/pages/Requests";
 import Profile from "@/pages/Profile";
 import Admin from "@/pages/Admin";
+import Customers from "@/pages/Customers";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Imprint from "@/pages/Imprint";
@@ -61,6 +62,14 @@ const App = () => (
                   element={
                     <AdminRoute>
                       <Admin />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/kunden"
+                  element={
+                    <AdminRoute>
+                      <Customers />
                     </AdminRoute>
                   }
                 />
