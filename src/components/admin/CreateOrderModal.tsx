@@ -85,7 +85,7 @@ function ProductCombobox({ products, value, onSelect, formatCurrency }: {
               {products.map(p => (
                 <CommandItem
                   key={p.id}
-                  value={`${p.name} ${p.storage} ${p.manufacturer}`}
+                  value={`${p.id}-${p.name} ${p.storage} ${p.manufacturer}`}
                   onSelect={() => { onSelect(p.id); setOpen(false); }}
                 >
                   <Check className={cn("mr-2 h-4 w-4", value === p.id ? "opacity-100" : "opacity-0")} />
