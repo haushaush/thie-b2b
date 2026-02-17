@@ -35,20 +35,22 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
     const isFreeShipping = totalDevices >= FREE_SHIPPING_THRESHOLD;
     const standardCost = isFreeShipping ? 0 : STANDARD_SHIPPING_COST;
     const expressCost = EXPRESS_FLAT_COST;
+    const expressInsuranceCost = expressShipping ? Math.round(totalAmount * 0.01 * 100) / 100 : 0;
     const selectedShippingCost = expressShipping ? expressCost : standardCost;
-    const grandTotal = totalAmount + selectedShippingCost;
+    const grandTotal = totalAmount + selectedShippingCost + expressInsuranceCost;
 
     return {
       isFreeShipping,
       standardCost,
       expressCost,
+      expressInsuranceCost,
       selectedShippingCost,
       grandTotal,
     };
   }, [totalDevices, totalAmount, expressShipping]);
 
   const handleConfirm = () => {
-    onConfirm(expressShipping, shippingDetails.selectedShippingCost);
+    onConfirm(expressShipping, shippingDetails.selectedShippingCost + shippingDetails.expressInsuranceCost);
   };
 
   return (
@@ -176,6 +178,12 @@ export function SubmitModal({ isOpen, onClose, onConfirm, isSubmitting }: Submit
               }
             </span>
           </div>
+          {expressShipping && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t.shipping.expressInsurance}</span>
+              <span className="font-medium">{formatCurrency(shippingDetails.expressInsuranceCost)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-lg font-bold pt-2 border-t">
             <span>{t.shipping.grandTotal}</span>
             <span className="text-primary">{formatCurrency(shippingDetails.grandTotal)}</span>
