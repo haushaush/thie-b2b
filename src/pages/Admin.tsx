@@ -90,9 +90,19 @@ export default function Admin() {
   const { data: customers = [], isLoading: isLoadingCustomers, refetch: refetchCustomers } = useQuery({
     queryKey: ["admin-customers"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("user_id, email, company_name, contact_person, contact_phone").order("company_name");
+      // Get admin user IDs to exclude them
+      const { data: adminRoles } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+      const adminIds = (adminRoles || []).map((r) => r.user_id);
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("user_id, email, company_name, contact_person, contact_phone")
+        .order("company_name");
       if (error) throw error;
-      return data || [];
+      return (data || []).filter((p) => !adminIds.includes(p.user_id));
     },
   });
 
