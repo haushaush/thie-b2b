@@ -61,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-end justify-between">
           {/* Available Count */}
           <span className="text-sm text-muted-foreground">
             {t.products.available}: {product.availableUnits}
