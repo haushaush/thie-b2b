@@ -53,7 +53,7 @@ export function ProductListRow({ product }: ProductListRowProps) {
           {product.grade}
         </Badge>
       </TableCell>
-      <TableCell>{product.batteryHealth ? `${product.batteryHealth}%` : "-"}</TableCell>
+      <TableCell>{product.batteryHealth > 0 ? `${product.batteryHealth}%` : "N/A"}</TableCell>
       <TableCell className="font-bold">{formatCurrency(product.pricePerUnit)}</TableCell>
       <TableCell className="text-muted-foreground">{product.availableUnits}</TableCell>
       <TableCell>

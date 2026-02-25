@@ -51,11 +51,9 @@ export function ProductCard({ product }: ProductCardProps) {
           <p className="mt-3 text-sm text-muted-foreground">
             {product.manufacturer} | {product.storage} {t.products.storage}{product.color ? ` | ${product.color}` : ""}
           </p>
-          {product.batteryHealth > 0 && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              ⌀ {t.products.battery}: <span className="font-bold text-card-foreground">{product.batteryHealth}%</span>
-            </p>
-          )}
+          <p className="mt-2 text-sm text-muted-foreground">
+            ⌀ {t.products.battery}: <span className="font-bold text-card-foreground">{product.batteryHealth > 0 ? `${product.batteryHealth}%` : "N/A"}</span>
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
             {t.products.costPerUnit}: <span className="font-bold text-card-foreground">{formatCurrency(product.pricePerUnit)}</span>
           </p>
