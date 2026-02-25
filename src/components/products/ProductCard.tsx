@@ -49,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.grade}-GRADE
           </Badge>
           <p className="mt-3 text-sm text-muted-foreground">
-            {product.manufacturer} | {product.storage} {t.products.storage}{product.color ? ` | ${product.color}` : ""}
+            {product.manufacturer} | {product.storage}{product.color ? ` | ${product.color}` : ""}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             ⌀ {t.products.battery}: <span className="font-bold text-card-foreground">{product.batteryHealth > 0 ? `${product.batteryHealth}%` : "N/A"}</span>
