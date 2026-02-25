@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, Loader2, Tablet, X } from "lucide-react";
+import { Search, Loader2, Tablet, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppleLogo } from "@/components/icons/AppleLogo";
 import { SamsungLogo } from "@/components/icons/SamsungLogo";
@@ -36,6 +36,7 @@ export default function Dashboard() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [currentPage, setCurrentPage] = useState(1);
   
   const { items, clearCart } = useCart();
   const { user } = useAuth();
@@ -140,6 +141,20 @@ export default function Dashboard() {
       return true;
     });
   }, [products, searchQuery, filters, activeCategory]);
+
+  // Pagination: 4 rows max — grid has 3 cols on lg, 2 on sm, 1 on xs; list = 4 rows
+  const ROWS = 4;
+  const itemsPerPage = viewMode === "grid" ? ROWS * 3 : ROWS;
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedProducts = filteredProducts.slice(
+    (safePage - 1) * itemsPerPage,
+    safePage * itemsPerPage
+  );
+
+  // Reset page when filters/search/view change
+  const resetPage = useCallback(() => setCurrentPage(1), []);
+  useMemo(() => { resetPage(); }, [searchQuery, filters, activeCategory, viewMode]);
 
   const handleSubmitRequest = async (expressShipping: boolean, shippingCost: number) => {
     if (!user || items.length === 0) return;
@@ -338,15 +353,50 @@ export default function Dashboard() {
 
       {/* Products Grid/List */}
       {filteredProducts.length > 0 ? (
-        viewMode === "grid" ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <ProductList products={filteredProducts} />
-        )
+        <>
+          {viewMode === "grid" ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {paginatedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <ProductList products={paginatedProducts} />
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={page === safePage ? "default" : "outline"}
+                  size="sm"
+                  className="min-w-[2.25rem]"
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
