@@ -36,7 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
-      <div className="flex items-start justify-between gap-6">
+      <div className="flex items-stretch justify-between gap-6">
         {/* Left: Product Info */}
         <div className="flex-1 min-w-0">
           <p className="text-sm text-muted-foreground">{product.manufacturer}</p>
