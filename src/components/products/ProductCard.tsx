@@ -39,6 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="flex items-start justify-between gap-6">
         {/* Left: Product Info */}
         <div className="flex-1 min-w-0">
+          <p className="text-sm text-muted-foreground">{product.manufacturer}</p>
           <h3 className="text-xl font-bold text-card-foreground">
             {product.name}
           </h3>
@@ -49,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.grade}-GRADE
           </Badge>
           <p className="mt-3 text-sm text-muted-foreground">
-            {product.manufacturer} | {product.storage}{product.color ? ` | ${product.color}` : ""}
+            {product.storage}{product.color ? ` | ${product.color}` : ""}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             ⌀ {t.products.battery}: <span className="font-bold text-card-foreground">{product.batteryHealth > 0 ? `${product.batteryHealth}%` : "N/A"}</span>
@@ -61,14 +62,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Right: Actions */}
         <div className="flex flex-col items-end gap-2">
-          {/* Claim All Button */}
-          <Button
-            onClick={handleClaimAll}
-            className="h-10 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-            disabled={product.availableUnits === 0 || quantity >= product.availableUnits}
-          >
-            {t.products.claimAll}
-          </Button>
+          {/* Available Count */}
+          <span className="text-sm text-muted-foreground">
+            {t.products.available}: {product.availableUnits}
+          </span>
 
           {/* Quantity Controls */}
           <div className="flex items-center gap-2">
@@ -95,10 +92,14 @@ export function ProductCard({ product }: ProductCardProps) {
             </Button>
           </div>
 
-          {/* Available Count */}
-          <span className="text-sm text-muted-foreground">
-            {t.products.available}: {product.availableUnits}
-          </span>
+          {/* Claim All Button */}
+          <Button
+            onClick={handleClaimAll}
+            className="h-10 px-6 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+            disabled={product.availableUnits === 0 || quantity >= product.availableUnits}
+          >
+            {t.products.claimAll}
+          </Button>
         </div>
       </div>
     </div>
