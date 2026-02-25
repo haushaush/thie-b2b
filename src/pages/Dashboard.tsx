@@ -142,9 +142,9 @@ export default function Dashboard() {
     });
   }, [products, searchQuery, filters, activeCategory]);
 
-  // Pagination: 4 rows max — grid has 3 cols on lg, 2 on sm, 1 on xs; list = 4 rows
-  const ROWS = 4;
-  const itemsPerPage = viewMode === "grid" ? ROWS * 3 : ROWS;
+  // Pagination: grid = 4 rows × 3 cols = 12; list = 32 items before paginating
+  const GRID_ROWS = 4;
+  const itemsPerPage = viewMode === "grid" ? GRID_ROWS * 3 : 32;
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
   const safePage = Math.min(currentPage, totalPages);
   const paginatedProducts = filteredProducts.slice(
