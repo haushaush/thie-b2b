@@ -53,6 +53,7 @@ export type Database = {
         Row: {
           available_units: number
           battery_health: number | null
+          battery_type: string | null
           color: string | null
           created_at: string
           grade: string | null
@@ -67,6 +68,7 @@ export type Database = {
         Insert: {
           available_units?: number
           battery_health?: number | null
+          battery_type?: string | null
           color?: string | null
           created_at?: string
           grade?: string | null
@@ -81,6 +83,7 @@ export type Database = {
         Update: {
           available_units?: number
           battery_health?: number | null
+          battery_type?: string | null
           color?: string | null
           created_at?: string
           grade?: string | null
