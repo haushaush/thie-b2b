@@ -9,7 +9,8 @@ export interface Product {
   storage: string;
   color: string;
   batteryHealth: number;
-  grade: "A" | "B" | "C";
+  batteryType: string;
+  grade: string;
   pricePerUnit: number;
   availableUnits: number;
   securedUnits: number;
@@ -53,7 +54,8 @@ export function useProducts() {
         storage: p.storage || "",
         color: p.color || "",
         batteryHealth: p.battery_health || 0,
-        grade: (p.grade === "A" || p.grade === "B" || p.grade === "C" ? p.grade : "A") as "A" | "B" | "C",
+        batteryType: (p as any).battery_type || "",
+        grade: p.grade || "A",
         pricePerUnit: Number(p.price_per_unit),
         availableUnits: p.available_units,
         securedUnits: 0,

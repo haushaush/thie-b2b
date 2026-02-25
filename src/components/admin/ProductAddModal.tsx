@@ -12,7 +12,7 @@ const productSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(200, "Name may have max. 200 characters"),
   manufacturer: z.string().trim().min(1, "Manufacturer is required").max(100, "Manufacturer may have max. 100 characters"),
   storage: z.string().trim().max(50, "Storage may have max. 50 characters").optional(),
-  grade: z.enum(["A", "B", "C"], { required_error: "Grade is required" }),
+  grade: z.string().min(1, "Grade is required"),
   price_per_unit: z.number().min(0, "Price must be positive"),
   available_units: z.number().int().min(0, "Units must be positive"),
 });
@@ -53,7 +53,7 @@ export function ProductAddModal({ open, onOpenChange, onSave, isSaving }: Produc
           <div className="space-y-2"><Label htmlFor="add-manufacturer">{t.admin.addModal.manufacturer}</Label><Input id="add-manufacturer" value={formData.manufacturer} onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })} placeholder={t.admin.addModal.manufacturerPlaceholder} />{errors.manufacturer && <p className="text-sm text-destructive">{errors.manufacturer}</p>}</div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2"><Label htmlFor="add-storage">{t.admin.addModal.storage}</Label><Input id="add-storage" value={formData.storage} onChange={(e) => setFormData({ ...formData, storage: e.target.value })} placeholder={t.admin.addModal.storagePlaceholder} />{errors.storage && <p className="text-sm text-destructive">{errors.storage}</p>}</div>
-            <div className="space-y-2"><Label htmlFor="add-grade">{t.admin.addModal.grade}</Label><Select value={formData.grade} onValueChange={(value: "A" | "B" | "C") => setFormData({ ...formData, grade: value })}><SelectTrigger id="add-grade"><SelectValue placeholder={t.admin.addModal.selectGrade} /></SelectTrigger><SelectContent><SelectItem value="A">A</SelectItem><SelectItem value="B">B</SelectItem><SelectItem value="C">C</SelectItem></SelectContent></Select>{errors.grade && <p className="text-sm text-destructive">{errors.grade}</p>}</div>
+            <div className="space-y-2"><Label htmlFor="add-grade">{t.admin.addModal.grade}</Label><Select value={formData.grade} onValueChange={(value: string) => setFormData({ ...formData, grade: value })}><SelectTrigger id="add-grade"><SelectValue placeholder={t.admin.addModal.selectGrade} /></SelectTrigger><SelectContent><SelectItem value="A">A</SelectItem><SelectItem value="A+">A+</SelectItem><SelectItem value="B">B</SelectItem><SelectItem value="C">C</SelectItem><SelectItem value="NEW">NEW</SelectItem><SelectItem value="X">X</SelectItem></SelectContent></Select>{errors.grade && <p className="text-sm text-destructive">{errors.grade}</p>}</div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2"><Label htmlFor="add-price">{t.admin.addModal.price}</Label><Input id="add-price" type="number" min="0" step="0.01" value={formData.price_per_unit} onChange={(e) => setFormData({ ...formData, price_per_unit: parseFloat(e.target.value) || 0 })} placeholder={t.admin.addModal.pricePlaceholder} />{errors.price_per_unit && <p className="text-sm text-destructive">{errors.price_per_unit}</p>}</div>

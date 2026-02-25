@@ -5,7 +5,7 @@ export interface Product {
   storage: string;
   color: string;
   batteryHealth: number;
-  grade: "A" | "B" | "C";
+  grade: string;
   pricePerUnit: number;
   availableUnits: number;
   securedUnits: number;
@@ -183,7 +183,7 @@ export const mockProducts: Product[] = [
 ];
 
 export const storageOptions = ["64GB", "128GB", "256GB", "512GB", "1TB"];
-export const gradeOptions = ["A", "B", "C"] as const;
+export const gradeOptions = ["A", "A+", "B", "C", "NEW", "X"] as const;
 export const categoryOptions = ["Smartphones", "Laptops", "Tablets"] as const;
 export const modelOptions: Record<string, string[]> = {
   Smartphones: [

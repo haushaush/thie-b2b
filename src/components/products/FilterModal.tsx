@@ -19,7 +19,7 @@ export interface FilterState {
   categories: string[];
   models: string[];
   storage: string[];
-  grades: ("A" | "B" | "C")[];
+  grades: string[];
   colors: string[];
   batteryRange: [number, number];
   priceRange: [number, number];
