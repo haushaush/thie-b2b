@@ -35,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
+    <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-6">
         {/* Left: Product Info */}
         <div className="flex-1 min-w-0">
@@ -49,8 +49,13 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.grade}-GRADE
           </Badge>
           <p className="mt-3 text-sm text-muted-foreground">
-            {product.manufacturer} | {product.storage} {t.products.storage}{product.color ? ` | ${product.color}` : ""}{product.batteryHealth ? ` | ${product.batteryHealth}% ${t.products.battery}` : ""}
+            {product.manufacturer} | {product.storage} {t.products.storage}{product.color ? ` | ${product.color}` : ""}
           </p>
+          {product.batteryHealth > 0 && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              ⌀ {t.products.battery}: <span className="font-bold text-card-foreground">{product.batteryHealth}%</span>
+            </p>
+          )}
           <p className="mt-1 text-sm text-muted-foreground">
             {t.products.costPerUnit}: <span className="font-bold text-card-foreground">{formatCurrency(product.pricePerUnit)}</span>
           </p>
