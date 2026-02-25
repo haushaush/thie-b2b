@@ -344,7 +344,7 @@ export default function Dashboard() {
                   : "border-border bg-card hover:border-primary/50 hover:bg-accent/50"
               }`}
             >
-              <Icon className="h-6 w-6 shrink-0" />
+              <Icon className={`shrink-0 ${tile.key === "samsung" ? "h-6 w-20" : "h-6 w-6"}`} />
               <span className="font-semibold">{tile.label}</span>
             </button>
           );

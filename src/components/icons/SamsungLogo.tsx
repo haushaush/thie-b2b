@@ -1,4 +1,4 @@
-import samsungLogo from "@/assets/samsung-logo.webp";
+import samsungLogo from "@/assets/samsung-logo.jpg";
 
 export function SamsungLogo({ className }: { className?: string }) {
   return (
