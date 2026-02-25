@@ -1,12 +1,11 @@
+import samsungLogo from "@/assets/samsung-logo.webp";
+
 export function SamsungLogo({ className }: { className?: string }) {
   return (
-    <svg
+    <img
+      src={samsungLogo}
+      alt="Samsung"
       className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M5.9 4.05C2.6 4.05.12 6.1.12 9.17c0 2.26 1.48 3.85 3.93 4.93l2.19 1c1.56.7 2.34 1.42 2.34 2.6 0 1.3-1.17 2.2-2.84 2.2-1.87 0-3.36-.97-4.35-2.42L.1 18.7C1.4 20.72 3.7 22 6.04 22c3.54 0 5.98-2.17 5.98-5.3 0-2.54-1.63-4-4.1-5.1l-2.13-.97C4.56 10.1 3.76 9.5 3.76 8.5c0-1.07.93-1.85 2.24-1.85 1.22 0 2.3.56 3.2 1.6l1.28-1.3C9.34 5.4 7.62 4.05 5.9 4.05zM23.88 4.4h-2.04l-4.22 7.27L13.4 4.4h-2.13l5.3 8.93V22h1.93v-8.67l5.38-8.93z" />
-    </svg>
+    />
   );
 }
