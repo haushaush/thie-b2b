@@ -6,6 +6,7 @@ export function SamsungLogo({ className }: { className?: string }) {
       src={samsungLogo}
       alt="Samsung"
       className={className}
+      style={{ objectFit: "contain" }}
     />
   );
 }
