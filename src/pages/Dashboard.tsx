@@ -353,7 +353,7 @@ export default function Dashboard() {
 
       {/* Grade Quick Filters */}
       <div className="mb-6 flex flex-wrap items-center gap-2">
-        <span className="text-sm font-medium text-muted-foreground mr-1">Quick Filter:</span>
+        
         {gradeOptions.map((grade) => {
           const isActive = filters.grades.includes(grade);
           return (
