@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppleLogo } from "@/components/icons/AppleLogo";
 import { SamsungLogo } from "@/components/icons/SamsungLogo";
 import { useProducts } from "@/hooks/useProducts";
-import { modelOptions } from "@/data/mockProducts";
+import { modelOptions, gradeOptions } from "@/data/mockProducts";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -347,6 +347,32 @@ export default function Dashboard() {
               <Icon className={`shrink-0 ${tile.key === "samsung" ? "h-6 w-20" : "h-6 w-6"}`} />
               <span className="font-semibold">{tile.label}</span>
             </button>
+          );
+        })}
+      </div>
+
+      {/* Grade Quick Filters */}
+      <div className="mb-6 flex flex-wrap items-center gap-2">
+        <span className="text-sm font-medium text-muted-foreground mr-1">Quick Filter:</span>
+        {gradeOptions.map((grade) => {
+          const isActive = filters.grades.includes(grade);
+          return (
+            <Button
+              key={grade}
+              variant={isActive ? "default" : "outline"}
+              size="sm"
+              className="rounded-full"
+              onClick={() => {
+                setFilters((prev) => ({
+                  ...prev,
+                  grades: isActive
+                    ? prev.grades.filter((g) => g !== grade)
+                    : [...prev.grades, grade],
+                }));
+              }}
+            >
+              Grade {grade}
+            </Button>
           );
         })}
       </div>
