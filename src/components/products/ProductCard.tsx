@@ -35,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm transition-shadow hover:shadow-md flex flex-col gap-3">
+    <div className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-shadow hover:shadow-md flex flex-col gap-1.5">
       {/* Row 1: Manufacturer + Grade Badge */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">{product.manufacturer}</p>
@@ -48,29 +48,29 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Row 2: Product Name */}
-      <h3 className="text-xl font-bold text-card-foreground leading-tight">
+      <h3 className="text-lg font-bold text-card-foreground leading-tight">
         {product.name}
       </h3>
 
       {/* Row 3: Specs */}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted-foreground mb-1">
         {product.storage}{product.color ? ` | ${product.color}` : ""} | ⌀ {product.batteryHealth > 0 ? `${product.batteryHealth}%` : "N/A"}
       </p>
 
-      {/* Row 4: Price + Available */}
-      <div className="flex items-end justify-between mt-1">
+      {/* Row 4: Price + Available (grey background) */}
+      <div className="flex items-end justify-between bg-muted/60 rounded-lg px-3 py-2">
         <div>
           <p className="text-xs text-muted-foreground">{t.products.costPerUnit}:</p>
           <p className="text-2xl font-bold text-card-foreground">{formatCurrency(product.pricePerUnit)}</p>
         </div>
-        <span className="text-sm text-muted-foreground border border-border rounded-full px-3 py-1">
+        <span className="text-sm text-muted-foreground border border-border rounded-full px-3 py-1 bg-card">
           {product.availableUnits} {t.products.available.toLowerCase()}
         </span>
       </div>
 
       {/* Row 5: Quantity Controls + Claim Button */}
       <div className="flex items-center justify-between mt-1">
-        <div className="flex items-center gap-0">
+        <div className="flex items-center">
           <Button
             onClick={handleRemove}
             size="sm"
@@ -80,7 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             <Minus className="h-4 w-4" />
           </Button>
-          <div className="flex h-10 min-w-[3rem] items-center justify-center border-y border-border bg-card px-3">
+          <div className="flex h-10 min-w-[2.5rem] items-center justify-center border-y border-primary bg-card px-2">
             <span className="text-base font-bold text-card-foreground">{quantity}</span>
           </div>
           <Button
