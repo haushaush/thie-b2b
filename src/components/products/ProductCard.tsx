@@ -75,18 +75,18 @@ export function ProductCard({ product }: ProductCardProps) {
             onClick={handleRemove}
             size="sm"
             variant="outline"
-            className="h-10 w-10 rounded-l-full rounded-r-none p-0 border-primary bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="h-10 w-10 rounded-l-lg rounded-r-none p-0 border-primary bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             disabled={quantity === 0}
           >
             <Minus className="h-4 w-4" />
           </Button>
-          <div className="flex h-10 min-w-[2.5rem] items-center justify-center bg-card border-y border-primary px-2">
-            <span className="text-base font-bold text-card-foreground">{quantity}</span>
+          <div className="flex h-10 min-w-[2.5rem] items-center justify-center bg-primary px-2">
+            <span className="text-base font-bold text-primary-foreground">{quantity}</span>
           </div>
           <Button
             onClick={handleAdd}
             size="sm"
-            className="h-10 w-10 rounded-r-full rounded-l-none p-0 bg-primary text-primary-foreground hover:bg-primary/90"
+            className="h-10 w-10 rounded-r-lg rounded-l-none p-0 bg-primary text-primary-foreground hover:bg-primary/90"
             disabled={quantity >= product.availableUnits}
           >
             <Plus className="h-4 w-4" />
