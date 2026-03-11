@@ -42,9 +42,9 @@ export function ProductCard({ product }: ProductCardProps) {
         <Badge 
           variant="secondary" 
           className={`font-semibold px-3 py-1 text-xs rounded-full border-0 ${
-            product.grade === "A"
+            product.grade?.startsWith("A") || product.grade === "NEW"
               ? "bg-primary/15 text-primary hover:bg-primary/15"
-              : product.grade === "B"
+              : product.grade?.startsWith("B")
               ? "bg-orange-100 text-orange-700 hover:bg-orange-100"
               : "bg-gray-200 text-gray-600 hover:bg-gray-200"
           }`}
