@@ -8,7 +8,7 @@ export interface CartItem {
   quantity: number;
 }
 
-const RESERVATION_DURATION = 120; // seconds
+const RESERVATION_DURATION = 600; // seconds (10 minutes)
 
 interface CartContextType {
   items: CartItem[];
