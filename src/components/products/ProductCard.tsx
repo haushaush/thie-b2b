@@ -43,10 +43,10 @@ export function ProductCard({ product }: ProductCardProps) {
           variant="secondary" 
           className={`font-semibold px-3 py-1 text-xs rounded-full border-0 ${
             product.grade?.startsWith("A") || product.grade === "NEW"
-              ? "bg-primary/15 text-primary hover:bg-primary/15"
+              ? "bg-primary text-primary-foreground hover:bg-primary"
               : product.grade?.startsWith("B")
-              ? "bg-orange-100 text-orange-700 hover:bg-orange-100"
-              : "bg-gray-200 text-gray-600 hover:bg-gray-200"
+              ? "bg-orange-500 text-white hover:bg-orange-500"
+              : "bg-gray-300 text-gray-700 hover:bg-gray-300"
           }`}
         >
           {product.grade}-GRADE
