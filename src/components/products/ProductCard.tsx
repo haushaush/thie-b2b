@@ -41,7 +41,13 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="text-sm text-muted-foreground">{product.manufacturer}</p>
         <Badge 
           variant="secondary" 
-          className="bg-accent text-accent-foreground hover:bg-accent font-semibold px-3 py-1 text-xs rounded-full"
+          className={`font-semibold px-3 py-1 text-xs rounded-full border-0 ${
+            product.grade === "A"
+              ? "bg-primary/15 text-primary hover:bg-primary/15"
+              : product.grade === "B"
+              ? "bg-orange-100 text-orange-700 hover:bg-orange-100"
+              : "bg-gray-200 text-gray-600 hover:bg-gray-200"
+          }`}
         >
           {product.grade}-GRADE
         </Badge>
