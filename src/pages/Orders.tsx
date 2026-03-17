@@ -32,6 +32,10 @@ interface OrderItem {
   product_name: string;
   quantity: number;
   price_per_unit: number;
+  storage?: string | null;
+  color?: string | null;
+  grade?: string | null;
+  battery_health?: number | null;
 }
 
 interface Order {
@@ -72,7 +76,7 @@ export default function Orders() {
       const requestIds = requests.map((r) => r.id);
       const { data: items } = await supabase
         .from("request_items")
-        .select("*")
+        .select("*, products(storage, color, grade, battery_health)")
         .in("request_id", requestIds);
 
       // Fetch profiles
@@ -96,12 +100,19 @@ export default function Orders() {
         admin_message: r.admin_message,
         items: (items || [])
           .filter((i) => i.request_id === r.id)
-          .map((i) => ({
-            id: i.id,
-            product_name: i.product_name,
-            quantity: i.quantity,
-            price_per_unit: Number(i.price_per_unit),
-          })),
+          .map((i) => {
+            const product = (i as any).products;
+            return {
+              id: i.id,
+              product_name: i.product_name,
+              quantity: i.quantity,
+              price_per_unit: Number(i.price_per_unit),
+              storage: product?.storage ?? null,
+              color: product?.color ?? null,
+              grade: product?.grade ?? null,
+              battery_health: product?.battery_health ?? null,
+            };
+          }),
         user_email: profilesMap[r.user_id]?.email,
         company_name: profilesMap[r.user_id]?.company_name ?? undefined,
         contact_person: profilesMap[r.user_id]?.contact_person ?? undefined,
@@ -358,7 +369,22 @@ export default function Orders() {
                     <TableBody>
                       {selectedOrder.items.map((item) => (
                         <TableRow key={item.id}>
-                          <TableCell className="font-medium">{item.product_name}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex flex-col">
+                              <span>{item.product_name}</span>
+                              {(() => {
+                                const specs = [
+                                  item.storage,
+                                  item.color,
+                                  item.grade ? `Grade ${item.grade}` : null,
+                                  item.battery_health ? `${item.battery_health}% Battery` : null,
+                                ].filter(Boolean).join(" · ");
+                                return specs ? (
+                                  <span className="text-xs text-muted-foreground">{specs}</span>
+                                ) : null;
+                              })()}
+                            </div>
+                          </TableCell>
                           <TableCell className="text-right">{item.quantity}</TableCell>
                           <TableCell className="text-right">{formatCurrency(item.price_per_unit)}</TableCell>
                           <TableCell className="text-right font-medium">
