@@ -8,6 +8,10 @@ export interface RequestItem {
   product_name: string;
   quantity: number;
   price_per_unit: number;
+  storage?: string | null;
+  color?: string | null;
+  grade?: string | null;
+  battery_health?: number | null;
 }
 
 export interface Request {
@@ -48,7 +52,7 @@ export function useRequests() {
       const requestIds = requests.map((r) => r.id);
       const { data: items, error: itemsError } = await supabase
         .from("request_items")
-        .select("*")
+        .select("*, products(storage, color, grade, battery_health)")
         .in("request_id", requestIds);
 
       if (itemsError) throw itemsError;
@@ -79,13 +83,20 @@ export function useRequests() {
         express_shipping: request.express_shipping,
         items: (items || [])
           .filter((item) => item.request_id === request.id)
-          .map((item) => ({
-            id: item.id,
-            product_id: item.product_id,
-            product_name: item.product_name,
-            quantity: item.quantity,
-            price_per_unit: Number(item.price_per_unit),
-          })),
+          .map((item) => {
+            const product = (item as any).products;
+            return {
+              id: item.id,
+              product_id: item.product_id,
+              product_name: item.product_name,
+              quantity: item.quantity,
+              price_per_unit: Number(item.price_per_unit),
+              storage: product?.storage ?? null,
+              color: product?.color ?? null,
+              grade: product?.grade ?? null,
+              battery_health: product?.battery_health ?? null,
+            };
+          }),
         user_email: profilesMap[request.user_id]?.email,
         company_name: profilesMap[request.user_id]?.company_name ?? undefined,
       }));
