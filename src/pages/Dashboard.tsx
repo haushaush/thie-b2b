@@ -354,7 +354,7 @@ export default function Dashboard() {
       {/* Grade Quick Filters */}
       <div className="mb-6 flex flex-wrap items-center gap-2">
         
-        {gradeOptions.map((grade) => {
+        {gradeOptions.filter((grade) => products.some((p) => p.grade === grade)).map((grade) => {
           const isActive = filters.grades.includes(grade);
           return (
             <Button
