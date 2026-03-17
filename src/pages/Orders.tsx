@@ -100,12 +100,19 @@ export default function Orders() {
         admin_message: r.admin_message,
         items: (items || [])
           .filter((i) => i.request_id === r.id)
-          .map((i) => ({
-            id: i.id,
-            product_name: i.product_name,
-            quantity: i.quantity,
-            price_per_unit: Number(i.price_per_unit),
-          })),
+          .map((i) => {
+            const product = (i as any).products;
+            return {
+              id: i.id,
+              product_name: i.product_name,
+              quantity: i.quantity,
+              price_per_unit: Number(i.price_per_unit),
+              storage: product?.storage ?? null,
+              color: product?.color ?? null,
+              grade: product?.grade ?? null,
+              battery_health: product?.battery_health ?? null,
+            };
+          }),
         user_email: profilesMap[r.user_id]?.email,
         company_name: profilesMap[r.user_id]?.company_name ?? undefined,
         contact_person: profilesMap[r.user_id]?.contact_person ?? undefined,
