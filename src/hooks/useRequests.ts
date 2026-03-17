@@ -52,7 +52,7 @@ export function useRequests() {
       const requestIds = requests.map((r) => r.id);
       const { data: items, error: itemsError } = await supabase
         .from("request_items")
-        .select("*")
+        .select("*, products(storage, color, grade, battery_health)")
         .in("request_id", requestIds);
 
       if (itemsError) throw itemsError;
