@@ -32,6 +32,10 @@ interface OrderItem {
   product_name: string;
   quantity: number;
   price_per_unit: number;
+  storage?: string | null;
+  color?: string | null;
+  grade?: string | null;
+  battery_health?: number | null;
 }
 
 interface Order {
