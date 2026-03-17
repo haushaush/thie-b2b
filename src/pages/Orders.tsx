@@ -369,7 +369,22 @@ export default function Orders() {
                     <TableBody>
                       {selectedOrder.items.map((item) => (
                         <TableRow key={item.id}>
-                          <TableCell className="font-medium">{item.product_name}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex flex-col">
+                              <span>{item.product_name}</span>
+                              {(() => {
+                                const specs = [
+                                  item.storage,
+                                  item.color,
+                                  item.grade ? `Grade ${item.grade}` : null,
+                                  item.battery_health ? `${item.battery_health}% Battery` : null,
+                                ].filter(Boolean).join(" · ");
+                                return specs ? (
+                                  <span className="text-xs text-muted-foreground">{specs}</span>
+                                ) : null;
+                              })()}
+                            </div>
+                          </TableCell>
                           <TableCell className="text-right">{item.quantity}</TableCell>
                           <TableCell className="text-right">{formatCurrency(item.price_per_unit)}</TableCell>
                           <TableCell className="text-right font-medium">
