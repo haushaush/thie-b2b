@@ -83,13 +83,20 @@ export function useRequests() {
         express_shipping: request.express_shipping,
         items: (items || [])
           .filter((item) => item.request_id === request.id)
-          .map((item) => ({
-            id: item.id,
-            product_id: item.product_id,
-            product_name: item.product_name,
-            quantity: item.quantity,
-            price_per_unit: Number(item.price_per_unit),
-          })),
+          .map((item) => {
+            const product = (item as any).products;
+            return {
+              id: item.id,
+              product_id: item.product_id,
+              product_name: item.product_name,
+              quantity: item.quantity,
+              price_per_unit: Number(item.price_per_unit),
+              storage: product?.storage ?? null,
+              color: product?.color ?? null,
+              grade: product?.grade ?? null,
+              battery_health: product?.battery_health ?? null,
+            };
+          }),
         user_email: profilesMap[request.user_id]?.email,
         company_name: profilesMap[request.user_id]?.company_name ?? undefined,
       }));
