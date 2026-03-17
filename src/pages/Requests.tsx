@@ -135,19 +135,35 @@ export default function Requests() {
 
                 {/* Items Summary */}
                 <div className="mt-4 space-y-2">
-                  {request.items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <span className="text-muted-foreground">
-                        {item.quantity}x {item.product_name}
-                      </span>
-                      <span className="font-medium">
-                        {formatCurrency(item.quantity * item.price_per_unit)}
-                      </span>
-                    </div>
-                  ))}
+                  {request.items.map((item) => {
+                    const specs = [
+                      item.storage,
+                      item.color,
+                      item.grade,
+                      item.battery_health != null ? `${item.battery_health}% Battery` : null,
+                    ].filter(Boolean).join(" · ");
+
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <div>
+                          <span className="text-foreground">
+                            {item.quantity}x {item.product_name}
+                          </span>
+                          {specs && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              ({specs})
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-medium shrink-0 ml-4">
+                          {formatCurrency(item.quantity * item.price_per_unit)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Admin Message */}
