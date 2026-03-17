@@ -43,6 +43,7 @@ export function useProducts() {
       const { data, error } = await supabase
         .from("products")
         .select("*")
+        .gt("available_units", 0)
         .order("name");
 
       if (error) throw error;
