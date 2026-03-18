@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2, Truck, Zap, Package } from "lucide-react";
+import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2, Truck, Zap, Package, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRequests, type Request } from "@/hooks/useRequests";
 import { RequestActionModal } from "@/components/requests/RequestActionModal";
+import { EditRequestModal } from "@/components/requests/EditRequestModal";
 
 type RequestStatus = "pending" | "approved" | "rejected";
 
