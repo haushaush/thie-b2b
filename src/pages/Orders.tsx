@@ -44,7 +44,6 @@ interface OrderItem {
   grade?: string | null;
   battery_health?: number | null;
   manufacturer?: string | null;
-  battery_health?: number | null;
 }
 
 interface Order {
