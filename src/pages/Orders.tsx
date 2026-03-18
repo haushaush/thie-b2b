@@ -284,7 +284,7 @@ export default function Orders() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-2">
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
                 {t.admin.ordersPage?.title || "Bestellungen"}
@@ -293,8 +293,24 @@ export default function Orders() {
                 {filtered.length} {t.admin.ordersPage?.title || "Bestellungen"}
               </CardDescription>
             </div>
-          </div>
-          <div className="relative mt-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => exportAllOrders("xlsx")}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Als Excel (.xlsx)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportAllOrders("csv")}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Als CSV (.csv)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t.admin.ordersPage?.searchPlaceholder || "Bestellungen suchen..."}
