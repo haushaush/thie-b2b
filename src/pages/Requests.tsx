@@ -284,6 +284,15 @@ export default function Requests() {
         userEmail={actionModal.userEmail}
         companyName={actionModal.companyName}
       />
+
+      {/* Edit Modal */}
+      {editModal.request && (
+        <EditRequestModal
+          open={editModal.open}
+          onOpenChange={(open) => setEditModal((prev) => ({ ...prev, open }))}
+          request={editModal.request}
+        />
+      )}
     </div>
   );
 }
