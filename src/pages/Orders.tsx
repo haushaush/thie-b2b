@@ -420,6 +420,7 @@ export default function Orders() {
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
