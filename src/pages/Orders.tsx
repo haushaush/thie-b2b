@@ -189,6 +189,62 @@ export default function Orders() {
     });
   };
 
+  const buildExportRows = useCallback((orderItems: OrderItem[]) => {
+    return orderItems.map((item) => ({
+      Make: item.product_name.includes("iPhone") || item.product_name.includes("iPad") || item.product_name.includes("Mac") ? "Apple" : "Samsung",
+      Model: item.product_name,
+      Memory: item.storage || "",
+      Color: item.color || "",
+      "Battery Avg.": item.battery_health ? `${item.battery_health}%` : "",
+      Grade: item.grade || "",
+      QTY: item.quantity,
+      "Price/Model": `${item.price_per_unit.toFixed(2)} €`,
+      Total: `${(item.quantity * item.price_per_unit).toFixed(2)} €`,
+    }));
+  }, []);
+
+  const exportOrder = useCallback((order: Order, format: "xlsx" | "csv") => {
+    const rows = buildExportRows(order.items);
+    const totalQty = order.items.reduce((s, i) => s + i.quantity, 0);
+    const totalValue = order.items.reduce((s, i) => s + i.quantity * i.price_per_unit, 0);
+    rows.push({
+      Make: "", Model: "", Memory: "", Color: "", "Battery Avg.": "", Grade: "",
+      QTY: totalQty,
+      "Price/Model": "",
+      Total: `${totalValue.toFixed(2)} €`,
+    });
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    const customerName = order.company_name || "Order";
+    const dateStr = new Date(order.created_at).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\./g, ".");
+    XLSX.utils.book_append_sheet(wb, ws, "Bestellung");
+    const filename = `Thie_${order.id.slice(0, 4)}_${customerName.replace(/\s+/g, "_")}_${dateStr}`;
+    XLSX.writeFile(wb, `${filename}.${format}`);
+  }, [buildExportRows]);
+
+  const exportAllOrders = useCallback((format: "xlsx" | "csv") => {
+    const allRows: any[] = [];
+    filtered.forEach((order) => {
+      const rows = buildExportRows(order.items);
+      allRows.push(...rows);
+    });
+    const totalQty = allRows.reduce((s, r) => s + (r.QTY || 0), 0);
+    const totalValue = filtered.reduce((s, o) => s + getOrderTotal(o), 0);
+    allRows.push({
+      Make: "", Model: "", Memory: "", Color: "", "Battery Avg.": "", Grade: "",
+      QTY: totalQty,
+      "Price/Model": "",
+      Total: `${totalValue.toFixed(2)} €`,
+    });
+
+    const ws = XLSX.utils.json_to_sheet(allRows);
+    const wb = XLSX.utils.book_new();
+    const dateStr = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\./g, ".");
+    XLSX.utils.book_append_sheet(wb, ws, "Bestellungen");
+    XLSX.writeFile(wb, `Thie_Bestellungen_${dateStr}.${format}`);
+  }, [filtered, buildExportRows, getOrderTotal]);
+
   return (
     <div className="space-y-6">
       <div>
