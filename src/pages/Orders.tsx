@@ -43,6 +43,8 @@ interface OrderItem {
   color?: string | null;
   grade?: string | null;
   battery_health?: number | null;
+  manufacturer?: string | null;
+  battery_health?: number | null;
 }
 
 interface Order {
