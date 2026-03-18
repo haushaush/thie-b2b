@@ -444,9 +444,27 @@ export default function Orders() {
                   <Package className="h-5 w-5" />
                   {t.admin.ordersPage?.orderDetails || "Bestelldetails"} #{selectedOrder.id.slice(0, 8).toUpperCase()}
                 </DialogTitle>
-                <DialogDescription>
-                  {selectedOrder.company_name || selectedOrder.user_email}
-                  {selectedOrder.contact_person && ` • ${selectedOrder.contact_person}`}
+                <DialogDescription className="flex items-center justify-between">
+                  <span>
+                    {selectedOrder.company_name || selectedOrder.user_email}
+                    {selectedOrder.contact_person && ` • ${selectedOrder.contact_person}`}
+                  </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-2 ml-2">
+                        <Download className="h-3.5 w-3.5" />
+                        Export
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => exportOrder(selectedOrder, "xlsx")}>
+                        <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => exportOrder(selectedOrder, "csv")}>
+                        <Download className="mr-2 h-4 w-4" /> CSV
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </DialogDescription>
               </DialogHeader>
 
