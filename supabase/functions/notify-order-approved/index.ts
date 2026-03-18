@@ -10,7 +10,7 @@ const corsHeaders = {
 };
 
 // Fixed Thie notification recipients - update these as needed
-const THIE_NOTIFICATION_EMAILS: string[] = [];
+const THIE_NOTIFICATION_EMAILS: string[] = ["sawazki@thie-eco.de"];
 
 interface OrderItem {
   product_name: string;
