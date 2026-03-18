@@ -243,6 +243,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      edit_request_items: {
+        Args: { p_items: Json; p_request_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2, Truck, Zap, Package } from "lucide-react";
+import { FileText, Clock, CheckCircle, XCircle, MessageSquare, Building2, Mail, Loader2, Truck, Zap, Package, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useRequests, type Request } from "@/hooks/useRequests";
 import { RequestActionModal } from "@/components/requests/RequestActionModal";
+import { EditRequestModal } from "@/components/requests/EditRequestModal";
 
 type RequestStatus = "pending" | "approved" | "rejected";
 
@@ -20,6 +21,10 @@ export default function Requests() {
     userEmail?: string;
     companyName?: string;
   }>({ open: false, requestId: "", action: "approve" });
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    request: Request | null;
+  }>({ open: false, request: null });
 
   const statusConfig: Record<RequestStatus, { label: string; icon: typeof Clock; className: string }> = {
     pending: {
@@ -216,6 +221,21 @@ export default function Requests() {
                   </div>
                 </div>
 
+                {/* Customer Edit Action */}
+                {!isAdmin && request.status === "pending" && (
+                  <div className="mt-4 flex gap-2 border-t pt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => setEditModal({ open: true, request })}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      Anfrage bearbeiten
+                    </Button>
+                  </div>
+                )}
+
                 {/* Admin Actions */}
                 {isAdmin && request.status === "pending" && (
                   <div className="mt-4 flex gap-2 border-t pt-4">
@@ -264,6 +284,15 @@ export default function Requests() {
         userEmail={actionModal.userEmail}
         companyName={actionModal.companyName}
       />
+
+      {/* Edit Modal */}
+      {editModal.request && (
+        <EditRequestModal
+          open={editModal.open}
+          onOpenChange={(open) => setEditModal((prev) => ({ ...prev, open }))}
+          request={editModal.request}
+        />
+      )}
     </div>
   );
 }
