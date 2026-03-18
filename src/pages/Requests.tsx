@@ -21,6 +21,10 @@ export default function Requests() {
     userEmail?: string;
     companyName?: string;
   }>({ open: false, requestId: "", action: "approve" });
+  const [editModal, setEditModal] = useState<{
+    open: boolean;
+    request: Request | null;
+  }>({ open: false, request: null });
 
   const statusConfig: Record<RequestStatus, { label: string; icon: typeof Clock; className: string }> = {
     pending: {
