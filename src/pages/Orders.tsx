@@ -193,7 +193,7 @@ export default function Orders() {
 
   const buildExportRows = useCallback((orderItems: OrderItem[]) => {
     return orderItems.map((item) => ({
-      Make: item.product_name.includes("iPhone") || item.product_name.includes("iPad") || item.product_name.includes("Mac") ? "Apple" : "Samsung",
+      Make: item.manufacturer || (item.product_name.includes("iPhone") || item.product_name.includes("iPad") ? "Apple" : "Samsung"),
       Model: item.product_name,
       Memory: item.storage || "",
       Color: item.color || "",
