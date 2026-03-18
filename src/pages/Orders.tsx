@@ -84,7 +84,7 @@ export default function Orders() {
       const requestIds = requests.map((r) => r.id);
       const { data: items } = await supabase
         .from("request_items")
-        .select("*, products(storage, color, grade, battery_health)")
+        .select("*, products(storage, color, grade, battery_health, manufacturer)")
         .in("request_id", requestIds);
 
       // Fetch profiles
