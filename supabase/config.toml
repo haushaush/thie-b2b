@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.notify-request-confirmation]
 verify_jwt = false
+
+[functions.notify-order-approved]
+verify_jwt = false
