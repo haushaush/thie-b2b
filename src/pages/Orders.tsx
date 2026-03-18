@@ -228,12 +228,18 @@ export default function Orders() {
   const exportAllOrders = useCallback((format: "xlsx" | "csv") => {
     const allRows: any[] = [];
     filtered.forEach((order) => {
-      const rows = buildExportRows(order.items);
+      const rows = buildExportRows(order.items).map((row) => ({
+        "Order ID": `#${order.id.slice(0, 8).toUpperCase()}`,
+        "Customer": order.company_name || order.user_email || "",
+        "Contact Person": order.contact_person || "",
+        ...row,
+      }));
       allRows.push(...rows);
     });
     const totalQty = allRows.reduce((s, r) => s + (r.QTY || 0), 0);
     const totalValue = filtered.reduce((s, o) => s + getOrderTotal(o), 0);
     allRows.push({
+      "Order ID": "", "Customer": "", "Contact Person": "",
       Make: "", Model: "", Memory: "", Color: "", "Battery Avg.": "", Grade: "",
       QTY: totalQty,
       "Price/Model": "",
