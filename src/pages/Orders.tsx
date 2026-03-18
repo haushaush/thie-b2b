@@ -405,7 +405,21 @@ export default function Orders() {
                             >
                               <Mail className="h-4 w-4" />
                             </Button>
-                          </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="Export">
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => exportOrder(order, "xlsx")}>
+                                  <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => exportOrder(order, "csv")}>
+                                  <Download className="mr-2 h-4 w-4" /> CSV
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     );
