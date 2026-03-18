@@ -119,7 +119,7 @@ export default function Orders() {
               color: product?.color ?? null,
               grade: product?.grade ?? null,
               battery_health: product?.battery_health ?? null,
-            };
+              manufacturer: product?.manufacturer ?? null,
           }),
         user_email: profilesMap[r.user_id]?.email,
         company_name: profilesMap[r.user_id]?.company_name ?? undefined,
