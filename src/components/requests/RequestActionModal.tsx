@@ -79,6 +79,55 @@ export function RequestActionModal({
           console.error("Failed to send status notification:", notifyError);
         }
       }
+
+      // On approval, send order summary to Thie team
+      if (data.status === "approved") {
+        try {
+          // Fetch request items with product details
+          const { data: items } = await supabase
+            .from("request_items")
+            .select("*, products(storage, color, grade, battery_health, manufacturer)")
+            .eq("request_id", requestId);
+
+          const { data: requestData } = await supabase
+            .from("requests")
+            .select("shipping_cost, express_shipping")
+            .eq("id", requestId)
+            .single();
+
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("contact_person")
+            .eq("email", userEmail || "")
+            .maybeSingle();
+
+          const orderItems = (items || []).map((i: any) => ({
+            product_name: i.product_name,
+            quantity: i.quantity,
+            price_per_unit: Number(i.price_per_unit),
+            storage: i.products?.storage ?? null,
+            color: i.products?.color ?? null,
+            grade: i.products?.grade ?? null,
+            battery_health: i.products?.battery_health ?? null,
+            manufacturer: i.products?.manufacturer ?? null,
+          }));
+
+          await supabase.functions.invoke("notify-order-approved", {
+            body: {
+              requestId,
+              companyName,
+              contactPerson: profile?.contact_person || undefined,
+              items: orderItems,
+              shippingCost: Number(requestData?.shipping_cost || 0),
+              expressShipping: requestData?.express_shipping || false,
+              notificationEmails: [], // Will use THIE_NOTIFICATION_EMAILS from edge function
+            },
+          });
+          console.log("Order approval notification sent");
+        } catch (orderNotifyError) {
+          console.error("Failed to send order approval notification:", orderNotifyError);
+        }
+      }
       
       queryClient.invalidateQueries({ queryKey: ["requests"] });
       onOpenChange(false);

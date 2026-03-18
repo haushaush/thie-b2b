@@ -1,9 +1,16 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Package, Mail, Send, Loader2, Eye } from "lucide-react";
+import { Search, Package, Mail, Send, Loader2, Eye, Download, FileSpreadsheet } from "lucide-react";
+import * as XLSX from "xlsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +43,7 @@ interface OrderItem {
   color?: string | null;
   grade?: string | null;
   battery_health?: number | null;
+  manufacturer?: string | null;
 }
 
 interface Order {
@@ -76,7 +84,7 @@ export default function Orders() {
       const requestIds = requests.map((r) => r.id);
       const { data: items } = await supabase
         .from("request_items")
-        .select("*, products(storage, color, grade, battery_health)")
+        .select("*, products(storage, color, grade, battery_health, manufacturer)")
         .in("request_id", requestIds);
 
       // Fetch profiles
@@ -111,6 +119,7 @@ export default function Orders() {
               color: product?.color ?? null,
               grade: product?.grade ?? null,
               battery_health: product?.battery_health ?? null,
+              manufacturer: product?.manufacturer ?? null,
             };
           }),
         user_email: profilesMap[r.user_id]?.email,
@@ -182,6 +191,62 @@ export default function Orders() {
     });
   };
 
+  const buildExportRows = useCallback((orderItems: OrderItem[]) => {
+    return orderItems.map((item) => ({
+      Make: item.manufacturer || (item.product_name.includes("iPhone") || item.product_name.includes("iPad") ? "Apple" : "Samsung"),
+      Model: item.product_name,
+      Memory: item.storage || "",
+      Color: item.color || "",
+      "Battery Avg.": item.battery_health ? `${item.battery_health}%` : "",
+      Grade: item.grade || "",
+      QTY: item.quantity,
+      "Price/Model": `${item.price_per_unit.toFixed(2)} €`,
+      Total: `${(item.quantity * item.price_per_unit).toFixed(2)} €`,
+    }));
+  }, []);
+
+  const exportOrder = useCallback((order: Order, format: "xlsx" | "csv") => {
+    const rows = buildExportRows(order.items);
+    const totalQty = order.items.reduce((s, i) => s + i.quantity, 0);
+    const totalValue = order.items.reduce((s, i) => s + i.quantity * i.price_per_unit, 0);
+    rows.push({
+      Make: "", Model: "", Memory: "", Color: "", "Battery Avg.": "", Grade: "",
+      QTY: totalQty,
+      "Price/Model": "",
+      Total: `${totalValue.toFixed(2)} €`,
+    });
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    const customerName = order.company_name || "Order";
+    const dateStr = new Date(order.created_at).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\./g, ".");
+    XLSX.utils.book_append_sheet(wb, ws, "Bestellung");
+    const filename = `Thie_${order.id.slice(0, 4)}_${customerName.replace(/\s+/g, "_")}_${dateStr}`;
+    XLSX.writeFile(wb, `${filename}.${format}`);
+  }, [buildExportRows]);
+
+  const exportAllOrders = useCallback((format: "xlsx" | "csv") => {
+    const allRows: any[] = [];
+    filtered.forEach((order) => {
+      const rows = buildExportRows(order.items);
+      allRows.push(...rows);
+    });
+    const totalQty = allRows.reduce((s, r) => s + (r.QTY || 0), 0);
+    const totalValue = filtered.reduce((s, o) => s + getOrderTotal(o), 0);
+    allRows.push({
+      Make: "", Model: "", Memory: "", Color: "", "Battery Avg.": "", Grade: "",
+      QTY: totalQty,
+      "Price/Model": "",
+      Total: `${totalValue.toFixed(2)} €`,
+    });
+
+    const ws = XLSX.utils.json_to_sheet(allRows);
+    const wb = XLSX.utils.book_new();
+    const dateStr = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\./g, ".");
+    XLSX.utils.book_append_sheet(wb, ws, "Bestellungen");
+    XLSX.writeFile(wb, `Thie_Bestellungen_${dateStr}.${format}`);
+  }, [filtered, buildExportRows, getOrderTotal]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -221,7 +286,7 @@ export default function Orders() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-2">
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
                 {t.admin.ordersPage?.title || "Bestellungen"}
@@ -230,6 +295,24 @@ export default function Orders() {
                 {filtered.length} {t.admin.ordersPage?.title || "Bestellungen"}
               </CardDescription>
             </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => exportAllOrders("xlsx")}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Als Excel (.xlsx)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportAllOrders("csv")}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Als CSV (.csv)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="relative mt-2">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -326,6 +409,21 @@ export default function Orders() {
                             >
                               <Mail className="h-4 w-4" />
                             </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="Export">
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => exportOrder(order, "xlsx")}>
+                                  <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => exportOrder(order, "csv")}>
+                                  <Download className="mr-2 h-4 w-4" /> CSV
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -348,9 +446,27 @@ export default function Orders() {
                   <Package className="h-5 w-5" />
                   {t.admin.ordersPage?.orderDetails || "Bestelldetails"} #{selectedOrder.id.slice(0, 8).toUpperCase()}
                 </DialogTitle>
-                <DialogDescription>
-                  {selectedOrder.company_name || selectedOrder.user_email}
-                  {selectedOrder.contact_person && ` • ${selectedOrder.contact_person}`}
+                <DialogDescription className="flex items-center justify-between">
+                  <span>
+                    {selectedOrder.company_name || selectedOrder.user_email}
+                    {selectedOrder.contact_person && ` • ${selectedOrder.contact_person}`}
+                  </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-2 ml-2">
+                        <Download className="h-3.5 w-3.5" />
+                        Export
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => exportOrder(selectedOrder, "xlsx")}>
+                        <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => exportOrder(selectedOrder, "csv")}>
+                        <Download className="mr-2 h-4 w-4" /> CSV
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </DialogDescription>
               </DialogHeader>
 
