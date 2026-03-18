@@ -221,6 +221,21 @@ export default function Requests() {
                   </div>
                 </div>
 
+                {/* Customer Edit Action */}
+                {!isAdmin && request.status === "pending" && (
+                  <div className="mt-4 flex gap-2 border-t pt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-2"
+                      onClick={() => setEditModal({ open: true, request })}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      Anfrage bearbeiten
+                    </Button>
+                  </div>
+                )}
+
                 {/* Admin Actions */}
                 {isAdmin && request.status === "pending" && (
                   <div className="mt-4 flex gap-2 border-t pt-4">
