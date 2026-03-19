@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle, UserPlus, ShoppingCart, Users } from "lucide-react";
+import { Upload, FileSpreadsheet, Trash2, AlertCircle, CheckCircle, Loader2, Clock, CheckCircle2, XCircle, UserPlus, ShoppingCart, Users, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -29,6 +29,7 @@ import { ProductsTable } from "@/components/admin/ProductsTable";
 import { ProductData } from "@/components/admin/ProductEditModal";
 import { CreateCustomerModal } from "@/components/admin/CreateCustomerModal";
 import { CreateOrderModal } from "@/components/admin/CreateOrderModal";
+import { AdminsTab } from "@/components/admin/AdminsTab";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 
@@ -454,6 +455,9 @@ export default function Admin() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Admin Management */}
+      <AdminsTab />
 
       <Card>
         <CardHeader><CardTitle>{t.admin.tabs.products}</CardTitle><CardDescription>{products.length} {t.admin.stats.totalProducts}</CardDescription></CardHeader>

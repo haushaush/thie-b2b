@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, password, companyName, contactPerson, contactPhone } = await req.json();
+    const { email, password, companyName, contactPerson, contactPhone, role } = await req.json();
 
     if (!email || !password || !companyName || !contactPerson) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -86,6 +86,14 @@ Deno.serve(async (req) => {
           contact_phone: contactPhone || null,
         })
         .eq("user_id", newUser.user.id);
+
+      // If role is admin, update the user_roles entry
+      if (role === "admin") {
+        await adminClient
+          .from("user_roles")
+          .update({ role: "admin" })
+          .eq("user_id", newUser.user.id);
+      }
     }
 
     return new Response(
