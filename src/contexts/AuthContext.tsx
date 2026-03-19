@@ -11,6 +11,9 @@ export interface AppUser {
   logoUrl: string | null;
   initials: string;
   isAdmin: boolean;
+  profileCompleted: boolean;
+  firstName: string;
+  lastName: string;
 }
 
 interface AuthContextType {
@@ -29,6 +32,8 @@ interface RegisterData {
   password: string;
   companyName: string;
   contactPerson: string;
+  firstName: string;
+  lastName: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,14 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (userId: string, email: string) => {
     try {
-      // Fetch profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", userId)
         .single();
 
-      // Check if user is admin
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
@@ -75,6 +78,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logoUrl: profile?.logo_url || null,
         initials,
         isAdmin: hasAdminRole,
+        profileCompleted: profile?.profile_completed || false,
+        firstName: profile?.first_name || "",
+        lastName: profile?.last_name || "",
       };
 
       setUser(appUser);
@@ -84,13 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         
         if (session?.user) {
-          // Defer Supabase calls with setTimeout
           setTimeout(() => {
             fetchUserProfile(session.user.id, session.user.email || "");
           }, 0);
@@ -102,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
@@ -143,6 +146,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             company_name: data.companyName,
             contact_person: data.contactPerson,
+            first_name: data.firstName,
+            last_name: data.lastName,
           },
         },
       });
@@ -154,13 +159,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: error.message };
       }
 
-      // Update profile with additional data
       if (authData.user) {
         await supabase
           .from("profiles")
           .update({
             company_name: data.companyName,
             contact_person: data.contactPerson,
+            first_name: data.firstName,
+            last_name: data.lastName,
           })
           .eq("user_id", authData.user.id);
       }
