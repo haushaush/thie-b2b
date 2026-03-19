@@ -107,7 +107,7 @@ export function AdminsTab() {
   };
 
   const handleCreate = async () => {
-    if (!form.email || !form.password || !form.companyName || !form.contactPerson) {
+    if (!form.email || !form.password || !form.contactPerson) {
       toast({ variant: "destructive", title: "Fehler", description: "Bitte alle Pflichtfelder ausfüllen." });
       return;
     }
