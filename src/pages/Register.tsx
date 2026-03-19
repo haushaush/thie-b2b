@@ -12,7 +12,8 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export default function Register() {
   const [formData, setFormData] = useState({
     companyName: "",
-    contactPerson: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -33,8 +34,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
-    // Validation
-    if (!formData.companyName || !formData.contactPerson || !formData.email || !formData.password) {
+    if (!formData.companyName || !formData.firstName || !formData.lastName || !formData.email || !formData.password) {
       setError(t.auth.register.error);
       return;
     }
@@ -54,7 +54,9 @@ export default function Register() {
       email: formData.email,
       password: formData.password,
       companyName: formData.companyName,
-      contactPerson: formData.contactPerson,
+      contactPerson: `${formData.firstName} ${formData.lastName}`,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
     });
     setIsSubmitting(false);
 
@@ -108,16 +110,29 @@ export default function Register() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="contactPerson">{t.auth.register.contactPerson}</Label>
-                <Input
-                  id="contactPerson"
-                  name="contactPerson"
-                  placeholder={t.auth.register.contactPersonPlaceholder}
-                  value={formData.contactPerson}
-                  onChange={handleChange}
-                  disabled={isSubmitting}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">{t.auth.register.firstName}</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    placeholder={t.auth.register.firstNamePlaceholder}
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">{t.auth.register.lastName}</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    placeholder={t.auth.register.lastNamePlaceholder}
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">

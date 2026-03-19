@@ -17,6 +17,7 @@ import { ViewToggle, ViewMode } from "@/components/products/ViewToggle";
 import { CartBar } from "@/components/products/CartBar";
 import { FilterModal, FilterState } from "@/components/products/FilterModal";
 import { SubmitModal } from "@/components/products/SubmitModal";
+import { ProfileIncompleteModal } from "@/components/ProfileIncompleteModal";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
@@ -35,6 +36,7 @@ export default function Dashboard() {
   });
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showProfileIncomplete, setShowProfileIncomplete] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -436,7 +438,19 @@ export default function Dashboard() {
       )}
 
       {/* Cart Bar */}
-      <CartBar onSubmit={() => setIsSubmitModalOpen(true)} />
+      <CartBar onSubmit={() => {
+        if (user && !user.isAdmin && !user.profileCompleted) {
+          setShowProfileIncomplete(true);
+          return;
+        }
+        setIsSubmitModalOpen(true);
+      }} />
+
+      {/* Profile Incomplete Modal */}
+      <ProfileIncompleteModal
+        open={showProfileIncomplete}
+        onOpenChange={setShowProfileIncomplete}
+      />
 
       {/* Submit Modal */}
       <SubmitModal

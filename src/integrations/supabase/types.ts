@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_documents: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_url: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_url: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cart_reservations: {
         Row: {
           created_at: string
@@ -48,6 +72,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      contact_persons: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       products: {
         Row: {
@@ -99,37 +150,82 @@ export type Database = {
       }
       profiles: {
         Row: {
+          billing_city: string | null
+          billing_country: string | null
+          billing_email: string | null
+          billing_street: string | null
+          billing_zip: string | null
           company_name: string | null
           contact_person: string | null
           contact_phone: string | null
           created_at: string
           email: string
+          first_name: string | null
           id: string
+          last_name: string | null
           logo_url: string | null
+          preferred_contact_method: string | null
+          profile_completed: boolean | null
+          shipping_city: string | null
+          shipping_country: string | null
+          shipping_same_as_billing: boolean | null
+          shipping_street: string | null
+          shipping_zip: string | null
           updated_at: string
           user_id: string
+          vat_id: string | null
         }
         Insert: {
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_email?: string | null
+          billing_street?: string | null
+          billing_zip?: string | null
           company_name?: string | null
           contact_person?: string | null
           contact_phone?: string | null
           created_at?: string
           email: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           logo_url?: string | null
+          preferred_contact_method?: string | null
+          profile_completed?: boolean | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_same_as_billing?: boolean | null
+          shipping_street?: string | null
+          shipping_zip?: string | null
           updated_at?: string
           user_id: string
+          vat_id?: string | null
         }
         Update: {
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_email?: string | null
+          billing_street?: string | null
+          billing_zip?: string | null
           company_name?: string | null
           contact_person?: string | null
           contact_phone?: string | null
           created_at?: string
           email?: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           logo_url?: string | null
+          preferred_contact_method?: string | null
+          profile_completed?: boolean | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_same_as_billing?: boolean | null
+          shipping_street?: string | null
+          shipping_zip?: string | null
           updated_at?: string
           user_id?: string
+          vat_id?: string | null
         }
         Relationships: []
       }
