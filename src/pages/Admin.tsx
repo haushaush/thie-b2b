@@ -456,6 +456,9 @@ export default function Admin() {
         </CardContent>
       </Card>
 
+      {/* Admin Management */}
+      <AdminsTab />
+
       <Card>
         <CardHeader><CardTitle>{t.admin.tabs.products}</CardTitle><CardDescription>{products.length} {t.admin.stats.totalProducts}</CardDescription></CardHeader>
         <CardContent><ProductsTable products={products} isLoading={isLoadingProducts} onProductUpdated={refetchProducts} /></CardContent>
