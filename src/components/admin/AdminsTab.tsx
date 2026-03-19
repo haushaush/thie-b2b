@@ -107,7 +107,7 @@ export function AdminsTab() {
   };
 
   const handleCreate = async () => {
-    if (!form.email || !form.password || !form.companyName || !form.contactPerson) {
+    if (!form.email || !form.password || !form.contactPerson) {
       toast({ variant: "destructive", title: "Fehler", description: "Bitte alle Pflichtfelder ausfüllen." });
       return;
     }
@@ -255,8 +255,8 @@ export function AdminsTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Firma *</Label>
-              <Input value={form.companyName} onChange={(e) => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="Firma GmbH" />
+              <Label>Firma</Label>
+              <Input value={form.companyName} onChange={(e) => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="Optional" />
             </div>
             <div className="space-y-2">
               <Label>Ansprechpartner *</Label>

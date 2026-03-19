@@ -51,7 +51,8 @@ Deno.serve(async (req) => {
 
     const { email, password, companyName, contactPerson, contactPhone, role } = await req.json();
 
-    if (!email || !password || !companyName || !contactPerson) {
+    const isAdminRole = role === "admin";
+    if (!email || !password || !contactPerson || (!isAdminRole && !companyName)) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
