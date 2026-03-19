@@ -196,7 +196,6 @@ export function AdminsTab() {
                       </TableCell>
                       <TableCell className="text-muted-foreground">{admin.email}</TableCell>
                       <TableCell>
-                      <TableCell>
                         {editingId === admin.user_id ? (
                           <Input
                             value={editForm.contact_phone || ""}
