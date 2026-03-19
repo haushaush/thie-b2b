@@ -174,7 +174,7 @@ export function AdminsTab() {
                 <TableHeader>
                   <TableRow className="bg-muted/50">
                     <TableHead className="font-semibold">Name</TableHead>
-                    <TableHead className="font-semibold">Firma</TableHead>
+                    <TableHead className="font-semibold">E-Mail</TableHead>
                     <TableHead className="font-semibold">E-Mail</TableHead>
                     <TableHead className="font-semibold">Telefon</TableHead>
                     <TableHead className="font-semibold w-[100px]">Aktionen</TableHead>
@@ -192,17 +192,6 @@ export function AdminsTab() {
                           />
                         ) : (
                           <span className="font-medium">{admin.contact_person || "-"}</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingId === admin.user_id ? (
-                          <Input
-                            value={editForm.company_name || ""}
-                            onChange={(e) => setEditForm((f) => ({ ...f, company_name: e.target.value }))}
-                            className="h-8"
-                          />
-                        ) : (
-                          admin.company_name || "-"
                         )}
                       </TableCell>
                       <TableCell className="text-muted-foreground">{admin.email}</TableCell>
@@ -254,10 +243,6 @@ export function AdminsTab() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Firma</Label>
-              <Input value={form.companyName} onChange={(e) => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="Optional" />
-            </div>
             <div className="space-y-2">
               <Label>Ansprechpartner *</Label>
               <Input value={form.contactPerson} onChange={(e) => setForm(f => ({ ...f, contactPerson: e.target.value }))} placeholder="Max Mustermann" />
