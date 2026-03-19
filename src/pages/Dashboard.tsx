@@ -438,7 +438,19 @@ export default function Dashboard() {
       )}
 
       {/* Cart Bar */}
-      <CartBar onSubmit={() => setIsSubmitModalOpen(true)} />
+      <CartBar onSubmit={() => {
+        if (user && !user.isAdmin && !user.profileCompleted) {
+          setShowProfileIncomplete(true);
+          return;
+        }
+        setIsSubmitModalOpen(true);
+      }} />
+
+      {/* Profile Incomplete Modal */}
+      <ProfileIncompleteModal
+        open={showProfileIncomplete}
+        onOpenChange={setShowProfileIncomplete}
+      />
 
       {/* Submit Modal */}
       <SubmitModal
