@@ -36,6 +36,7 @@ export default function Dashboard() {
   });
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showProfileIncomplete, setShowProfileIncomplete] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currentPage, setCurrentPage] = useState(1);
   
