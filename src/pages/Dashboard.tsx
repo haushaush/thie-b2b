@@ -17,6 +17,7 @@ import { ViewToggle, ViewMode } from "@/components/products/ViewToggle";
 import { CartBar } from "@/components/products/CartBar";
 import { FilterModal, FilterState } from "@/components/products/FilterModal";
 import { SubmitModal } from "@/components/products/SubmitModal";
+import { ProfileIncompleteModal } from "@/components/ProfileIncompleteModal";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
