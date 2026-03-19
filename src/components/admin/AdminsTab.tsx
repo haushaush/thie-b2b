@@ -194,17 +194,7 @@ export function AdminsTab() {
                           <span className="font-medium">{admin.contact_person || "-"}</span>
                         )}
                       </TableCell>
-                      <TableCell>
-                        {editingId === admin.user_id ? (
-                          <Input
-                            value={editForm.company_name || ""}
-                            onChange={(e) => setEditForm((f) => ({ ...f, company_name: e.target.value }))}
-                            className="h-8"
-                          />
-                        ) : (
-                          admin.company_name || "-"
-                        )}
-                      </TableCell>
+                      <TableCell className="text-muted-foreground">{admin.email}</TableCell>
                       <TableCell className="text-muted-foreground">{admin.email}</TableCell>
                       <TableCell>
                         {editingId === admin.user_id ? (
