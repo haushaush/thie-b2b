@@ -29,6 +29,7 @@ import { ProductsTable } from "@/components/admin/ProductsTable";
 import { ProductData } from "@/components/admin/ProductEditModal";
 import { CreateCustomerModal } from "@/components/admin/CreateCustomerModal";
 import { CreateOrderModal } from "@/components/admin/CreateOrderModal";
+import { AdminsTab } from "@/components/admin/AdminsTab";
 import { z } from "zod";
 import * as XLSX from "xlsx";
 
