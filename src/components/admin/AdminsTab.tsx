@@ -174,7 +174,7 @@ export function AdminsTab() {
                 <TableHeader>
                   <TableRow className="bg-muted/50">
                     <TableHead className="font-semibold">Name</TableHead>
-                    <TableHead className="font-semibold">Firma</TableHead>
+                    <TableHead className="font-semibold">E-Mail</TableHead>
                     <TableHead className="font-semibold">E-Mail</TableHead>
                     <TableHead className="font-semibold">Telefon</TableHead>
                     <TableHead className="font-semibold w-[100px]">Aktionen</TableHead>
