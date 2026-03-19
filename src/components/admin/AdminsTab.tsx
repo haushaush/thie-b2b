@@ -255,8 +255,8 @@ export function AdminsTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Firma *</Label>
-              <Input value={form.companyName} onChange={(e) => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="Firma GmbH" />
+              <Label>Firma</Label>
+              <Input value={form.companyName} onChange={(e) => setForm(f => ({ ...f, companyName: e.target.value }))} placeholder="Optional" />
             </div>
             <div className="space-y-2">
               <Label>Ansprechpartner *</Label>
