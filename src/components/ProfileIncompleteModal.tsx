@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ interface ProfileIncompleteModalProps {
 
 export function ProfileIncompleteModal({ open, onOpenChange }: ProfileIncompleteModalProps) {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -25,10 +27,9 @@ export function ProfileIncompleteModal({ open, onOpenChange }: ProfileIncomplete
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-warning/10">
             <AlertTriangle className="h-6 w-6 text-warning" />
           </div>
-          <DialogTitle className="text-center">Profil unvollständig</DialogTitle>
+          <DialogTitle className="text-center">{(t as any).profileIncomplete?.title || "Profile Incomplete"}</DialogTitle>
           <DialogDescription className="text-center">
-            Um Bestellungen tätigen zu können, müssen Sie zunächst Ihr Profil vervollständigen.
-            Bitte ergänzen Sie Ihre Unternehmensdaten, Adressen und Nachweise.
+            {(t as any).profileIncomplete?.description || "To place orders, you must first complete your profile."}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col gap-2 sm:flex-col">
@@ -39,14 +40,14 @@ export function ProfileIncompleteModal({ open, onOpenChange }: ProfileIncomplete
               navigate("/complete-profile");
             }}
           >
-            Profil vervollständigen
+            {(t as any).profileIncomplete?.completeProfile || "Complete Profile"}
           </Button>
           <Button
             variant="outline"
             className="w-full"
             onClick={() => onOpenChange(false)}
           >
-            Später
+            {(t as any).profileIncomplete?.later || "Later"}
           </Button>
         </DialogFooter>
       </DialogContent>

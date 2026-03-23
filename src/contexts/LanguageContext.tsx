@@ -35,7 +35,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const t = translations[language];
 
-  const locale = language === "de" ? "de-DE" : language === "fr" ? "fr-FR" : "en-US";
+  const locale = language === "de" ? "de-DE" : language === "fr" ? "fr-FR" : language === "nl" ? "nl-NL" : "en-US";
 
   const formatNumber = useCallback(
     (num: number, options?: Intl.NumberFormatOptions) => {
