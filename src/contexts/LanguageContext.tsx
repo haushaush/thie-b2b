@@ -17,13 +17,14 @@ const LANGUAGE_STORAGE_KEY = "preferred-language";
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (stored === "en" || stored === "de" || stored === "fr") {
+    if (stored === "en" || stored === "de" || stored === "fr" || stored === "nl") {
       return stored;
     }
     // Default to browser language or English
     const browserLang = navigator.language.split("-")[0];
     if (browserLang === "de") return "de";
     if (browserLang === "fr") return "fr";
+    if (browserLang === "nl") return "nl";
     return "en";
   });
 
