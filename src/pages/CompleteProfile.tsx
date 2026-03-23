@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Upload, X, Loader2, FileText } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,6 +52,28 @@ export default function CompleteProfile() {
   const [contacts, setContacts] = useState<ContactPerson[]>([
     { name: "", phone: "", email: "" },
   ]);
+  const [existingContactIds, setExistingContactIds] = useState<string[]>([]);
+
+  // Load existing contact persons from registration
+  useEffect(() => {
+    if (!user) return;
+    const loadContacts = async () => {
+      const { data } = await supabase
+        .from("contact_persons")
+        .select("id, name, phone, email")
+        .eq("user_id", user.id);
+      if (data && data.length > 0) {
+        setContacts(data.map((c) => ({
+          id: c.id,
+          name: c.name,
+          phone: c.phone || "",
+          email: c.email || "",
+        })));
+        setExistingContactIds(data.map((c) => c.id));
+      }
+    };
+    loadContacts();
+  }, [user]);
 
   // Preferred contact method
   const [preferredContact, setPreferredContact] = useState("email");
@@ -168,14 +190,22 @@ export default function CompleteProfile() {
     setIsSaving(true);
 
     try {
-      // Save contact persons
+      // Save contact persons (update existing, insert new)
       for (const contact of validContacts) {
-        await supabase.from("contact_persons").insert({
-          user_id: user.id,
-          name: contact.name.trim(),
-          phone: contact.phone.trim() || null,
-          email: contact.email.trim() || null,
-        });
+        if (contact.id && existingContactIds.includes(contact.id)) {
+          await supabase.from("contact_persons").update({
+            name: contact.name.trim(),
+            phone: contact.phone.trim() || null,
+            email: contact.email.trim() || null,
+          }).eq("id", contact.id);
+        } else {
+          await supabase.from("contact_persons").insert({
+            user_id: user.id,
+            name: contact.name.trim(),
+            phone: contact.phone.trim() || null,
+            email: contact.email.trim() || null,
+          });
+        }
       }
 
       // Update profile
