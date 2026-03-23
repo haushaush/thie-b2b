@@ -190,14 +190,22 @@ export default function CompleteProfile() {
     setIsSaving(true);
 
     try {
-      // Save contact persons
+      // Save contact persons (update existing, insert new)
       for (const contact of validContacts) {
-        await supabase.from("contact_persons").insert({
-          user_id: user.id,
-          name: contact.name.trim(),
-          phone: contact.phone.trim() || null,
-          email: contact.email.trim() || null,
-        });
+        if (contact.id && existingContactIds.includes(contact.id)) {
+          await supabase.from("contact_persons").update({
+            name: contact.name.trim(),
+            phone: contact.phone.trim() || null,
+            email: contact.email.trim() || null,
+          }).eq("id", contact.id);
+        } else {
+          await supabase.from("contact_persons").insert({
+            user_id: user.id,
+            name: contact.name.trim(),
+            phone: contact.phone.trim() || null,
+            email: contact.email.trim() || null,
+          });
+        }
       }
 
       // Update profile
