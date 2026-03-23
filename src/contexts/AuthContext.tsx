@@ -169,6 +169,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             last_name: data.lastName,
           })
           .eq("user_id", authData.user.id);
+
+        // Save registration data as first contact person
+        await supabase
+          .from("contact_persons")
+          .insert({
+            user_id: authData.user.id,
+            name: data.contactPerson,
+            email: data.email,
+          });
       }
 
       return { success: true };
