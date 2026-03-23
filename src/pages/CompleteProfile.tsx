@@ -52,6 +52,28 @@ export default function CompleteProfile() {
   const [contacts, setContacts] = useState<ContactPerson[]>([
     { name: "", phone: "", email: "" },
   ]);
+  const [existingContactIds, setExistingContactIds] = useState<string[]>([]);
+
+  // Load existing contact persons from registration
+  useEffect(() => {
+    if (!user) return;
+    const loadContacts = async () => {
+      const { data } = await supabase
+        .from("contact_persons")
+        .select("id, name, phone, email")
+        .eq("user_id", user.id);
+      if (data && data.length > 0) {
+        setContacts(data.map((c) => ({
+          id: c.id,
+          name: c.name,
+          phone: c.phone || "",
+          email: c.email || "",
+        })));
+        setExistingContactIds(data.map((c) => c.id));
+      }
+    };
+    loadContacts();
+  }, [user]);
 
   // Preferred contact method
   const [preferredContact, setPreferredContact] = useState("email");
