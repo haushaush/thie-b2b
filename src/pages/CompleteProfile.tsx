@@ -43,6 +43,7 @@ export default function CompleteProfile() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cp = (t as any).completeProfile || {};
 
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -114,7 +115,7 @@ export default function CompleteProfile() {
           .upload(fileName, file);
 
         if (uploadError) {
-          toast.error(`Fehler: ${file.name}`);
+          toast.error(`${t.common.error}: ${file.name}`);
           continue;
         }
 
@@ -150,17 +151,17 @@ export default function CompleteProfile() {
     // Validate at least one contact with name
     const validContacts = contacts.filter((c) => c.name.trim());
     if (validContacts.length === 0) {
-      toast.error("Bitte fügen Sie mindestens einen Ansprechpartner hinzu.");
+      toast.error(cp.errorMinContact || "Please add at least one contact person.");
       return;
     }
 
     if (!billing.street || !billing.city || !billing.zip || !billing.country) {
-      toast.error("Bitte füllen Sie die Rechnungsadresse aus.");
+      toast.error(cp.errorBillingAddress || "Please fill in the billing address.");
       return;
     }
 
     if (!shippingSameAsBilling && (!shipping.street || !shipping.city || !shipping.zip || !shipping.country)) {
-      toast.error("Bitte füllen Sie die Lieferadresse aus.");
+      toast.error(cp.errorShippingAddress || "Please fill in the shipping address.");
       return;
     }
 
@@ -199,12 +200,12 @@ export default function CompleteProfile() {
 
       if (error) throw error;
 
-      toast.success("Profil vervollständigt!");
+      toast.success(cp.completed || "Profile completed!");
       // Reload to refresh auth context
       window.location.href = "/dashboard";
     } catch (error: any) {
       console.error("Error completing profile:", error);
-      toast.error("Fehler beim Speichern des Profils.");
+      toast.error(cp.errorSaving || "Error saving profile.");
     } finally {
       setIsSaving(false);
     }
@@ -217,9 +218,9 @@ export default function CompleteProfile() {
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
             <span className="text-2xl font-bold text-primary-foreground">T</span>
           </div>
-          <h1 className="text-2xl font-bold text-primary">Profil vervollständigen</h1>
+          <h1 className="text-2xl font-bold text-primary">{cp.title || "Complete Profile"}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Bitte ergänzen Sie Ihre Unternehmensdaten, um Bestellungen tätigen zu können.
+            {cp.description || "Please complete your company details to be able to place orders."}
           </p>
         </div>
 
@@ -227,15 +228,15 @@ export default function CompleteProfile() {
           {/* Contact Persons */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Ansprechpartner</CardTitle>
-              <CardDescription>Fügen Sie Ihre Ansprechpartner hinzu.</CardDescription>
+              <CardTitle className="text-lg">{cp.contactPersons || "Contact Persons"}</CardTitle>
+              <CardDescription>{cp.contactPersonsDesc || "Add your contact persons."}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {contacts.map((contact, index) => (
                 <div key={index} className="space-y-3 rounded-lg border border-border p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-muted-foreground">
-                      Ansprechpartner {index + 1}
+                      {cp.contactPerson || "Contact Person"} {index + 1}
                     </span>
                     {contacts.length > 1 && (
                       <Button
@@ -251,7 +252,7 @@ export default function CompleteProfile() {
                   </div>
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Name *</Label>
+                      <Label className="text-xs">{cp.name || "Name"} *</Label>
                       <Input
                         placeholder="Max Mustermann"
                         value={contact.name}
@@ -259,7 +260,7 @@ export default function CompleteProfile() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Telefon</Label>
+                      <Label className="text-xs">{cp.phone || "Phone"}</Label>
                       <Input
                         type="tel"
                         placeholder="+49 123 456789"
@@ -268,7 +269,7 @@ export default function CompleteProfile() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">E-Mail</Label>
+                      <Label className="text-xs">{cp.emailLabel || "Email"}</Label>
                       <Input
                         type="email"
                         placeholder="max@firma.de"
@@ -281,7 +282,7 @@ export default function CompleteProfile() {
               ))}
               <Button type="button" variant="outline" size="sm" onClick={addContact}>
                 <Plus className="mr-2 h-4 w-4" />
-                Ansprechpartner hinzufügen
+                {cp.addContact || "Add Contact Person"}
               </Button>
             </CardContent>
           </Card>
@@ -289,7 +290,7 @@ export default function CompleteProfile() {
           {/* Preferred Contact Method */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Bevorzugte Kontaktart</CardTitle>
+              <CardTitle className="text-lg">{cp.preferredContact || "Preferred Contact Method"}</CardTitle>
             </CardHeader>
             <CardContent>
               <Select value={preferredContact} onValueChange={setPreferredContact}>
@@ -298,7 +299,7 @@ export default function CompleteProfile() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="email">E-Mail</SelectItem>
-                  <SelectItem value="phone">Telefon</SelectItem>
+                  <SelectItem value="phone">{cp.phone || "Phone"}</SelectItem>
                   <SelectItem value="whatsapp">WhatsApp</SelectItem>
                 </SelectContent>
               </Select>
@@ -308,11 +309,11 @@ export default function CompleteProfile() {
           {/* Billing Address */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Rechnungsadresse</CardTitle>
+              <CardTitle className="text-lg">{cp.billingAddress || "Billing Address"}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Straße & Hausnummer *</Label>
+                <Label>{cp.street || "Street & Number"} *</Label>
                 <Input
                   placeholder="Musterstraße 1"
                   value={billing.street}
@@ -321,7 +322,7 @@ export default function CompleteProfile() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>PLZ *</Label>
+                  <Label>{cp.zip || "Postal Code"} *</Label>
                   <Input
                     placeholder="12345"
                     value={billing.zip}
@@ -329,7 +330,7 @@ export default function CompleteProfile() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Stadt *</Label>
+                  <Label>{cp.city || "City"} *</Label>
                   <Input
                     placeholder="Berlin"
                     value={billing.city}
@@ -338,10 +339,10 @@ export default function CompleteProfile() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Land *</Label>
+                <Label>{cp.country || "Country"} *</Label>
                 <Select value={billing.country} onValueChange={(v) => setBilling((p) => ({ ...p, country: v }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Land auswählen" />
+                    <SelectValue placeholder={cp.selectCountry || "Select country"} />
                   </SelectTrigger>
                   <SelectContent>
                     {ALL_COUNTRIES.map((c) => (
@@ -351,7 +352,7 @@ export default function CompleteProfile() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Abweichende E-Mail für Rechnungsversand (optional)</Label>
+                <Label>{cp.billingEmailAlt || "Alternative email for invoices (optional)"}</Label>
                 <Input
                   type="email"
                   placeholder="rechnung@firma.de"
@@ -365,7 +366,7 @@ export default function CompleteProfile() {
           {/* Shipping Address */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Lieferadresse</CardTitle>
+              <CardTitle className="text-lg">{cp.shippingAddress || "Shipping Address"}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-2">
@@ -375,14 +376,14 @@ export default function CompleteProfile() {
                   onCheckedChange={(checked) => setShippingSameAsBilling(checked === true)}
                 />
                 <Label htmlFor="sameAsBilling" className="text-sm font-normal">
-                  Lieferadresse ist gleich Rechnungsadresse
+                  {cp.shippingSameAsBilling || "Shipping address is the same as billing address"}
                 </Label>
               </div>
 
               {!shippingSameAsBilling && (
                 <div className="space-y-4 pt-2">
                   <div className="space-y-2">
-                    <Label>Straße & Hausnummer *</Label>
+                    <Label>{cp.street || "Street & Number"} *</Label>
                     <Input
                       placeholder="Musterstraße 1"
                       value={shipping.street}
@@ -391,7 +392,7 @@ export default function CompleteProfile() {
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>PLZ *</Label>
+                      <Label>{cp.zip || "Postal Code"} *</Label>
                       <Input
                         placeholder="12345"
                         value={shipping.zip}
@@ -399,7 +400,7 @@ export default function CompleteProfile() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Stadt *</Label>
+                      <Label>{cp.city || "City"} *</Label>
                       <Input
                         placeholder="Berlin"
                         value={shipping.city}
@@ -408,10 +409,10 @@ export default function CompleteProfile() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Land *</Label>
+                    <Label>{cp.country || "Country"} *</Label>
                     <Select value={shipping.country} onValueChange={(v) => setShipping((p) => ({ ...p, country: v }))}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Land auswählen" />
+                        <SelectValue placeholder={cp.selectCountry || "Select country"} />
                       </SelectTrigger>
                       <SelectContent>
                         {ALL_COUNTRIES.map((c) => (
@@ -429,8 +430,8 @@ export default function CompleteProfile() {
           {showVatField && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">USt-IdNr. (VAT ID)</CardTitle>
-                <CardDescription>Pflichtangabe für EU-Unternehmen</CardDescription>
+                <CardTitle className="text-lg">{cp.vatId || "VAT ID"}</CardTitle>
+                <CardDescription>{cp.vatIdDesc || "Required for EU companies"}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Input
@@ -445,9 +446,9 @@ export default function CompleteProfile() {
           {/* Document Upload */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Dokumente hochladen</CardTitle>
+              <CardTitle className="text-lg">{cp.documents || "Upload Documents"}</CardTitle>
               <CardDescription>
-                Laden Sie Nachweise wie Gewerbeanmeldung, Handelsregisterauszug o.ä. hoch.
+                {cp.documentsDesc || "Upload proof such as business registration, trade register extract, etc."}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -481,7 +482,7 @@ export default function CompleteProfile() {
                 ) : (
                   <Upload className="mr-2 h-4 w-4" />
                 )}
-                Dokument hochladen
+                {cp.uploadDocuments || "Upload Documents"}
               </Button>
               <input
                 ref={fileInputRef}
@@ -491,7 +492,7 @@ export default function CompleteProfile() {
                 onChange={handleDocUpload}
                 className="hidden"
               />
-              <p className="text-xs text-muted-foreground">PDF, JPG, PNG, DOC – max. 10MB pro Datei</p>
+              <p className="text-xs text-muted-foreground">PDF, JPG, PNG, DOC – max. 10MB</p>
             </CardContent>
           </Card>
 
@@ -501,10 +502,10 @@ export default function CompleteProfile() {
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Wird gespeichert...
+                  {cp.saving || "Saving..."}
                 </>
               ) : (
-                "Profil vervollständigen"
+                cp.save || "Save & Continue"
               )}
             </Button>
           </div>
