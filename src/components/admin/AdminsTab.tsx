@@ -3,6 +3,7 @@ import { Search, Shield, ShieldPlus, Pencil, X, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,8 @@ interface AdminProfile {
 
 export function AdminsTab() {
   const { toast } = useToast();
+  const { t } = useLanguage();
+  const ta = (t.admin as any).admins || {};
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<AdminProfile>>({});
@@ -96,11 +99,11 @@ export function AdminsTab() {
         })
         .eq("user_id", userId);
       if (error) throw error;
-      toast({ title: "Gespeichert", description: "Admin-Profil wurde aktualisiert." });
+      toast({ title: ta.saved || "Saved", description: ta.savedDesc || "Admin profile updated." });
       cancelEdit();
       refetch();
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Fehler", description: error.message });
+      toast({ variant: "destructive", title: ta.error || "Error", description: error.message });
     } finally {
       setIsSaving(false);
     }
@@ -108,11 +111,11 @@ export function AdminsTab() {
 
   const handleCreate = async () => {
     if (!form.email || !form.password || !form.contactPerson) {
-      toast({ variant: "destructive", title: "Fehler", description: "Bitte alle Pflichtfelder ausfüllen." });
+      toast({ variant: "destructive", title: ta.error || "Error", description: ta.fillRequired || "Please fill in all required fields." });
       return;
     }
     if (form.password.length < 6) {
-      toast({ variant: "destructive", title: "Fehler", description: "Passwort muss mindestens 6 Zeichen haben." });
+      toast({ variant: "destructive", title: ta.error || "Error", description: ta.passwordMinLength || "Password must be at least 6 characters." });
       return;
     }
     setIsSubmitting(true);
@@ -122,12 +125,12 @@ export function AdminsTab() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast({ title: "Admin erstellt", description: "Der neue Admin wurde erfolgreich angelegt." });
+      toast({ title: ta.createSuccess || "Admin created", description: ta.createSuccessDesc || "The new admin has been successfully created." });
       setForm({ email: "", password: "", companyName: "", contactPerson: "", contactPhone: "" });
       setShowCreate(false);
       refetch();
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Fehler", description: error.message });
+      toast({ variant: "destructive", title: ta.error || "Error", description: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -141,19 +144,19 @@ export function AdminsTab() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
-                Administratoren
+                {ta.title || "Administrators"}
               </CardTitle>
               <CardDescription>{admins.length} Admin(s)</CardDescription>
             </div>
             <Button onClick={() => setShowCreate(true)} className="gap-2">
               <ShieldPlus className="h-4 w-4" />
-              Admin anlegen
+              {ta.create || "Create Admin"}
             </Button>
           </div>
           <div className="relative mt-2">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Admin suchen..."
+              placeholder={ta.searchPlaceholder || "Search admins..."}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
@@ -162,22 +165,21 @@ export function AdminsTab() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex items-center justify-center py-12 text-muted-foreground">Laden...</div>
+            <div className="flex items-center justify-center py-12 text-muted-foreground">{ta.loading || "Loading..."}</div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Shield className="mb-3 h-10 w-10 text-muted-foreground/50" />
-              <p className="font-medium text-muted-foreground">Keine Admins gefunden</p>
+              <p className="font-medium text-muted-foreground">{ta.noAdmins || "No admins found"}</p>
             </div>
           ) : (
             <div className="rounded-lg border overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
-                    <TableHead className="font-semibold">Name</TableHead>
-                    <TableHead className="font-semibold">E-Mail</TableHead>
-                    <TableHead className="font-semibold">E-Mail</TableHead>
-                    <TableHead className="font-semibold">Telefon</TableHead>
-                    <TableHead className="font-semibold w-[100px]">Aktionen</TableHead>
+                    <TableHead className="font-semibold">{ta.name || "Name"}</TableHead>
+                    <TableHead className="font-semibold">{ta.email || "Email"}</TableHead>
+                    <TableHead className="font-semibold">{ta.phone || "Phone"}</TableHead>
+                    <TableHead className="font-semibold w-[100px]">{ta.actions || "Actions"}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -236,34 +238,34 @@ export function AdminsTab() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ShieldPlus className="h-5 w-5" />
-              Admin anlegen
+              {ta.createTitle || "Create Admin"}
             </DialogTitle>
             <DialogDescription>
-              Erstellen Sie einen neuen Administrator mit Zugangsdaten.
+              {ta.createDesc || "Create a new administrator with login credentials."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Ansprechpartner *</Label>
+              <Label>{ta.contactPerson || "Contact Person"} *</Label>
               <Input value={form.contactPerson} onChange={(e) => setForm(f => ({ ...f, contactPerson: e.target.value }))} placeholder="Max Mustermann" />
             </div>
             <div className="space-y-2">
-              <Label>Telefon</Label>
+              <Label>{ta.phone || "Phone"}</Label>
               <Input value={form.contactPhone} onChange={(e) => setForm(f => ({ ...f, contactPhone: e.target.value }))} placeholder="+49 123 456789" />
             </div>
             <div className="space-y-2">
-              <Label>E-Mail *</Label>
+              <Label>{ta.email || "Email"} *</Label>
               <Input type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="admin@firma.de" />
             </div>
             <div className="space-y-2">
-              <Label>Passwort *</Label>
-              <Input type="password" value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Mindestens 6 Zeichen" />
+              <Label>{ta.password || "Password"} *</Label>
+              <Input type="password" value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} placeholder={ta.passwordPlaceholder || "At least 6 characters"} />
             </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setShowCreate(false)} disabled={isSubmitting}>Abbrechen</Button>
+            <Button variant="outline" onClick={() => setShowCreate(false)} disabled={isSubmitting}>{ta.cancel || "Cancel"}</Button>
             <Button onClick={handleCreate} disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Erstellen...</> : "Admin anlegen"}
+              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{ta.creating || "Creating..."}</> : ta.create || "Create Admin"}
             </Button>
           </DialogFooter>
         </DialogContent>
