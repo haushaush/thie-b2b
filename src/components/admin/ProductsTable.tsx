@@ -146,10 +146,16 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
         </div>
         <div className="flex gap-2">
           {someSelected && (
-            <Button variant="outline" onClick={() => setShowBulkEdit(true)}>
-              <Edit3 className="mr-2 h-4 w-4" />
-              {(bulk.button || "Bulk Edit")} ({selectedIds.size})
-            </Button>
+            <>
+              <Button variant="outline" onClick={() => setShowBulkEdit(true)}>
+                <Edit3 className="mr-2 h-4 w-4" />
+                {(bulk.button || "Bulk Edit")} ({selectedIds.size})
+              </Button>
+              <Button variant="destructive" onClick={() => setShowBulkDelete(true)}>
+                <Trash className="mr-2 h-4 w-4" />
+                {t.common.delete} ({selectedIds.size})
+              </Button>
+            </>
           )}
           <Button onClick={() => setShowAddModal(true)}><Plus className="mr-2 h-4 w-4" />{t.admin.products.addProduct}</Button>
         </div>
