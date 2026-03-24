@@ -1960,6 +1960,10 @@ export const translations = {
         error: "Fout bij bijwerken",
         changed: "{count} gewijzigd",
         noChanges: "Geen wijzigingen",
+        confirmBulkDelete: "{count} producten verwijderen?",
+        confirmBulkDeleteDesc: "Deze actie kan niet ongedaan worden gemaakt. Alle geselecteerde producten worden permanent verwijderd.",
+        deleteSuccess: "Producten verwijderd",
+        deleteSuccessDesc: "{count} producten succesvol verwijderd.",
       },
       customers: {
         title: "Klanten",
