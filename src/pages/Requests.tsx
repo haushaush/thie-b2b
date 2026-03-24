@@ -231,7 +231,7 @@ export default function Requests() {
                       onClick={() => setEditModal({ open: true, request })}
                     >
                       <Pencil className="h-4 w-4" />
-                      {isAdmin ? (t.admin.actionModal?.editRequest || "Anfrage bearbeiten") : "Anfrage bearbeiten"}
+                      {isAdmin ? "Anfrage bearbeiten" : "Anfrage bearbeiten"}
                     </Button>
 
                     {/* Admin Approve/Reject */}
