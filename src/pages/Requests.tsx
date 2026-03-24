@@ -221,42 +221,42 @@ export default function Requests() {
                   </div>
                 </div>
 
-                {/* Customer Edit Action */}
-                {!isAdmin && request.status === "pending" && (
+                {/* Edit Action - for customers and admins on pending requests */}
+                {request.status === "pending" && (
                   <div className="mt-4 flex gap-2 border-t pt-4">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 gap-2"
+                      className="gap-2"
                       onClick={() => setEditModal({ open: true, request })}
                     >
                       <Pencil className="h-4 w-4" />
-                      Anfrage bearbeiten
+                      {isAdmin ? "Anfrage bearbeiten" : "Anfrage bearbeiten"}
                     </Button>
-                  </div>
-                )}
 
-                {/* Admin Actions */}
-                {isAdmin && request.status === "pending" && (
-                  <div className="mt-4 flex gap-2 border-t pt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 border-success/30 text-success hover:bg-success/10 hover:text-success"
-                      onClick={() => handleAction(request.id, "approve", request.user_email, request.company_name)}
-                    >
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      {t.admin.actionModal.approve}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => handleAction(request.id, "reject", request.user_email, request.company_name)}
-                    >
-                      <XCircle className="mr-2 h-4 w-4" />
-                      {t.admin.actionModal.reject}
-                    </Button>
+                    {/* Admin Approve/Reject */}
+                    {isAdmin && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 border-success/30 text-success hover:bg-success/10 hover:text-success"
+                          onClick={() => handleAction(request.id, "approve", request.user_email, request.company_name)}
+                        >
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          {t.admin.actionModal.approve}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => handleAction(request.id, "reject", request.user_email, request.company_name)}
+                        >
+                          <XCircle className="mr-2 h-4 w-4" />
+                          {t.admin.actionModal.reject}
+                        </Button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
