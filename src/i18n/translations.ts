@@ -865,6 +865,18 @@ export const translations = {
         successDesc: "Das Produkt wurde erfolgreich aktualisiert.",
         error: "Fehler beim Aktualisieren des Produkts",
       },
+      bulkEdit: {
+        button: "Massenbearbeitung",
+        title: "Produkte bearbeiten",
+        description: "Preis und Menge für {count} ausgewählte Produkte bearbeiten.",
+        save: "Änderungen speichern",
+        saving: "Wird gespeichert...",
+        success: "Produkte aktualisiert",
+        successDesc: "{count} Produkte wurden erfolgreich aktualisiert.",
+        error: "Fehler beim Aktualisieren",
+        changed: "{count} geändert",
+        noChanges: "Keine Änderungen",
+      },
       customers: {
         title: "Kunden",
         createTitle: "Kunde anlegen",
