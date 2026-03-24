@@ -1937,6 +1937,18 @@ export const translations = {
         successDesc: "Het product is succesvol bijgewerkt.",
         error: "Fout bij bijwerken van product",
       },
+      bulkEdit: {
+        button: "Bulk bewerken",
+        title: "Producten bewerken",
+        description: "Prijs en aantal voor {count} geselecteerde producten bewerken.",
+        save: "Wijzigingen opslaan",
+        saving: "Opslaan...",
+        success: "Producten bijgewerkt",
+        successDesc: "{count} producten succesvol bijgewerkt.",
+        error: "Fout bij bijwerken",
+        changed: "{count} gewijzigd",
+        noChanges: "Geen wijzigingen",
+      },
       customers: {
         title: "Klanten",
         createTitle: "Klant aanmaken",
