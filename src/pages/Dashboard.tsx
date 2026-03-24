@@ -164,65 +164,38 @@ export default function Dashboard() {
     setIsSubmitting(true);
     
     try {
-      // Create the request with shipping info
-      const { data: request, error: requestError } = await supabase
-        .from("requests")
-        .insert({
-          user_id: user.id,
-          status: "pending",
-          shipping_cost: shippingCost,
-          express_shipping: expressShipping,
-        })
-        .select()
-        .single();
+      // Use atomic server-side request creation with inventory validation
+      const requestId = await submitRequest(expressShipping, shippingCost);
 
-      if (requestError) throw requestError;
-
-      // Create request items
+      // Build items info for email notifications
       const requestItems = items.map((item) => ({
-        request_id: request.id,
-        product_id: item.product.id,
         product_name: item.product.name,
         quantity: item.quantity,
         price_per_unit: item.product.pricePerUnit,
       }));
+      const totalDevicesCount = items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalAmountValue = items.reduce((sum, item) => sum + (item.quantity * item.product.pricePerUnit), 0);
 
-      const { error: itemsError } = await supabase
-        .from("request_items")
-        .insert(requestItems);
-
-      if (itemsError) throw itemsError;
-
-      // Calculate totals for email notification
-      const totalDevices = items.reduce((sum, item) => sum + item.quantity, 0);
-      const totalAmount = items.reduce((sum, item) => sum + (item.quantity * item.product.pricePerUnit), 0);
-
-      // Send notification email to admins
+      // Send notification emails (non-blocking)
       try {
         await supabase.functions.invoke("notify-new-request", {
           body: {
-            requestId: request.id,
+            requestId,
             userEmail: user.email,
             companyName: user.companyName,
-            items: requestItems.map(item => ({
-              product_name: item.product_name,
-              quantity: item.quantity,
-              price_per_unit: item.price_per_unit,
-            })),
-            totalDevices,
-            totalAmount,
+            items: requestItems,
+            totalDevices: totalDevicesCount,
+            totalAmount: totalAmountValue,
           },
         });
-        console.log("Admin notification sent successfully");
       } catch (notifyError) {
         console.error("Failed to send admin notification:", notifyError);
       }
 
-      // Send confirmation email to the customer
       try {
         await supabase.functions.invoke("notify-request-confirmation", {
           body: {
-            requestId: request.id,
+            requestId,
             userEmail: user.email,
             companyName: user.companyName,
             contactPerson: user.contactPerson,
@@ -232,13 +205,11 @@ export default function Dashboard() {
             })),
           },
         });
-        console.log("Customer confirmation email sent successfully");
       } catch (notifyError) {
         console.error("Failed to send customer confirmation:", notifyError);
       }
 
       setIsSubmitModalOpen(false);
-      clearCart(true); // Skip release - units are now part of the order
       
       toast({
         title: t.submit.success,
@@ -247,6 +218,7 @@ export default function Dashboard() {
       
       navigate("/requests");
     } catch (error: any) {
+      console.error("Request submission failed:", error);
       toast({
         title: t.submit.error,
         description: t.submit.errorDesc,
