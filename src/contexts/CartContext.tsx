@@ -2,13 +2,14 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { Product } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export interface CartItem {
   product: Product;
   quantity: number;
 }
 
-const RESERVATION_DURATION = 600; // seconds (10 minutes)
+const RESERVATION_DURATION = 600; // seconds (10 minutes) - matches server-side
 
 interface CartContextType {
   items: CartItem[];
@@ -16,6 +17,7 @@ interface CartContextType {
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: (skipRelease?: boolean) => void;
+  submitRequest: (expressShipping: boolean, shippingCost: number) => Promise<string>;
   totalDevices: number;
   totalAmount: number;
   reservationSecondsLeft: number;
@@ -34,7 +36,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const isReservationActive = items.length > 0 && reservationSecondsLeft > 0;
 
   const startTimer = useCallback(() => {
-    // Clear existing timer
     if (timerRef.current) clearInterval(timerRef.current);
     
     const expiresAt = Date.now() + RESERVATION_DURATION * 1000;
@@ -64,7 +65,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // When timer expires, clear cart and release reservations
   useEffect(() => {
     if (reservationSecondsLeft === 0 && items.length > 0 && expiresAtRef.current === null) {
-      // Timer just expired
       releaseReservations();
       setItems([]);
     }
@@ -79,13 +79,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const reserveProduct = async (productId: string, quantity: number) => {
     if (!user) return;
-    try {
-      await supabase.rpc("reserve_product", {
-        p_product_id: productId,
-        p_quantity: quantity,
-      });
-    } catch (e) {
-      console.error("Failed to reserve product:", e);
+    const { error } = await supabase.rpc("reserve_product", {
+      p_product_id: productId,
+      p_quantity: quantity,
+    });
+    if (error) {
+      console.error("Failed to reserve product:", error);
+      throw error;
+    }
+  };
+
+  const releaseProductUnits = async (productId: string, quantity: number) => {
+    if (!user) return;
+    const { error } = await supabase.rpc("release_product_units", {
+      p_product_id: productId,
+      p_quantity: quantity,
+    });
+    if (error) {
+      console.error("Failed to release product units:", error);
     }
   };
 
@@ -98,9 +109,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addItem = (product: Product, quantity = 1) => {
-    setItems((current) => {
-      const existingItem = current.find((item) => item.product.id === product.id);
+  const addItem = async (product: Product, quantity = 1) => {
+    try {
+      const currentItems = items;
+      const existingItem = currentItems.find((item) => item.product.id === product.id);
       
       if (existingItem) {
         const addedQuantity = Math.min(
@@ -109,31 +121,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ) - existingItem.quantity;
         
         if (addedQuantity > 0) {
-          reserveProduct(product.id, addedQuantity);
+          await reserveProduct(product.id, addedQuantity);
+          setItems((current) =>
+            current.map((item) =>
+              item.product.id === product.id
+                ? { ...item, quantity: item.quantity + addedQuantity }
+                : item
+            )
+          );
         }
-        
-        return current.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: existingItem.quantity + addedQuantity }
-            : item
-        );
+      } else {
+        const actualQuantity = Math.min(quantity, product.availableUnits);
+        await reserveProduct(product.id, actualQuantity);
+        setItems((current) => [...current, { product, quantity: actualQuantity }]);
       }
 
-      const actualQuantity = Math.min(quantity, product.availableUnits);
-      reserveProduct(product.id, actualQuantity);
-      return [...current, { product, quantity: actualQuantity }];
-    });
-
-    // Reset timer on every add
-    startTimer();
-    resetTimerInDb();
+      startTimer();
+      resetTimerInDb();
+    } catch (e: any) {
+      toast.error("Nicht genug Einheiten verfügbar");
+    }
   };
 
-  const removeItem = (productId: string) => {
+  const removeItem = async (productId: string) => {
+    const item = items.find((i) => i.product.id === productId);
+    if (item) {
+      await releaseProductUnits(productId, item.quantity);
+    }
+
     setItems((current) => {
-      const newItems = current.filter((item) => item.product.id !== productId);
+      const newItems = current.filter((i) => i.product.id !== productId);
       if (newItems.length === 0) {
-        releaseReservations();
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = null;
         expiresAtRef.current = null;
@@ -143,42 +161,75 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = async (productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(productId);
       return;
     }
 
-    setItems((current) => {
-      const existingItem = current.find((item) => item.product.id === productId);
-      if (!existingItem) return current;
+    const existingItem = items.find((item) => item.product.id === productId);
+    if (!existingItem) return;
 
-      const newQuantity = Math.min(quantity, existingItem.product.availableUnits);
-      const diff = newQuantity - existingItem.quantity;
-      
-      if (diff !== 0) {
-        reserveProduct(productId, diff);
-        startTimer();
-        resetTimerInDb();
+    const newQuantity = Math.min(quantity, existingItem.product.availableUnits);
+    const diff = newQuantity - existingItem.quantity;
+
+    if (diff === 0) return;
+
+    try {
+      if (diff > 0) {
+        await reserveProduct(productId, diff);
+      } else {
+        await releaseProductUnits(productId, Math.abs(diff));
       }
 
-      return current.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity: newQuantity }
-          : item
+      setItems((current) =>
+        current.map((item) =>
+          item.product.id === productId
+            ? { ...item, quantity: newQuantity }
+            : item
+        )
       );
-    });
+
+      startTimer();
+      resetTimerInDb();
+    } catch (e: any) {
+      toast.error("Nicht genug Einheiten verfügbar");
+    }
   };
 
-  const clearCart = (skipRelease = false) => {
+  const clearCart = async (skipRelease = false) => {
     if (!skipRelease) {
-      releaseReservations();
+      await releaseReservations();
     }
     setItems([]);
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
     expiresAtRef.current = null;
     setReservationSecondsLeft(0);
+  };
+
+  const submitRequest = async (expressShipping: boolean, shippingCost: number): Promise<string> => {
+    if (!user || items.length === 0) throw new Error("No items");
+
+    const itemsPayload = items.map((item) => ({
+      product_id: item.product.id,
+      product_name: item.product.name,
+      quantity: item.quantity,
+      price_per_unit: item.product.pricePerUnit,
+    }));
+
+    const { data, error } = await supabase.rpc("create_request_atomic", {
+      p_items: itemsPayload as any,
+      p_express_shipping: expressShipping,
+      p_shipping_cost: shippingCost,
+    });
+
+    if (error) throw error;
+
+    // Clear cart without releasing reservations (they were consumed by the request)
+    clearCart(true);
+
+    return data as string;
   };
 
   const totalDevices = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -195,6 +246,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
+        submitRequest,
         totalDevices,
         totalAmount,
         reservationSecondsLeft,
