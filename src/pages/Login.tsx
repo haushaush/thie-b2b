@@ -55,7 +55,6 @@ export default function Login() {
             <span className="text-2xl font-bold text-primary-foreground">T</span>
           </div>
           <h1 className="text-2xl font-bold text-primary">Thie B2B Portal</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Refurbished Apple devices for your business</p>
         </div>
 
         <Card className="border-border/50 shadow-lg">
