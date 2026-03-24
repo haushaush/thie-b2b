@@ -1401,6 +1401,18 @@ export const translations = {
         successDesc: "Le produit a été mis à jour avec succès.",
         error: "Erreur lors de la mise à jour du produit",
       },
+      bulkEdit: {
+        button: "Modification en masse",
+        title: "Modifier les produits",
+        description: "Modifier le prix et la quantité de {count} produits sélectionnés.",
+        save: "Enregistrer",
+        saving: "Enregistrement...",
+        success: "Produits mis à jour",
+        successDesc: "{count} produits mis à jour avec succès.",
+        error: "Erreur lors de la mise à jour",
+        changed: "{count} modifié(s)",
+        noChanges: "Aucune modification",
+      },
       customers: {
         title: "Clients",
         createTitle: "Créer un client",
