@@ -340,6 +340,10 @@ export const translations = {
         error: "Error updating products",
         changed: "{count} changed",
         noChanges: "No changes",
+        confirmBulkDelete: "Delete {count} products?",
+        confirmBulkDeleteDesc: "This action cannot be undone. All selected products will be permanently deleted.",
+        deleteSuccess: "Products deleted",
+        deleteSuccessDesc: "{count} products deleted successfully.",
       },
       customers: {
         title: "Customers",
@@ -876,6 +880,10 @@ export const translations = {
         error: "Fehler beim Aktualisieren",
         changed: "{count} geändert",
         noChanges: "Keine Änderungen",
+        confirmBulkDelete: "{count} Produkte löschen?",
+        confirmBulkDeleteDesc: "Diese Aktion kann nicht rückgängig gemacht werden. Alle ausgewählten Produkte werden dauerhaft gelöscht.",
+        deleteSuccess: "Produkte gelöscht",
+        deleteSuccessDesc: "{count} Produkte wurden erfolgreich gelöscht.",
       },
       customers: {
         title: "Kunden",
@@ -1412,6 +1420,10 @@ export const translations = {
         error: "Erreur lors de la mise à jour",
         changed: "{count} modifié(s)",
         noChanges: "Aucune modification",
+        confirmBulkDelete: "Supprimer {count} produits ?",
+        confirmBulkDeleteDesc: "Cette action est irréversible. Tous les produits sélectionnés seront définitivement supprimés.",
+        deleteSuccess: "Produits supprimés",
+        deleteSuccessDesc: "{count} produits supprimés avec succès.",
       },
       customers: {
         title: "Clients",
@@ -1948,6 +1960,10 @@ export const translations = {
         error: "Fout bij bijwerken",
         changed: "{count} gewijzigd",
         noChanges: "Geen wijzigingen",
+        confirmBulkDelete: "{count} producten verwijderen?",
+        confirmBulkDeleteDesc: "Deze actie kan niet ongedaan worden gemaakt. Alle geselecteerde producten worden permanent verwijderd.",
+        deleteSuccess: "Producten verwijderd",
+        deleteSuccessDesc: "{count} producten succesvol verwijderd.",
       },
       customers: {
         title: "Klanten",

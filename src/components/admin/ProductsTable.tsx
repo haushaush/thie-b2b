@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Pencil, Trash2, Loader2, Search, Plus, X, Edit3 } from "lucide-react";
+import { Pencil, Trash2, Loader2, Search, Plus, X, Edit3, Trash } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
   const [deletingProduct, setDeletingProduct] = useState<ProductData | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showBulkDelete, setShowBulkDelete] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -112,6 +113,26 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
     onProductUpdated();
   };
 
+  const handleBulkDelete = async () => {
+    setShowBulkDelete(false);
+    setIsDeleting(true);
+    try {
+      const ids = Array.from(selectedIds);
+      const { error } = await supabase.from("products").delete().in("id", ids);
+      if (error) throw error;
+      toast({
+        title: (bulk.deleteSuccess || "Products deleted"),
+        description: (bulk.deleteSuccessDesc || "{count} products deleted.").replace("{count}", String(ids.length)),
+      });
+      setSelectedIds(new Set());
+      onProductUpdated();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: t.admin.products.deleteError, description: error.message });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isLoading) return <div className="flex items-center justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
 
   return (
@@ -125,10 +146,16 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
         </div>
         <div className="flex gap-2">
           {someSelected && (
-            <Button variant="outline" onClick={() => setShowBulkEdit(true)}>
-              <Edit3 className="mr-2 h-4 w-4" />
-              {(bulk.button || "Bulk Edit")} ({selectedIds.size})
-            </Button>
+            <>
+              <Button variant="outline" onClick={() => setShowBulkEdit(true)}>
+                <Edit3 className="mr-2 h-4 w-4" />
+                {(bulk.button || "Bulk Edit")} ({selectedIds.size})
+              </Button>
+              <Button variant="destructive" onClick={() => setShowBulkDelete(true)}>
+                <Trash className="mr-2 h-4 w-4" />
+                {t.common.delete} ({selectedIds.size})
+              </Button>
+            </>
           )}
           <Button onClick={() => setShowAddModal(true)}><Plus className="mr-2 h-4 w-4" />{t.admin.products.addProduct}</Button>
         </div>
@@ -192,6 +219,20 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
       <BulkEditModal products={selectedProducts} open={showBulkEdit} onOpenChange={setShowBulkEdit} onSaved={handleBulkSaved} />
       <AlertDialog open={!!deletingProduct} onOpenChange={(open) => !open && setDeletingProduct(null)}>
         <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t.admin.products.confirmDelete}</AlertDialogTitle><AlertDialogDescription>{t.admin.products.confirmDeleteDesc.replace("{name}", deletingProduct?.name || "")}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>{t.common.cancel}</AlertDialogCancel><AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{t.common.delete}</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={showBulkDelete} onOpenChange={setShowBulkDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{(bulk.confirmBulkDelete || "Delete {count} products?").replace("{count}", String(selectedIds.size))}</AlertDialogTitle>
+            <AlertDialogDescription>{bulk.confirmBulkDeleteDesc || "This action cannot be undone. All selected products will be permanently deleted."}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>{t.common.cancel}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{t.common.delete} ({selectedIds.size})
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </>
   );
