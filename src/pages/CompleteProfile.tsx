@@ -245,9 +245,7 @@ export default function CompleteProfile() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-2xl">
         <div className="mb-8 flex flex-col items-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
-            <span className="text-2xl font-bold text-primary-foreground">T</span>
-          </div>
+          <img src="/thie-logo.png" alt="Thie Logo" className="mb-1 h-14 w-auto" />
           <h1 className="text-2xl font-bold text-primary">{cp.title || "Complete Profile"}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {cp.description || "Please complete your company details to be able to place orders."}
