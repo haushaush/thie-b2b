@@ -113,6 +113,26 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
     onProductUpdated();
   };
 
+  const handleBulkDelete = async () => {
+    setShowBulkDelete(false);
+    setIsDeleting(true);
+    try {
+      const ids = Array.from(selectedIds);
+      const { error } = await supabase.from("products").delete().in("id", ids);
+      if (error) throw error;
+      toast({
+        title: (bulk.deleteSuccess || "Products deleted"),
+        description: (bulk.deleteSuccessDesc || "{count} products deleted.").replace("{count}", String(ids.length)),
+      });
+      setSelectedIds(new Set());
+      onProductUpdated();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: t.admin.products.deleteError, description: error.message });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isLoading) return <div className="flex items-center justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
 
   return (
