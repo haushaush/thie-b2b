@@ -329,6 +329,18 @@ export const translations = {
         successDesc: "The product has been successfully updated.",
         error: "Error updating product",
       },
+      bulkEdit: {
+        button: "Bulk Edit",
+        title: "Bulk Edit Products",
+        description: "Edit price and quantity for {count} selected products.",
+        save: "Save Changes",
+        saving: "Saving...",
+        success: "Products updated",
+        successDesc: "{count} products updated successfully.",
+        error: "Error updating products",
+        changed: "{count} changed",
+        noChanges: "No changes",
+      },
       customers: {
         title: "Customers",
         createTitle: "Create Customer",
