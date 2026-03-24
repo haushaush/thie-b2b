@@ -340,6 +340,10 @@ export const translations = {
         error: "Error updating products",
         changed: "{count} changed",
         noChanges: "No changes",
+        confirmBulkDelete: "Delete {count} products?",
+        confirmBulkDeleteDesc: "This action cannot be undone. All selected products will be permanently deleted.",
+        deleteSuccess: "Products deleted",
+        deleteSuccessDesc: "{count} products deleted successfully.",
       },
       customers: {
         title: "Customers",
