@@ -21,6 +21,7 @@ export function ProductsTable({ products, isLoading, onProductUpdated }: Product
   const [deletingProduct, setDeletingProduct] = useState<ProductData | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showBulkDelete, setShowBulkDelete] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
