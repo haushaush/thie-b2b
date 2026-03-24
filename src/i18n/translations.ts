@@ -1420,6 +1420,10 @@ export const translations = {
         error: "Erreur lors de la mise à jour",
         changed: "{count} modifié(s)",
         noChanges: "Aucune modification",
+        confirmBulkDelete: "Supprimer {count} produits ?",
+        confirmBulkDeleteDesc: "Cette action est irréversible. Tous les produits sélectionnés seront définitivement supprimés.",
+        deleteSuccess: "Produits supprimés",
+        deleteSuccessDesc: "{count} produits supprimés avec succès.",
       },
       customers: {
         title: "Clients",
