@@ -339,6 +339,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_reservations: { Args: never; Returns: undefined }
       create_request_atomic: {
         Args: {
           p_express_shipping?: boolean
