@@ -51,8 +51,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
-          <img src="/thie-logo.png" alt="Thie Logo" className="mb-1 h-14 w-auto" />
-          <h1 className="text-2xl font-bold text-primary">Thie B2B Portal</h1>
+          <img src="/thie-logo.png" alt="Thie Logo" className="h-14 w-auto" />
         </div>
 
         <Card className="border-border/50 shadow-lg">
