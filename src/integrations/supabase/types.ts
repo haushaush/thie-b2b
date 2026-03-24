@@ -339,6 +339,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_request_atomic: {
+        Args: {
+          p_express_shipping?: boolean
+          p_items: Json
+          p_shipping_cost?: number
+        }
+        Returns: string
+      }
       edit_request_items: {
         Args: { p_items: Json; p_request_id: string }
         Returns: undefined
@@ -349,6 +357,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      release_product_units: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: undefined
       }
       release_user_reservations: { Args: never; Returns: undefined }
       reserve_product: {
