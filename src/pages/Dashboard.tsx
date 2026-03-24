@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currentPage, setCurrentPage] = useState(1);
   
-  const { items, clearCart } = useCart();
+  const { items, clearCart, submitRequest } = useCart();
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
