@@ -880,6 +880,10 @@ export const translations = {
         error: "Fehler beim Aktualisieren",
         changed: "{count} geändert",
         noChanges: "Keine Änderungen",
+        confirmBulkDelete: "{count} Produkte löschen?",
+        confirmBulkDeleteDesc: "Diese Aktion kann nicht rückgängig gemacht werden. Alle ausgewählten Produkte werden dauerhaft gelöscht.",
+        deleteSuccess: "Produkte gelöscht",
+        deleteSuccessDesc: "{count} Produkte wurden erfolgreich gelöscht.",
       },
       customers: {
         title: "Kunden",
