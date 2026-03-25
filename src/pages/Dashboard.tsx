@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Loader2, Tablet, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ export default function Dashboard() {
   const [showProfileIncomplete, setShowProfileIncomplete] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currentPage, setCurrentPage] = useState(1);
+  const submitLockRef = useRef(false);
   
   const { items, clearCart, submitRequest } = useCart();
   const { user } = useAuth();
@@ -160,6 +161,8 @@ export default function Dashboard() {
 
   const handleSubmitRequest = async (expressShipping: boolean, shippingCost: number) => {
     if (!user || items.length === 0) return;
+    if (submitLockRef.current) return;
+    submitLockRef.current = true;
     
     setIsSubmitting(true);
     
@@ -226,6 +229,7 @@ export default function Dashboard() {
       });
     } finally {
       setIsSubmitting(false);
+      submitLockRef.current = false;
     }
   };
 
