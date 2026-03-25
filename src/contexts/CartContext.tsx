@@ -31,6 +31,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [reservationSecondsLeft, setReservationSecondsLeft] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const expiresAtRef = useRef<number | null>(null);
+  const operationLocksRef = useRef<Set<string>>(new Set());
+  const submitPromiseRef = useRef<Promise<string> | null>(null);
   const { user } = useAuth();
 
   const isReservationActive = items.length > 0 && reservationSecondsLeft > 0;
@@ -110,6 +112,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const addItem = async (product: Product, quantity = 1) => {
+    const lockKey = `product:${product.id}`;
+    if (operationLocksRef.current.has(lockKey)) return;
+    operationLocksRef.current.add(lockKey);
+
     try {
       const currentItems = items;
       const existingItem = currentItems.find((item) => item.product.id === product.id);
@@ -140,40 +146,61 @@ export function CartProvider({ children }: { children: ReactNode }) {
       resetTimerInDb();
     } catch (e: any) {
       toast.error("Nicht genug Einheiten verfügbar");
+    } finally {
+      operationLocksRef.current.delete(lockKey);
     }
   };
 
   const removeItem = async (productId: string) => {
-    const item = items.find((i) => i.product.id === productId);
-    if (item) {
-      await releaseProductUnits(productId, item.quantity);
-    }
+    const lockKey = `product:${productId}`;
+    if (operationLocksRef.current.has(lockKey)) return;
+    operationLocksRef.current.add(lockKey);
 
-    setItems((current) => {
-      const newItems = current.filter((i) => i.product.id !== productId);
-      if (newItems.length === 0) {
-        if (timerRef.current) clearInterval(timerRef.current);
-        timerRef.current = null;
-        expiresAtRef.current = null;
-        setReservationSecondsLeft(0);
+    const item = items.find((i) => i.product.id === productId);
+    try {
+      if (item) {
+        await releaseProductUnits(productId, item.quantity);
       }
-      return newItems;
-    });
+
+      setItems((current) => {
+        const newItems = current.filter((i) => i.product.id !== productId);
+        if (newItems.length === 0) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = null;
+          expiresAtRef.current = null;
+          setReservationSecondsLeft(0);
+        }
+        return newItems;
+      });
+    } finally {
+      operationLocksRef.current.delete(lockKey);
+    }
   };
 
   const updateQuantity = async (productId: string, quantity: number) => {
+    const lockKey = `product:${productId}`;
+    if (operationLocksRef.current.has(lockKey)) return;
+    operationLocksRef.current.add(lockKey);
+
     if (quantity <= 0) {
-      removeItem(productId);
+      await removeItem(productId);
+      operationLocksRef.current.delete(lockKey);
       return;
     }
 
     const existingItem = items.find((item) => item.product.id === productId);
-    if (!existingItem) return;
+    if (!existingItem) {
+      operationLocksRef.current.delete(lockKey);
+      return;
+    }
 
     const newQuantity = Math.min(quantity, existingItem.product.availableUnits);
     const diff = newQuantity - existingItem.quantity;
 
-    if (diff === 0) return;
+    if (diff === 0) {
+      operationLocksRef.current.delete(lockKey);
+      return;
+    }
 
     try {
       if (diff > 0) {
@@ -194,6 +221,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       resetTimerInDb();
     } catch (e: any) {
       toast.error("Nicht genug Einheiten verfügbar");
+    } finally {
+      operationLocksRef.current.delete(lockKey);
     }
   };
 
@@ -209,27 +238,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const submitRequest = async (expressShipping: boolean, shippingCost: number): Promise<string> => {
-    if (!user || items.length === 0) throw new Error("No items");
+    if (submitPromiseRef.current) {
+      return submitPromiseRef.current;
+    }
 
-    const itemsPayload = items.map((item) => ({
-      product_id: item.product.id,
-      product_name: item.product.name,
-      quantity: item.quantity,
-      price_per_unit: item.product.pricePerUnit,
-    }));
+    const submitPromise = (async () => {
+      if (!user || items.length === 0) throw new Error("No items");
 
-    const { data, error } = await supabase.rpc("create_request_atomic", {
-      p_items: itemsPayload as any,
-      p_express_shipping: expressShipping,
-      p_shipping_cost: shippingCost,
-    });
+      const itemsPayload = items.map((item) => ({
+        product_id: item.product.id,
+        product_name: item.product.name,
+        quantity: item.quantity,
+        price_per_unit: item.product.pricePerUnit,
+      }));
 
-    if (error) throw error;
+      const { data, error } = await supabase.rpc("create_request_atomic", {
+        p_items: itemsPayload as any,
+        p_express_shipping: expressShipping,
+        p_shipping_cost: shippingCost,
+      });
 
-    // Clear cart without releasing reservations (they were consumed by the request)
-    clearCart(true);
+      if (error) throw error;
 
-    return data as string;
+      // Clear cart without releasing reservations (they were consumed by the request)
+      await clearCart(true);
+
+      return data as string;
+    })();
+
+    submitPromiseRef.current = submitPromise;
+
+    try {
+      return await submitPromise;
+    } finally {
+      submitPromiseRef.current = null;
+    }
   };
 
   const totalDevices = items.reduce((sum, item) => sum + item.quantity, 0);
