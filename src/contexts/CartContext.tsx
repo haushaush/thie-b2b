@@ -178,15 +178,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const updateQuantity = async (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      await removeItem(productId);
+      return;
+    }
+
     const lockKey = `product:${productId}`;
     if (operationLocksRef.current.has(lockKey)) return;
     operationLocksRef.current.add(lockKey);
-
-    if (quantity <= 0) {
-      await removeItem(productId);
-      operationLocksRef.current.delete(lockKey);
-      return;
-    }
 
     const existingItem = items.find((item) => item.product.id === productId);
     if (!existingItem) {
