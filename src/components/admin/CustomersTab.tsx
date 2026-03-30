@@ -167,8 +167,6 @@ export function CustomersTab({ customers, isLoading, onRefetch }: CustomersTabPr
     </>
   );
 }
-  const { t } = useLanguage();
-  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<CustomerProfile>>({});
