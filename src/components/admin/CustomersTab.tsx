@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Search, UserPlus, Pencil, X, Check, Users } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Search, UserPlus, Eye, Users } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -15,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CreateCustomerModal } from "./CreateCustomerModal";
+import { CustomerDetailModal } from "./CustomerDetailModal";
 
 interface CustomerProfile {
   user_id: string;
@@ -22,6 +22,21 @@ interface CustomerProfile {
   company_name: string | null;
   contact_person: string | null;
   contact_phone: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  vat_id: string | null;
+  billing_street: string | null;
+  billing_city: string | null;
+  billing_zip: string | null;
+  billing_country: string | null;
+  billing_email: string | null;
+  shipping_street: string | null;
+  shipping_city: string | null;
+  shipping_zip: string | null;
+  shipping_country: string | null;
+  shipping_same_as_billing: boolean | null;
+  preferred_contact_method: string | null;
+  profile_completed: boolean | null;
 }
 
 interface CustomersTabProps {
@@ -32,12 +47,9 @@ interface CustomersTabProps {
 
 export function CustomersTab({ customers, isLoading, onRefetch }: CustomersTabProps) {
   const { t } = useLanguage();
-  const { toast } = useToast();
   const [search, setSearch] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<CustomerProfile>>({});
-  const [isSaving, setIsSaving] = useState(false);
   const [showCreateCustomer, setShowCreateCustomer] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerProfile | null>(null);
 
   const filtered = customers.filter((c) => {
     const q = search.toLowerCase();
@@ -48,52 +60,6 @@ export function CustomersTab({ customers, isLoading, onRefetch }: CustomersTabPr
       (c.contact_phone || "").toLowerCase().includes(q)
     );
   });
-
-  const startEdit = (customer: CustomerProfile) => {
-    setEditingId(customer.user_id);
-    setEditForm({
-      company_name: customer.company_name,
-      contact_person: customer.contact_person,
-      contact_phone: customer.contact_phone,
-    });
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditForm({});
-  };
-
-  const saveEdit = async (userId: string) => {
-    setIsSaving(true);
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          company_name: editForm.company_name || null,
-          contact_person: editForm.contact_person || null,
-          contact_phone: editForm.contact_phone || null,
-        })
-        .eq("user_id", userId);
-
-      if (error) throw error;
-
-      toast({
-        title: t.admin.customers.editSuccess,
-        description: t.admin.customers.editSuccessDesc,
-      });
-      setEditingId(null);
-      setEditForm({});
-      onRefetch();
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: t.admin.customers.editError,
-        description: error.message,
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   return (
     <>
@@ -151,78 +117,38 @@ export function CustomersTab({ customers, isLoading, onRefetch }: CustomersTabPr
                     <TableHead className="font-semibold">{t.admin.customers.contactPerson}</TableHead>
                     <TableHead className="font-semibold">{t.admin.customers.email}</TableHead>
                     <TableHead className="font-semibold">{t.admin.customers.contactPhone}</TableHead>
-                    <TableHead className="font-semibold w-[100px]">{t.admin.products.table.actions}</TableHead>
+                    <TableHead className="font-semibold">{t.admin.customers.profileCompleted}</TableHead>
+                    <TableHead className="font-semibold w-[80px]">{t.admin.products.table.actions}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.map((customer) => (
-                    <TableRow key={customer.user_id}>
-                      <TableCell>
-                        {editingId === customer.user_id ? (
-                          <Input
-                            value={editForm.company_name || ""}
-                            onChange={(e) => setEditForm((f) => ({ ...f, company_name: e.target.value }))}
-                            className="h-8"
-                          />
-                        ) : (
-                          <span className="font-medium">{customer.company_name || "-"}</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingId === customer.user_id ? (
-                          <Input
-                            value={editForm.contact_person || ""}
-                            onChange={(e) => setEditForm((f) => ({ ...f, contact_person: e.target.value }))}
-                            className="h-8"
-                          />
-                        ) : (
-                          customer.contact_person || "-"
-                        )}
-                      </TableCell>
+                    <TableRow
+                      key={customer.user_id}
+                      className="cursor-pointer hover:bg-muted/30"
+                      onClick={() => setSelectedCustomer(customer)}
+                    >
+                      <TableCell className="font-medium">{customer.company_name || "-"}</TableCell>
+                      <TableCell>{customer.contact_person || "-"}</TableCell>
                       <TableCell className="text-muted-foreground">{customer.email}</TableCell>
+                      <TableCell>{customer.contact_phone || "-"}</TableCell>
                       <TableCell>
-                        {editingId === customer.user_id ? (
-                          <Input
-                            value={editForm.contact_phone || ""}
-                            onChange={(e) => setEditForm((f) => ({ ...f, contact_phone: e.target.value }))}
-                            className="h-8"
-                          />
-                        ) : (
-                          customer.contact_phone || "-"
-                        )}
+                        <Badge variant={customer.profile_completed ? "default" : "secondary"}>
+                          {customer.profile_completed ? t.admin.customers.yes : t.admin.customers.no}
+                        </Badge>
                       </TableCell>
                       <TableCell>
-                        {editingId === customer.user_id ? (
-                          <div className="flex items-center gap-1">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
-                              onClick={() => saveEdit(customer.user_id)}
-                              disabled={isSaving}
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
-                              onClick={cancelEdit}
-                              disabled={isSaving}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0"
-                            onClick={() => startEdit(customer)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCustomer(customer);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -237,6 +163,15 @@ export function CustomersTab({ customers, isLoading, onRefetch }: CustomersTabPr
         open={showCreateCustomer}
         onOpenChange={setShowCreateCustomer}
         onCreated={onRefetch}
+      />
+
+      <CustomerDetailModal
+        open={!!selectedCustomer}
+        onOpenChange={(open) => {
+          if (!open) setSelectedCustomer(null);
+        }}
+        customer={selectedCustomer}
+        onSaved={onRefetch}
       />
     </>
   );
