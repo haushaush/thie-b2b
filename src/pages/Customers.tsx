@@ -17,7 +17,7 @@ export default function Customers() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("user_id, email, company_name, contact_person, contact_phone")
+        .select("user_id, email, company_name, contact_person, contact_phone, first_name, last_name, vat_id, billing_street, billing_city, billing_zip, billing_country, billing_email, shipping_street, shipping_city, shipping_zip, shipping_country, shipping_same_as_billing, preferred_contact_method, profile_completed")
         .order("company_name");
       if (error) throw error;
       return (data || []).filter((p) => !adminIds.includes(p.user_id));

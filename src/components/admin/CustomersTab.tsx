@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Search, UserPlus, Pencil, X, Check, Users } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Search, UserPlus, Eye, Users } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -15,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CreateCustomerModal } from "./CreateCustomerModal";
+import { CustomerDetailModal } from "./CustomerDetailModal";
 
 interface CustomerProfile {
   user_id: string;
@@ -22,6 +22,21 @@ interface CustomerProfile {
   company_name: string | null;
   contact_person: string | null;
   contact_phone: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  vat_id: string | null;
+  billing_street: string | null;
+  billing_city: string | null;
+  billing_zip: string | null;
+  billing_country: string | null;
+  billing_email: string | null;
+  shipping_street: string | null;
+  shipping_city: string | null;
+  shipping_zip: string | null;
+  shipping_country: string | null;
+  shipping_same_as_billing: boolean | null;
+  preferred_contact_method: string | null;
+  profile_completed: boolean | null;
 }
 
 interface CustomersTabProps {
