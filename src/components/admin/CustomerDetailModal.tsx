@@ -307,16 +307,23 @@ export function CustomerDetailModal({ open, onOpenChange, customer, onSaved }: C
             ) : (
               <div className="space-y-2">
                 {documents.map((doc) => (
-                  <a
+                  <button
                     key={doc.id}
-                    href={doc.file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-md border p-2 text-sm hover:bg-muted transition-colors"
+                    onClick={async () => {
+                      const { data } = await supabase.storage
+                        .from("business-documents")
+                        .createSignedUrl(doc.file_url, 3600);
+                      if (data?.signedUrl) {
+                        window.open(data.signedUrl, "_blank");
+                      } else {
+                        toast({ variant: "destructive", title: "Error", description: "Could not open document" });
+                      }
+                    }}
+                    className="flex items-center gap-2 rounded-md border p-2 text-sm hover:bg-muted transition-colors w-full text-left"
                   >
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <span>{doc.file_name}</span>
-                  </a>
+                  </button>
                 ))}
               </div>
             )}
