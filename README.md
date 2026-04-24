@@ -33,6 +33,7 @@
 Das Portal ist ein **anfragebasierter B2B-Shop**: Kunden legen Geräte in den Warenkorb und senden eine **Anfrage** ab. Bestellungen werden nicht direkt bezahlt, sondern vom Admin geprüft, freigegeben oder abgelehnt. Reservierte Geräte werden automatisch nach 10 Minuten freigegeben, falls die Anfrage nicht abgesendet wird.
 
 **Hauptakteure:**
+
 - **Kunde (`user`)** — Registriert sich, vervollständigt Firmenprofil, stellt Anfragen.
 - **Admin (`admin`)** — Verwaltet Produkte, Kunden, Bestellungen und weitere Admins.
 
@@ -40,18 +41,18 @@ Das Portal ist ein **anfragebasierter B2B-Shop**: Kunden legen Geräte in den Wa
 
 ## 🛠 Tech-Stack
 
-| Bereich | Technologie |
-|---|---|
-| **Frontend** | React 18, TypeScript 5, Vite 5 |
-| **Styling** | Tailwind CSS v3, shadcn/ui, Radix UI |
-| **State** | TanStack Query, React Context |
-| **Routing** | React Router v6 |
-| **Backend** | Lovable Cloud (Supabase: Postgres, Auth, Storage, Edge Functions) |
-| **E-Mails** | Resend (via Edge Functions) |
-| **Datei-Verarbeitung** | XLSX (CSV/Excel-Import von Produktlisten) |
-| **Icons** | lucide-react |
-| **Forms** | react-hook-form + zod |
-| **i18n** | Eigenes Translations-Objekt (DE/EN/FR/NL) |
+| Bereich                | Technologie                                                       |
+| ---------------------- | ----------------------------------------------------------------- |
+| **Frontend**           | React 18, TypeScript 5, Vite 5                                    |
+| **Styling**            | Tailwind CSS v3, shadcn/ui, Radix UI                              |
+| **State**              | TanStack Query, React Context                                     |
+| **Routing**            | React Router v6                                                   |
+| **Backend**            | Lovable Cloud (Supabase: Postgres, Auth, Storage, Edge Functions) |
+| **E-Mails**            | Resend (via Edge Functions)                                       |
+| **Datei-Verarbeitung** | XLSX (CSV/Excel-Import von Produktlisten)                         |
+| **Icons**              | lucide-react                                                      |
+| **Forms**              | react-hook-form + zod                                             |
+| **i18n**               | Eigenes Translations-Objekt (DE/EN/FR/NL)                         |
 
 ---
 
@@ -74,6 +75,7 @@ npm run dev
 Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supabase-Credentials wird automatisch von Lovable Cloud verwaltet — **nicht manuell editieren**.
 
 **Verfügbare Skripte:**
+
 - `npm run dev` — Dev-Server mit Hot-Reload
 - `npm run build` — Produktions-Build (`dist/`)
 - `npm run preview` — Build lokal testen
@@ -117,6 +119,7 @@ Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supa
 ## ✨ Features
 
 ### Kundenseite
+
 - **Produktkatalog** mit Filtern (Hersteller, Modell, Grade, Speicher, Farbe), Suche und Grid-/List-View.
 - **Markenfilter-Kacheln** (Apple/Samsung) und dynamische Grade-Quick-Filter.
 - **Warenkorb (CartBar)** mit Mengensteuerung, Versandvorschau, 10-Min-Reservierung.
@@ -125,6 +128,7 @@ Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supa
 - **Anfragenhistorie** mit Bearbeitung von Pending-Anfragen.
 
 ### Admin-Bereich
+
 - **Dashboard** mit Live-Statistiken und großen Action-Tiles.
 - **Produktverwaltung**: CSV-/Excel-Import (flexibles Grading, EU-Preisparsing), Bulk-Edit (Preis/Bestand), Bulk-Delete.
 - **Kundenverwaltung** (`/kunden`): vollständige Kundeninfos einsehbar/bearbeitbar inkl. hochgeladener Dokumente.
@@ -133,6 +137,7 @@ Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supa
 - **E-Mail-Benachrichtigungen** automatisch via Edge Functions + Resend.
 
 ### Versandregeln
+
 - **Kostenloser Versand** ab 50 Einheiten, sonst **20 € pauschal**.
 - **Express-Option**: 50 € + 1 % Versicherung des Warenwerts.
 
@@ -142,18 +147,19 @@ Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supa
 
 **Tabellen** (alle in `public`, mit RLS-Policies):
 
-| Tabelle | Zweck |
-|---|---|
-| `profiles` | Firmen-, Rechnungs- & Lieferdaten pro User. `profile_completed` steuert Checkout-Berechtigung. |
-| `user_roles` | RBAC: `admin` oder `user` (separate Tabelle gegen Privilege-Escalation). |
-| `products` | Geräte mit `manufacturer`, `name`, `storage`, `color`, `grade`, `battery_health`, `price_per_unit`, `available_units`. |
-| `cart_reservations` | Aktive 10-Min-Reservierungen pro User/Produkt. |
-| `requests` | Bestellanfragen mit Status `pending` / `approved` / `rejected`. |
-| `request_items` | Positionen einer Anfrage. |
-| `contact_persons` | Zusätzliche Ansprechpartner pro Kunde. |
-| `business_documents` | Hochgeladene Geschäftsdokumente (Gewerbeschein etc.). |
+| Tabelle              | Zweck                                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `profiles`           | Firmen-, Rechnungs- & Lieferdaten pro User. `profile_completed` steuert Checkout-Berechtigung.                         |
+| `user_roles`         | RBAC: `admin` oder `user` (separate Tabelle gegen Privilege-Escalation).                                               |
+| `products`           | Geräte mit `manufacturer`, `name`, `storage`, `color`, `grade`, `battery_health`, `price_per_unit`, `available_units`. |
+| `cart_reservations`  | Aktive 10-Min-Reservierungen pro User/Produkt.                                                                         |
+| `requests`           | Bestellanfragen mit Status `pending` / `approved` / `rejected`.                                                        |
+| `request_items`      | Positionen einer Anfrage.                                                                                              |
+| `contact_persons`    | Zusätzliche Ansprechpartner pro Kunde.                                                                                 |
+| `business_documents` | Hochgeladene Geschäftsdokumente (Gewerbeschein etc.).                                                                  |
 
 **Wichtige RPCs (SECURITY DEFINER):**
+
 - `has_role(_user_id, _role)` — Rollencheck ohne RLS-Rekursion.
 - `reserve_product(p_product_id, p_quantity)` — Atomare Reservierung.
 - `release_product_units(p_product_id, p_quantity)` — Bestand freigeben.
@@ -164,6 +170,7 @@ Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supa
 - `edit_request_items(p_request_id, p_items)` — Bestehende Anfrage bearbeiten.
 
 **Enums:**
+
 - `app_role`: `admin` | `user`
 - `request_status`: `pending` | `approved` | `rejected`
 
@@ -176,17 +183,18 @@ Die App läuft dann unter `http://localhost:8080`. Die `.env`-Datei mit den Supa
 
 Alle Edge Functions liegen unter `supabase/functions/` und werden bei Push automatisch deployt.
 
-| Function | JWT | Zweck |
-|---|---|---|
-| `create-customer` | ❌ | Admin legt neuen Kunden inkl. Auth-User an. |
-| `notify-new-products` | ❌ | Mail an alle Kunden bei neuem Produkt-Upload. |
-| `notify-new-request` | ❌ | Admin-Mail bei neuer Anfrage. |
-| `notify-request-confirmation` | ❌ | Bestätigungsmail an Kunde. |
-| `notify-request-status` | ❌ | Mail an Kunde bei Approval/Rejection. |
-| `notify-order-approved` | ❌ | Bestätigungsmail nach Freigabe. |
-| `send-order-message` | ✅ | Admin-Nachricht zu einer Bestellung an Kunde. |
+| Function                      | JWT | Zweck                                         |
+| ----------------------------- | --- | --------------------------------------------- |
+| `create-customer`             | ❌  | Admin legt neuen Kunden inkl. Auth-User an.   |
+| `notify-new-products`         | ❌  | Mail an alle Kunden bei neuem Produkt-Upload. |
+| `notify-new-request`          | ❌  | Admin-Mail bei neuer Anfrage.                 |
+| `notify-request-confirmation` | ❌  | Bestätigungsmail an Kunde.                    |
+| `notify-request-status`       | ❌  | Mail an Kunde bei Approval/Rejection.         |
+| `notify-order-approved`       | ❌  | Bestätigungsmail nach Freigabe.               |
+| `send-order-message`          | ✅  | Admin-Nachricht zu einer Bestellung an Kunde. |
 
 **Benötigte Secrets** (in Lovable Cloud → Edge Functions → Secrets):
+
 - `RESEND_API_KEY`
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY` (automatisch)
 
@@ -201,6 +209,7 @@ Alle Edge Functions liegen unter `supabase/functions/` und werden bei Push autom
 - **RBAC** über separate `user_roles`-Tabelle. Rollencheck ausschließlich serverseitig via `has_role()`.
 
 **Route-Guards:**
+
 - `ProtectedRoute` → eingeloggter User
 - `AdminRoute` → Rolle `admin`
 
@@ -239,6 +248,7 @@ Alle Edge Functions liegen unter `supabase/functions/` und werden bei Push autom
 > **Regel:** Nie direkte Farbklassen wie `bg-white` oder `text-black` in Komponenten — immer semantische Tokens (`bg-background`, `text-foreground`, `bg-primary`, ...).
 
 **Branding:**
+
 - Nicht-Admins sehen das hochgeladene Firmenlogo statt Initialen.
 - Logo & Favicon in `public/`.
 
@@ -247,15 +257,18 @@ Alle Edge Functions liegen unter `supabase/functions/` und werden bei Push autom
 ## 🚀 Deployment & GitHub-Sync
 
 ### Lovable ↔ GitHub
+
 - **Bidirektionale Sync**: Änderungen in Lovable werden automatisch nach GitHub gepusht — und Pushes nach GitHub erscheinen sofort in Lovable.
 - Verbindung über **Lovable → Connectors → GitHub**.
 - Edge Functions werden bei jedem Commit **automatisch deployt**.
 
 ### Veröffentlichen
+
 - In Lovable oben rechts auf **Publish** klicken.
 - Custom Domain `wholesale.thie-eco-shop.de` ist über Lovable → Project Settings → Domains verbunden.
 
 ### Lokal entwickeln & pushen
+
 ```bash
 git checkout -b feature/mein-feature
 # ... ändern ...
@@ -270,11 +283,11 @@ git push origin feature/mein-feature
 
 `.env` wird **automatisch** von Lovable Cloud generiert — nicht manuell anpassen:
 
-| Variable | Zweck |
-|---|---|
-| `VITE_SUPABASE_URL` | Supabase Projekt-URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Public Anon Key |
-| `VITE_SUPABASE_PROJECT_ID` | Projekt-ID |
+| Variable                        | Zweck                |
+| ------------------------------- | -------------------- |
+| `VITE_SUPABASE_URL`             | Supabase Projekt-URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Public Anon Key      |
+| `VITE_SUPABASE_PROJECT_ID`      | Projekt-ID           |
 
 **Edge-Function-Secrets** werden in Lovable Cloud → Edge Functions verwaltet (z. B. `RESEND_API_KEY`).
 
@@ -296,21 +309,9 @@ CSV/Excel mit Spalten `name`, `manufacturer`, `storage`, `color`, `grade`, `batt
 | Mehr als 1000 Datensätze fehlen | Supabase-Default-Limit — Pagination oder `.range()` nutzen. |
 
 **Wichtige Konventionen:**
+
 - ❌ Niemals `src/integrations/supabase/types.ts` oder `client.ts` editieren — autogeneriert.
 - ❌ Niemals Migrationen in `supabase/migrations/` ändern — nur neue erstellen.
 - ✅ DB-Änderungen ausschließlich über neue, timestamped Migrationen.
 - ✅ Rollen niemals auf `profiles` speichern — immer `user_roles`.
 - ✅ Alle Farben als HSL in `index.css` definieren.
-
----
-
-## 📞 Kontakt
-
-**Thie GmbH**
-Navarrastraße 15, 33106 Paderborn
-Tel.: 05251 5438 006 · E-Mail: kontakt@thie-eco.de
-HRB 14169 (AG Paderborn) · USt.-ID: DE326347764
-
----
-
-_Built with [Lovable](https://lovable.dev)._
