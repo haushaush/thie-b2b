@@ -228,7 +228,7 @@ ${productListHtml}
         await resend.emails.send({
           from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [profile.email],
-          subject: "🆕 Frische refurbished Hardware auf Lager!",
+          subject: "🆕 Neuer Bestand im B2B-Portal / New stock available",
           html: emailHtml,
         });
         console.log("Email sent successfully");
