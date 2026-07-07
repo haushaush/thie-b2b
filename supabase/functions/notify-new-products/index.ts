@@ -147,11 +147,11 @@ body { margin: 0; padding: 0; width: 100% !important; font-family: Arial, Helvet
 
 <tr>
 <td style="padding: 40px 30px; color: #333333; line-height: 1.6; font-size: 16px;">
-<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Frische refurbished Hardware auf Lager!</h2>
+<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Neuer Bestand im B2B-Portal verfügbar</h2>
 
 <p style="margin: 0 0 15px 0;">Hallo${profile.company_name ? ` ${profile.company_name}` : ""},</p>
 
-<p style="margin: 0 0 15px 0;">wir haben soeben unseren Bestand im B2B-Portal für Sie aufgefüllt. Ab sofort stehen Ihnen wieder neue, hochwertig aufbereitete IT-Geräte zur Verfügung.</p>
+<p style="margin: 0 0 15px 0;">soeben ist neuer Bestand im B2B-Portal eingetroffen. Alle Geräte sind geprüft, nach Zustand sortiert und sofort verfügbar.</p>
 
 <div style="background-color: #f9f9f9; border-left: 4px solid #009c77; padding: 15px; margin-bottom: 20px;">
 <p style="margin: 0 0 10px 0;"><strong>Neu eingetroffen:</strong></p>
@@ -172,6 +172,34 @@ ${productListHtml}
 </table>
 
 <p style="margin: 25px 0 0 0;">Mit nachhaltigen Grüßen,<br>Ihr Team der Thie GmbH</p>
+
+<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 35px 0 30px 0;" />
+
+<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">New stock available in the B2B portal</h2>
+
+<p style="margin: 0 0 15px 0;">Hello${profile.company_name ? ` ${profile.company_name}` : ""},</p>
+
+<p style="margin: 0 0 15px 0;">new stock has just arrived in the B2B portal. All devices are tested, sorted by condition and available immediately.</p>
+
+<div style="background-color: #f9f9f9; border-left: 4px solid #009c77; padding: 15px; margin-bottom: 20px;">
+<p style="margin: 0 0 10px 0;"><strong>Just arrived:</strong></p>
+${productListHtml}
+<div style="margin-top: 15px; background-color: #e8f5e9; padding: 10px; border-radius: 4px;">
+<p style="margin: 0; font-size: 14px; color: #555555;"><strong>Tip:</strong> Be quick — allocation is based on order of incoming requests in the portal.</p>
+</div>
+</div>
+
+<p style="margin: 0 0 25px 0;">Log in to view the exact device specifications and submit a new request for your company directly.</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<a href="${baseUrl}/dashboard" style="background-color: #009c77; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 4px; font-weight: bold; display: inline-block;">Check stock in the portal now</a>
+</td>
+</tr>
+</table>
+
+<p style="margin: 25px 0 0 0;">With sustainable regards,<br>Your Thie GmbH team</p>
 </td>
 </tr>
 
@@ -200,7 +228,7 @@ ${productListHtml}
         await resend.emails.send({
           from: "THIE B2B <onboarding@updates.haushhaush.de>",
           to: [profile.email],
-          subject: "🆕 Frische refurbished Hardware auf Lager!",
+          subject: "🆕 Neuer Bestand im B2B-Portal / New stock available",
           html: emailHtml,
         });
         console.log("Email sent successfully");
