@@ -341,6 +341,10 @@ export default function Admin() {
             name: p.name,
             quantity: p.available_units,
             grade: p.grade || undefined,
+            storage: p.storage || undefined,
+            color: p.color || undefined,
+            battery_health: p.battery_health || undefined,
+            manufacturer: p.manufacturer || undefined,
           })),
         },
       }).then(() => {

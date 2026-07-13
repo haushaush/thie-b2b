@@ -135,6 +135,33 @@ const handler = async (req: Request): Promise<Response> => {
 </table>
 
 <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #333333;">Mit nachhaltigen Grüßen,<br>Ihr Team der Thie GmbH</p>
+
+<hr style="border: none; border-top: 1px solid #e0ebe7; margin: 36px 0 28px;">
+
+<h2 style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #1a1a1a;">Message regarding your order #${shortId}</h2>
+
+<p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hello ${customerName},</p>
+
+<p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">we have a message regarding your order for you:</p>
+
+<div style="background-color: #f7faf9; border: 1px solid #e0ebe7; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+<p style="margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #009c77; text-transform: uppercase; letter-spacing: 0.5px;">Message from our team:</p>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #333333;">${messageHtml}</p>
+<hr style="border: none; border-top: 1px solid #e0ebe7; margin: 16px 0;">
+<p style="margin: 0; font-size: 14px; color: #666666;">Order number: <strong style="color: #333333;">#${shortId}</strong></p>
+</div>
+
+<p style="margin: 0 0 28px; font-size: 15px; line-height: 1.6; color: #333333;">You can check the current status of your order in our portal at any time. If you have any questions, we are happy to help.</p>
+
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 28px;">
+<tr>
+<td style="border-radius: 8px; background-color: #009c77;">
+<a href="${baseUrl}/requests" style="display: inline-block; padding: 14px 32px; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none;">View order in portal</a>
+</td>
+</tr>
+</table>
+
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #333333;">With sustainable regards,<br>Your Thie GmbH team</p>
 </td>
 </tr>
 
@@ -160,7 +187,7 @@ const handler = async (req: Request): Promise<Response> => {
 </body>
 </html>`;
 
-    const emailSubject = subject || `Nachricht zu Ihrer Bestellung #${shortId}`;
+    const emailSubject = subject || `Nachricht zu Ihrer Bestellung / Message regarding your order #${shortId}`;
 
     await resend.emails.send({
       from: "THIE B2B <onboarding@updates.haushhaush.de>",

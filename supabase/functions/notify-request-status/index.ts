@@ -92,6 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const isApproved = status === "approved";
     const statusText = isApproved ? "Genehmigt ✅" : "Abgelehnt ❌";
+    const statusTextEn = isApproved ? "Approved ✅" : "Rejected ❌";
     const statusColor = isApproved ? "#28a745" : "#dc3545";
     const statusEmoji = isApproved ? "✅" : "❌";
 
@@ -103,6 +104,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const messageSection = adminMessage
       ? `<p style="margin: 15px 0 0 0; font-size: 14px;"><strong>Nachricht unseres Teams:</strong></p>${messageBlock}`
+      : "";
+
+    const messageSectionEn = adminMessage
+      ? `<p style="margin: 15px 0 0 0; font-size: 14px;"><strong>Message from our team:</strong></p>${messageBlock}`
       : "";
 
     const emailHtml = `<!DOCTYPE html>
@@ -156,6 +161,33 @@ ${messageSection}
 </table>
 
 <p style="margin: 25px 0 0 0;">Mit nachhaltigen Grüßen,<br>Ihr Team der Thie GmbH</p>
+
+<hr style="border: none; border-top: 1px solid #e0e0e0; margin: 35px 0 30px 0;" />
+
+<h2 style="color: #009c77; font-size: 20px; margin-top: 0;">Status update on your request</h2>
+
+<p style="margin: 0 0 15px 0;">Hello${companyName ? ` ${companyName}` : ""},</p>
+
+<p style="margin: 0 0 15px 0;">our team has reviewed your current request (number: #${requestId.slice(0, 8)}) for refurbished hardware. There is an update on the processing status:</p>
+
+<div style="background-color: #f9f9f9; border-left: 4px solid ${statusColor}; padding: 15px; margin-bottom: 20px;">
+<p style="margin: 0; font-size: 15px;">
+<strong>Current status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${statusTextEn}</span>
+</p>
+${messageSectionEn}
+</div>
+
+<p style="margin: 0 0 25px 0;">All further details — such as adjusted quantities, possible alternative devices or next steps for delivery — can be found directly in our B2B portal. If you have any questions, we are happy to help.</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<a href="${baseUrl}/requests" style="background-color: #009c77; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 4px; font-weight: bold; display: inline-block;">View details in the portal</a>
+</td>
+</tr>
+</table>
+
+<p style="margin: 25px 0 0 0;">With sustainable regards,<br>Your Thie GmbH team</p>
 </td>
 </tr>
 
@@ -183,7 +215,7 @@ ${messageSection}
     const emailResult = await resend.emails.send({
       from: "THIE B2B <onboarding@updates.haushhaush.de>",
       to: [userEmail],
-      subject: `${statusEmoji} Statusupdate zu Ihrer Anfrage #${requestId.slice(0, 8)}`,
+      subject: `${statusEmoji} Statusupdate zu Ihrer Anfrage / Status update on your request #${requestId.slice(0, 8)}`,
       html: emailHtml,
     });
 
