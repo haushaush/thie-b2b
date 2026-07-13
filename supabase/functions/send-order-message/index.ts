@@ -187,9 +187,7 @@ const handler = async (req: Request): Promise<Response> => {
 </body>
 </html>`;
 
-    const emailSubject = subject
-      ? `${subject} / ${subject}`
-      : `Nachricht zu Ihrer Bestellung / Message regarding your order #${shortId}`;
+    const emailSubject = subject || `Nachricht zu Ihrer Bestellung / Message regarding your order #${shortId}`;
 
     await resend.emails.send({
       from: "THIE B2B <onboarding@updates.haushhaush.de>",
