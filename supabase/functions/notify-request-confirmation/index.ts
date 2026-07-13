@@ -119,6 +119,33 @@ ${itemsHtml}
 </table>
 
 <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #333333;">Mit nachhaltigen Grüßen,<br>Ihr Team der Thie GmbH</p>
+
+<hr style="border: none; border-top: 1px solid #e0ebe7; margin: 36px 0 28px;">
+
+<h2 style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #1a1a1a;">Your device request has been received</h2>
+
+<p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hello ${customerName},</p>
+
+<p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">thank you for your request via our B2B portal. We have successfully received your requirement for refurbished IT devices and will take care of it immediately.</p>
+
+<div style="background-color: #f7faf9; border: 1px solid #e0ebe7; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+<p style="margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #009c77; text-transform: uppercase; letter-spacing: 0.5px;">Requested hardware:</p>
+${itemsHtml}
+<hr style="border: none; border-top: 1px solid #e0ebe7; margin: 16px 0;">
+<p style="margin: 0; font-size: 14px; color: #666666;">Request number: <strong style="color: #333333;">#${shortId}</strong></p>
+</div>
+
+<p style="margin: 0 0 28px; font-size: 15px; line-height: 1.6; color: #333333;">Our team is currently checking availability in our inventory. You will receive feedback or a delivery confirmation shortly. Together we give this technology a second life and preserve valuable resources.</p>
+
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto 28px;">
+<tr>
+<td style="border-radius: 8px; background-color: #009c77;">
+<a href="${baseUrl}/requests" style="display: inline-block; padding: 14px 32px; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none;">View request status in portal</a>
+</td>
+</tr>
+</table>
+
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #333333;">With sustainable regards,<br>Your Thie GmbH team</p>
 </td>
 </tr>
 
@@ -147,7 +174,7 @@ ${itemsHtml}
     await resend.emails.send({
       from: "THIE B2B <onboarding@updates.haushhaush.de>",
       to: [userEmail],
-      subject: `Ihre Geräteanfrage #${shortId} ist eingegangen`,
+      subject: `Ihre Geräteanfrage #${shortId} ist eingegangen / Your request #${shortId} has been received`,
       html: emailHtml,
     });
 
