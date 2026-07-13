@@ -13,6 +13,10 @@ interface ProductInfo {
   name: string;
   quantity: number;
   grade?: string;
+  storage?: string;
+  color?: string;
+  battery_health?: number;
+  manufacturer?: string;
 }
 
 interface NotifyNewProductsRequest {
@@ -110,12 +114,27 @@ const handler = async (req: Request): Promise<Response> => {
 
     const baseUrl = "https://thie-b2b.lovable.app";
 
-    // Build product list HTML
-    const productListHtml = products && products.length > 0
-      ? products.slice(0, 10).map(p => 
-          `<p style="margin: 0 0 8px 0; color: #555555;">${p.quantity}x ${p.name}${p.grade ? ` (Zustand: ${p.grade})` : ""}</p>`
+    // Build product list HTML with full specs (DE)
+    const buildSpecs = (p: ProductInfo, lang: "de" | "en") => {
+      const parts: string[] = [];
+      if (p.storage) parts.push(p.storage);
+      if (p.color) parts.push(p.color);
+      if (p.battery_health) parts.push(`${lang === "de" ? "Akku" : "Battery"}: ${p.battery_health}%`);
+      if (p.grade) parts.push(`${lang === "de" ? "Zustand" : "Grade"}: ${p.grade}`);
+      return parts.length ? ` – ${parts.join(" · ")}` : "";
+    };
+
+    const productListHtmlDe = products && products.length > 0
+      ? products.slice(0, 10).map(p =>
+          `<p style="margin: 0 0 8px 0; color: #555555;"><strong>${p.quantity}x</strong> ${p.name}<span style="color:#777;">${buildSpecs(p, "de")}</span></p>`
         ).join("\n")
       : `<p style="margin: 0; color: #555555;">${productCount} neue Geräte verfügbar</p>`;
+
+    const productListHtmlEn = products && products.length > 0
+      ? products.slice(0, 10).map(p =>
+          `<p style="margin: 0 0 8px 0; color: #555555;"><strong>${p.quantity}x</strong> ${p.name}<span style="color:#777;">${buildSpecs(p, "en")}</span></p>`
+        ).join("\n")
+      : `<p style="margin: 0; color: #555555;">${productCount} new devices available</p>`;
 
     // Send emails to all users
     const emailPromises = profiles.map(async (profile) => {
@@ -155,7 +174,7 @@ body { margin: 0; padding: 0; width: 100% !important; font-family: Arial, Helvet
 
 <div style="background-color: #f9f9f9; border-left: 4px solid #009c77; padding: 15px; margin-bottom: 20px;">
 <p style="margin: 0 0 10px 0;"><strong>Neu eingetroffen:</strong></p>
-${productListHtml}
+${productListHtmlDe}
 <div style="margin-top: 15px; background-color: #e8f5e9; padding: 10px; border-radius: 4px;">
 <p style="margin: 0; font-size: 14px; color: #555555;"><strong>Tipp:</strong> Schnell sein lohnt sich. Die Vergabe erfolgt nach Bestelleingang im Portal.</p>
 </div>
@@ -183,7 +202,7 @@ ${productListHtml}
 
 <div style="background-color: #f9f9f9; border-left: 4px solid #009c77; padding: 15px; margin-bottom: 20px;">
 <p style="margin: 0 0 10px 0;"><strong>Just arrived:</strong></p>
-${productListHtml}
+${productListHtmlEn}
 <div style="margin-top: 15px; background-color: #e8f5e9; padding: 10px; border-radius: 4px;">
 <p style="margin: 0; font-size: 14px; color: #555555;"><strong>Tip:</strong> Be quick — allocation is based on order of incoming requests in the portal.</p>
 </div>
