@@ -36,10 +36,10 @@ export function useRequests() {
   return useQuery({
     queryKey: ["requests", isAdmin],
     queryFn: async () => {
-      // Fetch requests
+      // Fetch requests with items embedded (avoids PostgREST 1000-row cap on separate item query)
       const { data: requests, error: requestsError } = await supabase
         .from("requests")
-        .select("*")
+        .select("*, request_items(*, products(storage, color, grade, battery_health))")
         .order("created_at", { ascending: false });
 
       if (requestsError) throw requestsError;
@@ -47,15 +47,6 @@ export function useRequests() {
       if (!requests || requests.length === 0) {
         return [];
       }
-
-      // Fetch all request items
-      const requestIds = requests.map((r) => r.id);
-      const { data: items, error: itemsError } = await supabase
-        .from("request_items")
-        .select("*, products(storage, color, grade, battery_health)")
-        .in("request_id", requestIds);
-
-      if (itemsError) throw itemsError;
 
       // If admin, fetch user profiles to get email and company
       let profilesMap: Record<string, { email: string; company_name: string | null }> = {};
@@ -76,13 +67,12 @@ export function useRequests() {
       }
 
       // Map items to requests
-      const requestsWithItems: Request[] = requests.map((request) => ({
+      const requestsWithItems: Request[] = requests.map((request: any) => ({
         ...request,
         status: request.status as "pending" | "approved" | "rejected",
         shipping_cost: Number(request.shipping_cost),
         express_shipping: request.express_shipping,
-        items: (items || [])
-          .filter((item) => item.request_id === request.id)
+        items: ((request.request_items as any[]) || [])
           .map((item) => {
             const product = (item as any).products;
             return {
