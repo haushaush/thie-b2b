@@ -70,22 +70,15 @@ export default function Orders() {
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
-      // Fetch approved requests
+      // Fetch approved requests with items embedded (avoid PostgREST 1000-row cap)
       const { data: requests, error } = await supabase
         .from("requests")
-        .select("*")
+        .select("*, request_items(*, products(storage, color, grade, battery_health, manufacturer))")
         .eq("status", "approved")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       if (!requests || requests.length === 0) return [];
-
-      // Fetch items
-      const requestIds = requests.map((r) => r.id);
-      const { data: items } = await supabase
-        .from("request_items")
-        .select("*, products(storage, color, grade, battery_health, manufacturer)")
-        .in("request_id", requestIds);
 
       // Fetch profiles
       const userIds = [...new Set(requests.map((r) => r.user_id))];
@@ -99,16 +92,15 @@ export default function Orders() {
         profilesMap[p.user_id] = { email: p.email, company_name: p.company_name, contact_person: p.contact_person };
       });
 
-      return requests.map((r) => ({
+      return requests.map((r: any) => ({
         id: r.id,
         user_id: r.user_id,
         created_at: r.created_at,
         shipping_cost: Number(r.shipping_cost),
         express_shipping: r.express_shipping,
         admin_message: r.admin_message,
-        items: (items || [])
-          .filter((i) => i.request_id === r.id)
-          .map((i) => {
+        items: ((r.request_items as any[]) || [])
+          .map((i: any) => {
             const product = (i as any).products;
             return {
               id: i.id,
